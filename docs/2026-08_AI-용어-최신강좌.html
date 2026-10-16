@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 AI 용어 최신판 — 프롬프트에서 루프로</title>
+<!--
+  type: output
+  subtype: 강의자료
+  derived_from:
+    - [[LLM-코딩-워크플로우-2026-Addy-Osmani]]
+    - [[하네스-설계-장기실행-코딩에이전트-Anthropic]]
+    - [[AI교육-세미나-7파트-커리큘럼]]
+  created: 2026-08-04
+  updated: 2026-08-04
+  status: draft
+  note: 강의 산출물. Output/CLAUDE.md 예외 조항 적용 (raw 직접 참조, wiki 컴파일은 별도 수행).
+-->
+<meta name="author" content="minsung">
+<meta name="description" content="2026년 8월 기준 AI 핵심 키워드 5개(루프·하네스·에이전틱 워크플로우·종료 조건·동적 컨텍스트)와 주변 용어 24개를 초보자용으로 정리한 90분 강좌.">
+<meta name="keywords" content="루프 엔지니어링, 하네스 엔지니어링, 에이전틱 워크플로우, 종료 조건, 동적 컨텍스트, AI 강좌">
+<meta property="og:title" content="AI 용어 최신 지도 — 프롬프트에서 루프로">
+<meta property="og:description" content="AI에게 말 잘 거는 법에서 AI에게 일 시키고 감독하는 법으로. 초보자용 2026 AI 용어 강좌.">
+<meta property="og:type" content="article">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+  /* ===== THEME ===== */
+  :root {
+    --bg:        #fbfbfa;
+    --surface:   #ffffff;
+    --raised:    #f4f4f2;
+    --line:      #e6e5e1;
+    --line-soft: #efeeea;
+    --text:      #1c1c1a;
+    --text-2:    #3d3d3a;
+    --muted:     #8a8a84;
+    --accent:    #2f5fd0;
+    --ok:        #1f7a4d;
+    --no:        #b03a4a;
+    --code-bg:   #f6f6f4;
+    --shadow:    none;
+  }
+  :root[data-theme="dark"] {
+    --bg:        #101112;
+    --surface:   #151617;
+    --raised:    #1b1c1e;
+    --line:      #292a2d;
+    --line-soft: #202124;
+    --text:      #e9e9e6;
+    --text-2:    #c6c6c1;
+    --muted:     #85857f;
+    --accent:    #7fa4f0;
+    --ok:        #5fc38c;
+    --no:        #e08492;
+    --code-bg:   #17181a;
+    --shadow:    none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #101112;
+      --surface:   #151617;
+      --raised:    #1b1c1e;
+      --line:      #292a2d;
+      --line-soft: #202124;
+      --text:      #e9e9e6;
+      --text-2:    #c6c6c1;
+      --muted:     #85857f;
+      --accent:    #7fa4f0;
+      --ok:        #5fc38c;
+      --no:        #e08492;
+      --code-bg:   #17181a;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.8;
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+    transition: background .2s ease, color .2s ease;
+  }
+
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 28px; }
+
+  /* ===== HEADER ===== */
+  header { padding: 64px 0 0; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 30px; font-weight: 700; line-height: 1.35;
+    letter-spacing: -0.025em; margin-bottom: 14px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede { font-size: 15.5px; color: var(--text-2); font-weight: 300; max-width: 620px; }
+  .kw { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 7px; }
+  .kw span {
+    font-size: 11.5px; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 11px; font-weight: 400;
+  }
+
+  /* theme toggle */
+  .toggle {
+    position: fixed; top: 18px; right: 18px; z-index: 60;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1;
+    transition: color .15s, border-color .15s;
+  }
+  .toggle:hover { color: var(--text); border-color: var(--muted); }
+  .toggle .sun { display: none; }
+  :root[data-theme="dark"] .toggle .sun { display: block; }
+  :root[data-theme="dark"] .toggle .moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .toggle .sun { display: block; }
+    :root:not([data-theme="light"]) .toggle .moon { display: none; }
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky; top: 0; z-index: 40;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    margin-top: 44px;
+  }
+  .nav-inner {
+    max-width: 820px; margin: 0 auto; padding: 0 28px;
+    display: flex; gap: 22px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 14px 0; font-size: 13px; font-weight: 400;
+    color: var(--muted); cursor: pointer; white-space: nowrap;
+    border-bottom: 1px solid transparent; margin-bottom: -1px;
+    transition: color .15s, border-color .15s; user-select: none;
+  }
+  .tab:hover { color: var(--text-2); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+
+  /* ===== PANELS ===== */
+  main { padding: 48px 0 120px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade .3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  h2 {
+    font-size: 13px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin: 56px 0 18px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  }
+  h2:first-child { margin-top: 0; }
+  h3 { font-size: 16px; font-weight: 600; margin: 32px 0 10px; letter-spacing: -0.01em; }
+  h4 { font-size: 14.5px; font-weight: 600; margin: 24px 0 8px; }
+
+  p { margin-bottom: 15px; color: var(--text-2); }
+  p.tight { margin-bottom: 8px; }
+  .muted { color: var(--muted); }
+  strong { color: var(--text); font-weight: 600; }
+  em { font-style: normal; color: var(--accent); }
+
+  ul, ol { margin: 0 0 18px 20px; color: var(--text-2); }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--muted); }
+
+  /* lead statement */
+  .lead {
+    font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--text);
+    border-left: 2px solid var(--accent); padding: 2px 0 2px 20px;
+    margin: 24px 0 26px;
+  }
+  .lead.warn { border-left-color: var(--no); }
+
+  /* ===== KEYWORD BLOCK ===== */
+  .kwblock { padding: 34px 0; border-top: 1px solid var(--line); }
+  .kwblock:first-of-type { border-top: none; padding-top: 6px; }
+  .kwhead { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .kwnum {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--muted); font-weight: 500;
+  }
+  .kwtitle { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .kwen { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .kwquote {
+    font-size: 16px; color: var(--text); margin: 12px 0 20px; font-weight: 400;
+  }
+
+  /* def list */
+  dl.kv { margin: 18px 0; }
+  dl.kv dt {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--muted); letter-spacing: .04em; text-transform: uppercase;
+    margin-top: 14px;
+  }
+  dl.kv dd { margin: 2px 0 0; color: var(--text-2); font-size: 14.5px; }
+
+  /* ===== TABLE ===== */
+  .scroll { overflow-x: auto; margin: 18px 0 22px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    text-align: left; padding: 9px 14px 9px 0; font-weight: 500; font-size: 11.5px;
+    letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    padding: 12px 14px 12px 0; border-bottom: 1px solid var(--line-soft);
+    vertical-align: top; color: var(--text-2);
+  }
+  tr:last-child td { border-bottom: none; }
+  td.k { color: var(--text); font-weight: 500; white-space: nowrap; }
+  td:last-child, th:last-child { padding-right: 0; }
+  .mono, td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* ===== CODE ===== */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: 4px; padding: 18px 20px; overflow-x: auto; margin: 18px 0 22px;
+  }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.75; color: var(--text-2); }
+  p code, li code, td code, dd code, .gd code {
+    background: var(--code-bg); border: 1px solid var(--line);
+    padding: 0 5px; border-radius: 3px; font-size: 12px; color: var(--text);
+  }
+
+  /* ===== NOTE ===== */
+  .note {
+    border-left: 2px solid var(--line); padding: 2px 0 2px 20px;
+    margin: 22px 0; font-size: 14px; color: var(--text-2);
+  }
+  .note .nt {
+    display: block; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; margin-bottom: 5px;
+  }
+  .note.acc { border-left-color: var(--accent); }
+  .note.acc .nt { color: var(--accent); }
+  .note.bad { border-left-color: var(--no); }
+  .note.bad .nt { color: var(--no); }
+  .note.good { border-left-color: var(--ok); }
+  .note.good .nt { color: var(--ok); }
+
+  /* ===== STACK ===== */
+  .stack { margin: 22px 0 26px; }
+  .layer { padding: 12px 0 12px 18px; border-left: 2px solid var(--line); }
+  .layer + .layer { border-top: 1px solid var(--line-soft); }
+  .layer .ln { font-weight: 600; font-size: 14.5px; color: var(--text); }
+  .layer .ld { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .layer.top { border-left-color: var(--accent); }
+  .layer .yr { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  /* ===== FLOW ===== */
+  .flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    margin: 20px 0 24px; font-size: 13px;
+  }
+  .flow b { font-weight: 500; color: var(--text); border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; }
+  .flow b.s { color: var(--ok); border-color: var(--ok); }
+  .flow b.e { color: var(--no); border-color: var(--no); }
+  .flow i { font-style: normal; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* ===== VS ===== */
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 20px 0 24px; border-top: 1px solid var(--line); }
+  .vs > div { padding: 18px 22px 18px 0; }
+  .vs > div + div { padding-left: 24px; border-left: 1px solid var(--line); }
+  .vs .vt { font-size: 11.5px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 10px; }
+  .vs .l .vt { color: var(--no); }
+  .vs .r .vt { color: var(--ok); }
+  .vs p, .vs ul { font-size: 13.5px; }
+  .vs ul { margin-bottom: 0; }
+
+  /* ===== GLOSSARY ===== */
+  .gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0 32px; }
+  .gitem { padding: 15px 0; border-bottom: 1px solid var(--line-soft); }
+  .gt { font-weight: 600; font-size: 14px; color: var(--text); }
+  .gt .en { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .gd { font-size: 13px; color: var(--text-2); margin-top: 3px; line-height: 1.65; }
+
+  /* ===== CHECKLIST ===== */
+  .check { list-style: none; margin-left: 0; }
+  .check li { padding-left: 24px; position: relative; margin-bottom: 10px; }
+  .check li::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 11px; height: 11px; border: 1px solid var(--muted); border-radius: 2px;
+  }
+
+  /* ===== TRACK TAG ===== */
+  .tt {
+    display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line);
+    color: var(--muted); margin-right: 6px; vertical-align: middle; font-weight: 400;
+  }
+  .tt.on { border-color: var(--accent); color: var(--accent); }
+  .star { color: var(--no); font-size: 12px; font-weight: 500; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--line); padding: 30px 0 60px;
+    font-size: 12px; color: var(--muted); line-height: 1.8;
+  }
+  .src {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    border-top: 1px solid var(--line-soft); padding-top: 12px; margin-top: 26px; line-height: 1.7;
+  }
+
+  /* ===== DIAGRAM ===== */
+  .dgm { margin: 24px 0 28px; overflow-x: auto; }
+  .dgm svg { display: block; width: 100%; height: auto; min-width: 520px; }
+  .dgm svg text { font-family: 'Noto Sans KR', sans-serif; }
+  .dgm svg .lbl { font-size: 13px; fill: var(--text); font-weight: 500; }
+  .dgm svg .sm  { font-size: 11px; fill: var(--muted); font-weight: 400; }
+  .dgm svg .mn  { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: var(--muted); }
+  .dgm svg .box { fill: none; stroke: var(--line); stroke-width: 1; }
+  .dgm svg .fillbox { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  .dgm svg .arw { stroke: var(--muted); stroke-width: 1; fill: none; }
+  .dgm svg .acc  { stroke: var(--accent); }
+  .dgm svg .accf { fill: var(--accent); }
+  .dgm svg .oks  { stroke: var(--ok); }   .dgm svg .okf  { fill: var(--ok); }
+  .dgm svg .nos  { stroke: var(--no); }   .dgm svg .nof  { fill: var(--no); }
+  .dgm svg .dash { stroke-dasharray: 3 3; }
+  .dgm-cap { font-size: 12px; color: var(--muted); margin-top: -14px; margin-bottom: 26px; }
+
+  /* ===== IMAGE SLOT ===== */
+  .imgslot {
+    border: 1px dashed var(--line); border-radius: 4px;
+    padding: 20px; margin: 20px 0; text-align: center;
+    color: var(--muted); font-size: 12.5px; background: var(--code-bg);
+  }
+  .imgslot b { display: block; color: var(--text-2); font-size: 13px; margin-bottom: 5px; font-weight: 600; }
+  .imgslot .how { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 6px; }
+  .imgslot img { max-width: 100%; border-radius: 3px; border: 1px solid var(--line); }
+
+  /* ===== COPY ===== */
+  .cpwrap { position: relative; }
+  .cpbtn {
+    position: absolute; top: 8px; right: 8px; z-index: 2;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    background: var(--surface); color: var(--muted);
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 3px 9px; cursor: pointer; opacity: 0; transition: opacity .15s, color .15s;
+  }
+  .cpwrap:hover .cpbtn { opacity: 1; }
+  .cpbtn:hover { color: var(--text); border-color: var(--muted); }
+  .cpbtn.done { color: var(--ok); border-color: var(--ok); opacity: 1; }
+
+  /* ===== VAR TOKEN ===== */
+  .v {
+    font-family: 'JetBrains Mono', monospace; font-size: .92em;
+    color: var(--accent); background: var(--code-bg);
+    border: 1px solid var(--line); border-radius: 3px; padding: 0 4px;
+  }
+  pre .v { border: none; background: none; padding: 0; }
+
+  @media (max-width: 680px) {
+    body { font-size: 14.5px; }
+    .wrap, .nav-inner { padding: 0 20px; }
+    header { padding-top: 48px; }
+    h1 { font-size: 25px; }
+    .vs { grid-template-columns: 1fr; }
+    .vs > div + div { padding-left: 0; border-left: none; border-top: 1px solid var(--line); }
+    .vs > div { padding-right: 0; }
+    .gloss { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<button class="toggle" id="themeBtn" aria-label="테마 전환" title="라이트/다크 전환">
+  <span class="moon">☾</span><span class="sun">☀</span>
+</button>
+
+<header class="wrap">
+  <div class="eyebrow">2026.08 · 초보자 대상 강좌</div>
+  <h1>AI 용어 최신 지도<br><em>프롬프트에서 루프로</em></h1>
+  <p class="lede">"AI에게 말 잘 거는 법"에서 "AI에게 일 시키고 감독하는 법"으로. 지금 초보자가 반드시 아는 5개 키워드와 주변 용어 24개.</p>
+  <div class="kw">
+    <span>루프 엔지니어링</span><span>하네스 엔지니어링</span><span>에이전틱 워크플로우</span><span>종료 조건</span><span>동적 컨텍스트</span><span>90분</span>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <div class="tab active" data-p="p0">왜 헷갈리는가</div>
+    <div class="tab" data-p="p1">핵심 키워드 5</div>
+    <div class="tab" data-p="p2">루프의 6조각</div>
+    <div class="tab" data-p="p3">AI 기초</div>
+    <div class="tab" data-p="p4">실습</div>
+    <div class="tab" data-p="p5">함정</div>
+    <div class="tab" data-p="p6">진행표</div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 0 ============ -->
+<div class="panel active" id="p0">
+
+  <div class="note acc">
+    <span class="nt">시작 전 — 대상 확인</span>
+    <strong>토큰 · 컨텍스트 윈도우 · 할루시네이션</strong>을 설명 없이 써도 되는 사람들인가?
+    아니라면 <strong>「AI 기초」 탭을 먼저 30분</strong> 하고 여기로 돌아온다. 그 순서를 지키지 않으면 나머지가 전부 헛돈다.
+  </div>
+
+  <h2>한 문장으로</h2>
+  <div class="lead">
+    프롬프트도 컨텍스트도 <strong>사라지지 않았다.</strong> 사람이 손으로 하던 그 일이 <em>루프(Loop)</em>라는 자동 공장 안으로 들어갔을 뿐이다.
+  </div>
+  <p>
+    지금 AI 생태계는 <strong>'대화하는 상대(Chatbot)'를 만드는 단계</strong>에서
+    <strong>'일하는 시스템(Agent System)'을 만드는 단계</strong>로 넘어가는 중이다.
+    용어가 갑자기 늘어난 게 아니라, <em>계층이 하나 더 생긴 것</em>이다.
+  </p>
+
+  <h2>엔지니어링 4층 구조</h2>
+  <p class="muted tight">아래로 갈수록 오래된 개념. 위로 갈수록 2026년에 새로 생긴 층. 아래층이 없어진 게 아니라 <strong>위층에 흡수됐다.</strong></p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 320" role="img" aria-label="엔지니어링 4층 포함 구조">
+      <rect class="box acc" x="10" y="10" width="700" height="300" rx="6"/>
+      <text class="lbl" x="28" y="36">루프 엔지니어링</text>
+      <text class="mn"  x="640" y="36">2026~</text>
+      <text class="sm"  x="28" y="54">언제 다시 돌릴지, 언제 멈출지 — 반복 자체를 설계</text>
+
+      <rect class="box" x="34" y="66" width="652" height="232" rx="5"/>
+      <text class="lbl" x="52" y="92">하네스 엔지니어링</text>
+      <text class="mn"  x="616" y="92">2025~</text>
+      <text class="sm"  x="52" y="110">도구·권한·출력 형식·평가자 — 에이전트 1대가 사는 작업 환경</text>
+
+      <rect class="box" x="58" y="122" width="604" height="164" rx="5"/>
+      <text class="lbl" x="76" y="148">컨텍스트 엔지니어링</text>
+      <text class="mn"  x="592" y="148">2024~</text>
+      <text class="sm"  x="76" y="166">이번 턴에 무엇을 먹일지 — 문서·코드·기억</text>
+
+      <rect class="fillbox" x="82" y="178" width="556" height="96" rx="5"/>
+      <text class="lbl" x="100" y="204">프롬프트 엔지니어링</text>
+      <text class="mn"  x="568" y="204">2023~</text>
+      <text class="sm"  x="100" y="222">이번 턴에 뭐라고 말할지</text>
+      <text class="sm"  x="100" y="252">여전히 필요하다. 다만 이제 사람이 아니라 바깥 층이 자동으로 쓴다.</text>
+    </svg>
+  </div>
+  <p class="dgm-cap">바깥이 안을 감싼다. 아래층은 <strong>사라진 게 아니라 위층 안으로 들어갔다.</strong></p>
+
+  <div class="note acc">
+    <span class="nt">계층 관계 한 줄</span>
+    하네스는 <strong>에이전트 한 대가 일하는 작업장</strong>이고, 루프는 <strong>그 작업장을 타이머로 계속 돌리고 인력을 더 뽑는 공장 관리 시스템</strong>이다.
+    <span class="muted">(Addy Osmani: "Loop engineering sits one floor above the harness.")</span>
+  </div>
+
+  <h2>2024 vs 2026</h2>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:110px">구분</th><th>2024년 (과거)</th><th>2026년 (현재)</th></tr>
+    <tr><td class="k">주체</td><td>사람 (Human-in-the-loop)<br><span class="muted">사람이 루프 안에서 매번 개입</span></td><td>시스템/AI (Agent-in-the-loop)<br><span class="muted">사람은 루프 <strong>밖</strong>에서 설계·검수</span></td></tr>
+    <tr><td class="k">행동</td><td>사람이 매번 프롬프트를 고쳐서 입력</td><td>시스템(Loop)이 상황에 맞춰 프롬프트를 자동 생성</td></tr>
+    <tr><td class="k">핵심 질문</td><td>"어떻게 질문해야 잘 대답할까?"</td><td>"어떻게 반복시켜야 스스로 고칠까?"</td></tr>
+    <tr><td class="k">성공 기준</td><td>답변의 퀄리티</td><td>작업의 완수 여부</td></tr>
+    <tr><td class="k">단위</td><td>대화 1턴</td><td>작업 1건 (수십~수백 턴)</td></tr>
+    <tr><td class="k">실패 원인</td><td>프롬프트가 부실</td><td>종료 조건이 없음 / 검증자가 없음</td></tr>
+    <tr><td class="k">비용 감각</td><td>토큰 몇천 개</td><td>작업 1건에 $10~$200 <span class="muted">(하네스 사례)</span></td></tr>
+  </table>
+  </div>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 250" role="img" aria-label="사람의 위치 변화">
+      <defs>
+        <marker id="mA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+        </marker>
+      </defs>
+
+      <!-- LEFT -->
+      <text class="mn" x="10" y="22">2024 · HUMAN-IN-THE-LOOP</text>
+      <rect class="box dash" x="10" y="70" width="340" height="140" rx="6"/>
+      <text class="sm" x="22" y="90">루프</text>
+
+      <rect class="box acc" x="34"  y="118" width="64" height="32" rx="4"/>
+      <text class="lbl accf" x="66" y="139" text-anchor="middle">사람</text>
+      <rect class="fillbox" x="110" y="118" width="64" height="32" rx="4"/>
+      <text class="lbl" x="142" y="139" text-anchor="middle">AI</text>
+      <rect class="box acc" x="186" y="118" width="64" height="32" rx="4"/>
+      <text class="lbl accf" x="218" y="139" text-anchor="middle">사람</text>
+      <rect class="fillbox" x="262" y="118" width="64" height="32" rx="4"/>
+      <text class="lbl" x="294" y="139" text-anchor="middle">AI</text>
+
+      <g class="arw" color="var(--muted)" marker-end="url(#mA)">
+        <path d="M100,134 L108,134"/><path d="M176,134 L184,134"/><path d="M252,134 L260,134"/>
+      </g>
+      <text class="sm" x="180" y="184" text-anchor="middle">사람이 매 턴 안에서 개입한다</text>
+
+      <!-- RIGHT -->
+      <text class="mn" x="370" y="22">2026 · AGENT-IN-THE-LOOP</text>
+      <rect class="box acc" x="500" y="34" width="80" height="30" rx="4"/>
+      <text class="lbl accf" x="540" y="54" text-anchor="middle">사람</text>
+
+      <rect class="box" x="370" y="86" width="340" height="140" rx="6"/>
+      <text class="sm" x="382" y="106">루프</text>
+
+      <rect class="fillbox" x="394" y="126" width="80" height="32" rx="4"/>
+      <text class="lbl" x="434" y="147" text-anchor="middle">계획</text>
+      <rect class="fillbox" x="490" y="126" width="80" height="32" rx="4"/>
+      <text class="lbl" x="530" y="147" text-anchor="middle">실행</text>
+      <rect class="fillbox" x="586" y="126" width="80" height="32" rx="4"/>
+      <text class="lbl" x="626" y="147" text-anchor="middle">검증</text>
+
+      <g class="arw" color="var(--muted)" marker-end="url(#mA)">
+        <path d="M476,142 L488,142"/><path d="M572,142 L584,142"/>
+        <path d="M626,158 L626,178 L434,178 L434,160"/>
+      </g>
+      <text class="sm" x="530" y="196" text-anchor="middle">↺ 반복</text>
+
+      <g class="arw acc dash" color="var(--accent)" marker-end="url(#mA)">
+        <path d="M516,64 L470,118"/>
+        <path d="M596,120 L572,66"/>
+      </g>
+      <text class="sm accf" x="452" y="86">설계</text>
+      <text class="sm accf" x="600" y="86">검수</text>
+      <text class="sm" x="540" y="216" text-anchor="middle">사람은 루프 밖에 있다</text>
+    </svg>
+  </div>
+  <p class="dgm-cap">용어가 늘어난 게 아니라 <strong>사람의 자리가 옮겨간 것</strong>이다. 안에서 밖으로.</p>
+
+  <div class="note good">
+    <span class="nt">초보자에게 이렇게 설명하세요</span>
+    "이제는 AI한테 <strong>말 잘 거는 법(프롬프트)</strong>을 배우는 게 아니라,
+    AI에게 일을 맡기고 <strong>관리·감독하는 법(루프·하네스)</strong>을 배우는 시대입니다."
+  </div>
+
+  <h2>이 강의의 목표</h2>
+  <ul>
+    <li>키워드 5개를 <strong>남에게 한 줄로 설명</strong>할 수 있게 된다.</li>
+    <li>AI 뉴스·문서에 나오는 <strong>주변 용어 24개</strong>가 어느 층에 속하는지 안다.</li>
+    <li>내 손으로 <strong>종료 조건 하나</strong>를 써 본다. (실습 4-2 — 오늘의 핵심)</li>
+    <li>루프가 <strong>돈과 이해력을 어떻게 태우는지</strong> 알고 방어선을 친다.</li>
+  </ul>
+
+  <div class="src">출처 — Addy Osmani, "Loop Engineering" (2026-06-07) · Anthropic, "Harness design for long-running application development" · 사내 세미나 Part 7·8 노트</div>
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="panel" id="p1">
+
+  <p class="muted">
+    관통하는 관점 하나: <strong>"AI에게 정답을 한 번에 묻지 말고, 정답을 찾을 때까지 고치게 시켜라."</strong>
+    아래 5개는 전부 이 문장의 부품이다.
+  </p>
+
+  <!-- 1 -->
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">01</span><span class="kwtitle">루프 엔지니어링</span><span class="kwen">Loop Engineering</span></div>
+    <p class="kwquote">"AI가 일을 끝낼 때까지 뺑뺑이 돌리는 규칙 만들기"</p>
+
+    <dl class="kv">
+      <dt>예전</dt><dd>사람이 질문 → AI가 답변 → 끝. 마음에 안 들면 사람이 또 질문.</dd>
+      <dt>지금</dt><dd>"목표를 달성할 때까지 <strong>계획 → 실행 → 검토 → 수정</strong>을 반복해"라고 <strong>시스템</strong>을 짜 둔다.</dd>
+      <dt>핵심</dt><dd>AI가 한 번에 완벽한 답을 못 낸다는 걸 <em>인정</em>하고, 스스로 고칠 기회를 <em>구조로</em> 만들어 주는 기술.</dd>
+    </dl>
+
+    <div class="dgm">
+      <svg viewBox="0 0 720 220" role="img" aria-label="루프 사이클">
+        <defs>
+          <marker id="mB" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+          </marker>
+        </defs>
+
+        <rect class="box oks" x="8" y="96" width="86" height="36" rx="4"/>
+        <text class="lbl okf" x="51" y="119" text-anchor="middle">목표 투입</text>
+
+        <rect class="fillbox" x="126" y="96" width="88" height="36" rx="4"/>
+        <text class="lbl" x="170" y="119" text-anchor="middle">계획</text>
+        <rect class="fillbox" x="246" y="96" width="88" height="36" rx="4"/>
+        <text class="lbl" x="290" y="119" text-anchor="middle">실행</text>
+        <rect class="fillbox" x="366" y="96" width="88" height="36" rx="4"/>
+        <text class="lbl" x="410" y="119" text-anchor="middle">검토</text>
+        <rect class="fillbox" x="486" y="96" width="88" height="36" rx="4"/>
+        <text class="lbl" x="530" y="119" text-anchor="middle">수정</text>
+
+        <g class="arw" color="var(--muted)" marker-end="url(#mB)">
+          <path d="M94,114 L122,114"/>
+          <path d="M214,114 L242,114"/>
+          <path d="M334,114 L362,114"/>
+          <path d="M454,114 L482,114"/>
+          <path d="M574,114 L604,114 L604,182 L170,182 L170,136"/>
+        </g>
+        <text class="sm" x="380" y="200" text-anchor="middle">↺ 종료 조건이 거짓인 동안 계속 돈다</text>
+
+        <g class="arw nos" color="var(--no)" marker-end="url(#mB)">
+          <path d="M410,94 L410,54 L556,54"/>
+        </g>
+        <rect class="box nos" x="560" y="36" width="150" height="36" rx="4"/>
+        <text class="lbl nof" x="635" y="59" text-anchor="middle">정지</text>
+        <text class="sm nof" x="424" y="44">종료 조건 참</text>
+
+        <text class="sm" x="8" y="26">사람이 손대는 곳</text>
+        <g class="arw acc dash" color="var(--accent)"><path d="M51,32 L51,92"/></g>
+        <text class="sm accf" x="120" y="26">← 여기 한 번. 그 다음부터는 안 만진다.</text>
+      </svg>
+    </div>
+    <p class="dgm-cap">사람은 <strong>목표와 종료 조건만</strong> 넣는다. 가운데 네 칸은 시스템이 돌린다.</p>
+
+    <p>
+      업계 인용 두 개면 분위기가 잡힌다.
+      Peter Steinberger: <em>"이제 코딩 에이전트에게 프롬프트를 쓰면 안 된다. 에이전트에게 프롬프트를 던지는 루프를 설계해야 한다."</em>
+      Boris Cherny(Anthropic, Claude Code 총괄): <em>"나는 더 이상 Claude에게 프롬프트를 쓰지 않는다. Claude에게 프롬프트를 던지고 다음 할 일을 판단하는 루프를 돌린다. 내 일은 루프를 짜는 것이다."</em>
+    </p>
+
+    <div class="note bad">
+      <span class="nt">초보자가 가장 많이 하는 오해</span>
+      "루프 = for문 돌리기"가 아니다. 루프의 본질은 <strong>반복</strong>이 아니라 <strong>매 회차마다 상태를 남기고 다음 할 일을 스스로 정하는 것</strong>이다.
+      상태를 안 남기면 같은 실수를 100번 반복하는 기계다.
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">02</span><span class="kwtitle">하네스 엔지니어링</span><span class="kwen">Harness Engineering</span></div>
+    <p class="kwquote">"AI가 딴 길로 새지 않게 채워두는 안전벨트와 작업복"</p>
+
+    <p>
+      하네스(Harness)의 원뜻은 <strong>마구(馬具)</strong> — 말을 제어하는 장비다.
+      AI를 루프에 태우면 반드시 엉뚱한 짓을 한다. 이를 막기 위해
+      <strong>쓸 수 있는 도구(Tool)를 제한</strong>하고, <strong>결과물을 특정 형식(JSON 등)으로만 뱉게 강제</strong>하고,
+      <strong>검사하는 별도 AI</strong>를 붙이는 기술이다.
+    </p>
+
+    <dl class="kv">
+      <dt>비유</dt><dd>요리사(AI)에게 아무 칼이나 주는 게 아니라, 이 요리에 필요한 <strong>채소 다지기용 칼만</strong> 쥐여주는 것.</dd>
+      <dt>구성물</dt><dd>도구 권한 / 출력 스키마 / 프로젝트 규칙 파일(<code>CLAUDE.md</code>, <code>AGENTS.md</code>) / 훅(Hook) / 평가자</dd>
+      <dt>가장 센 것</dt><dd><strong>생성자와 평가자 분리.</strong> LLM은 자기가 쓴 결과물에 비정상적으로 관대하다. "이 정도면 훌륭하다"며 스스로를 설득한다.</dd>
+    </dl>
+
+    <h3>회의적 평가자 (Skeptical Evaluator)</h3>
+    <p>
+      모델은 <strong>남의 작업을 비판할 때 훨씬 날카롭다.</strong> 그래서 평가자에게 일부러
+      "의심 많은 성격"을 부여하고, 통과 기준을 하드 임계값으로 못 박는다.
+      GAN(생성적 적대 신경망)의 생성자–판별자 구조에서 따온 발상이다.
+    </p>
+
+    <h3>하네스가 만드는 차이 — 레트로 게임 메이커 사례</h3>
+    <div class="scroll">
+    <table>
+      <tr><th style="width:110px">구분</th><th>Solo 실행 (하네스 없음)</th><th>Full Harness</th></tr>
+      <tr><td class="k">소요 시간</td><td>20분</td><td><strong>6시간</strong></td></tr>
+      <tr><td class="k">비용</td><td>$9</td><td><strong>$200</strong></td></tr>
+      <tr><td class="k">결과</td><td>기본 UI만, <strong>실제 작동 불가</strong></td><td><strong>16개 기능 구현, 실제 플레이 가능</strong></td></tr>
+      <tr><td class="k">주요 결함</td><td>런타임 오류, 캐릭터 이동 불가</td><td>일부 물리 엔진 오차 외 정상 작동</td></tr>
+    </table>
+    </div>
+    <div class="note acc">
+      <span class="nt">여기서 나오는 결론</span>
+      하네스는 비용을 <strong>20배</strong>로 올린다. 그러나 '동작하지 않는 쓰레기'를 '값어치 있는 제품'으로 바꾸는 방법은 지금으로선 이것뿐이다.
+      <strong>$9로 쓰레기를 만드는 것보다 $200로 동작하는 앱을 만드는 게 싸다.</strong>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">03</span><span class="kwtitle">에이전틱 워크플로우</span><span class="kwen">Agentic Workflow</span></div>
+    <p class="kwquote">"AI끼리 서로 일을 토스하며 협업하는 구조"</p>
+
+    <p>
+      한 명의 천재 AI가 다 하는 게 아니다. <strong>기획하는 AI · 코드 짜는 AI · 검수하는 AI</strong>를 따로 두고
+      결과물을 주고받게 만든다. 프롬프트 한 줄을 잘 쓰는 것보다 <strong>이 팀워크를 어떻게 짜느냐</strong>가 더 중요해졌다.
+    </p>
+
+    <div class="scroll">
+    <table>
+      <tr><th style="width:130px">역할</th><th>하는 일</th><th>흔한 실패</th></tr>
+      <tr>
+        <td class="k">Planner<br>기획자</td>
+        <td>모호한 요청을 <strong>상세 명세(Spec)</strong>로 확장. 제품 맥락과 기능 범위에 집중.</td>
+        <td>기술 세부사항을 너무 일찍 못 박아 <strong>연쇄 오류</strong> 유발</td>
+      </tr>
+      <tr>
+        <td class="k">Generator<br>생성자</td>
+        <td>명세를 작업 단위로 나눠 구현. 단계마다 Git 커밋으로 되돌아갈 지점 확보.</td>
+        <td>자기 결과에 관대함 — 스스로 "완료" 선언</td>
+      </tr>
+      <tr>
+        <td class="k">Evaluator<br>평가자</td>
+        <td>시작 전 <strong>"무엇이 완료인가"를 생성자와 협상</strong>하고, 끝나면 사용자 관점에서 공격하듯 테스트.</td>
+        <td>기준이 물러서 전부 통과시킴</td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="dgm">
+      <svg viewBox="0 0 720 210" role="img" aria-label="자기 채점 대 생성자 평가자 분리">
+        <defs>
+          <marker id="mC" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+          </marker>
+        </defs>
+
+        <!-- LEFT: same session -->
+        <text class="mn nof" x="10" y="22">✕ 같은 세션 — 자기 채점</text>
+        <rect class="fillbox" x="60" y="62" width="170" height="56" rx="4"/>
+        <text class="lbl" x="145" y="86" text-anchor="middle">AI 1대</text>
+        <text class="sm" x="145" y="104" text-anchor="middle">만들고, 스스로 채점한다</text>
+        <g class="arw nos" color="var(--no)" marker-end="url(#mC)">
+          <path d="M230,76 C282,68 282,116 234,108"/>
+        </g>
+        <text class="lbl nof" x="145" y="152" text-anchor="middle">"잘 만들어졌습니다"</text>
+        <text class="sm"      x="145" y="172" text-anchor="middle">결함이 그대로 통과한다</text>
+
+        <line x1="360" y1="14" x2="360" y2="190" stroke="var(--line)" stroke-width="1"/>
+
+        <!-- RIGHT: separated -->
+        <text class="mn okf" x="392" y="22">✓ 분리 — Maker ≠ Checker</text>
+        <rect class="fillbox" x="392" y="62" width="130" height="56" rx="4"/>
+        <text class="lbl" x="457" y="86" text-anchor="middle">생성자</text>
+        <text class="sm" x="457" y="104" text-anchor="middle">만들기만</text>
+
+        <rect class="box oks" x="578" y="62" width="130" height="56" rx="4"/>
+        <text class="lbl okf" x="643" y="86" text-anchor="middle">평가자</text>
+        <text class="sm" x="643" y="104" text-anchor="middle">깨기만</text>
+
+        <g class="arw" color="var(--muted)" marker-end="url(#mC)"><path d="M522,80 L574,80"/></g>
+        <text class="sm" x="548" y="72" text-anchor="middle">산출물</text>
+        <g class="arw dash" color="var(--muted)" marker-end="url(#mC)"><path d="M578,104 L526,104"/></g>
+        <text class="sm" x="550" y="122" text-anchor="middle">반려</text>
+
+        <text class="lbl okf" x="550" y="152" text-anchor="middle">"실패할 이유 3가지"</text>
+        <text class="sm"      x="550" y="172" text-anchor="middle">다른 지시문 · 가능하면 다른 모델</text>
+      </svg>
+    </div>
+    <p class="dgm-cap">실습 4-3이 이 그림을 <strong>직접 재현</strong>하는 순서다.</p>
+
+    <div class="note acc">
+      <span class="nt">원칙 한 줄 · Maker ≠ Checker</span>
+      만든 놈이 검사하면 안 된다. 코드를 쓴 모델은 자기 숙제를 채점하기엔 너무 착하다.
+      <strong>다른 지시문, 가능하면 다른 모델</strong>을 쓴 두 번째 에이전트가 첫 번째가 스스로 납득해버린 것을 잡아낸다.
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">04</span><span class="kwtitle">종료 조건</span><span class="kwen">Termination Condition</span></div>
+    <p class="kwquote">"AI야, 이 정도면 됐으니까 그만해"</p>
+
+    <p>
+      루프 엔지니어링의 <strong>진짜 핵심</strong>. "완벽할 때까지 해"라고 하면 토큰만 태우고 영원히 안 끝난다.
+      명확한 <strong>멈춤 신호</strong>가 필요하다. 그리고 멈춤 신호는 <strong>세 종류</strong>를 다 써야 한다.
+    </p>
+
+    <div class="scroll">
+    <table>
+      <tr><th style="width:120px">유형</th><th>내용</th><th>예시</th></tr>
+      <tr><td class="k">성공 종료</td><td>목표 달성 시 정지</td><td class="mono">test/auth 전체 통과 &amp;&amp; lint 오류 0</td></tr>
+      <tr><td class="k">실패 종료</td><td>더 해봐야 소용없을 때 정지</td><td class="mono">같은 테스트 3회 연속 실패 시 중단</td></tr>
+      <tr><td class="k">에스컬레이션</td><td>사람 호출</td><td class="mono">5회 시도해도 안 되면 사람 부르기 / 파일 삭제는 승인 요청</td></tr>
+    </table>
+    </div>
+
+    <div class="dgm">
+      <svg viewBox="0 0 720 240" role="img" aria-label="종료 조건 3분기">
+        <defs>
+          <marker id="mD" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+          </marker>
+        </defs>
+
+        <rect class="fillbox" x="8" y="96" width="132" height="48" rx="4"/>
+        <text class="lbl" x="74" y="118" text-anchor="middle">매 회차 판정</text>
+        <text class="sm"  x="74" y="135" text-anchor="middle">생성자가 아닌 쪽이</text>
+
+        <path class="arw" d="M140,120 L200,120" stroke="var(--muted)"/>
+        <path class="arw" d="M200,48 L200,192" stroke="var(--muted)"/>
+
+        <g class="arw oks" color="var(--ok)" marker-end="url(#mD)"><path d="M200,48 L512,48"/></g>
+        <text class="sm" x="356" y="40" text-anchor="middle">테스트 통과 &amp;&amp; lint 오류 0</text>
+        <rect class="box oks" x="516" y="30" width="194" height="38" rx="4"/>
+        <text class="lbl okf" x="613" y="54" text-anchor="middle">성공 종료</text>
+
+        <g class="arw nos" color="var(--no)" marker-end="url(#mD)"><path d="M200,120 L512,120"/></g>
+        <text class="sm" x="356" y="112" text-anchor="middle">같은 실패 3회 반복</text>
+        <rect class="box nos" x="516" y="102" width="194" height="38" rx="4"/>
+        <text class="lbl nof" x="613" y="126" text-anchor="middle">실패 종료 · 스킵</text>
+
+        <g class="arw acc" color="var(--accent)" marker-end="url(#mD)"><path d="M200,192 L512,192"/></g>
+        <text class="sm" x="356" y="184" text-anchor="middle">판단 애매 / 되돌릴 수 없는 작업</text>
+        <rect class="box acc" x="516" y="174" width="194" height="38" rx="4"/>
+        <text class="lbl accf" x="613" y="198" text-anchor="middle">사람 호출</text>
+
+        <text class="sm" x="8" y="222">세 갈래 중 하나라도 빠지면 루프가 멈추지 못한다.</text>
+      </svg>
+    </div>
+    <p class="dgm-cap">초보자는 <strong>맨 위 한 줄만</strong> 쓴다. 아래 두 줄이 없어서 요금이 터진다.</p>
+
+    <div class="vs">
+      <div class="l">
+        <div class="vt">나쁜 종료 조건</div>
+        <ul>
+          <li>"완벽해질 때까지"</li>
+          <li>"괜찮아 보이면 멈춰"</li>
+          <li>"충분히 좋아지면"</li>
+        </ul>
+        <p class="muted" style="margin:10px 0 0;font-size:12.5px">AI가 스스로 판정 = 자기 채점. 무한 루프 또는 조기 종료.</p>
+      </div>
+      <div class="r">
+        <div class="vt">좋은 종료 조건</div>
+        <ul>
+          <li>기계가 판정 가능 (테스트·린트·빌드 종료코드)</li>
+          <li>상한선 있음 (최대 N회, 최대 $X)</li>
+          <li>판정 주체가 생성자와 <strong>다름</strong></li>
+        </ul>
+        <p class="muted" style="margin:10px 0 0;font-size:12.5px">"done"이 <strong>주장</strong>이 아니라 <strong>증명</strong>이 된다.</p>
+      </div>
+    </div>
+
+    <div class="note good">
+      <span class="nt">도구는 이미 이걸 내장했다</span>
+      Claude Code의 <code>/goal</code>은 조건이 참이 될 때까지 계속 돌면서, <strong>매 턴 별도의 작은 모델이 완료 여부를 판정</strong>한다.
+      코드를 쓴 모델이 채점하지 않는다는 뜻이다. <code>/loop</code>는 주기적으로 다시 실행하는 쪽. OpenAI Codex 앱에도 같은 이름의 <code>/goal</code>이 있다.
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">05</span><span class="kwtitle">동적 컨텍스트</span><span class="kwen">Dynamic Context</span></div>
+    <p class="kwquote">"지금 당장 필요한 기억만 골라서 머리에 넣어주기"</p>
+
+    <p>
+      컨텍스트 엔지니어링은 <strong>사라진 게 아니라 시스템 안으로 들어갔다.</strong>
+      사람이 매번 문서를 붙여넣던 일을, 이제 AI가 루프를 돌면서
+      <strong>현재 단계에 필요한 정보만 검색(RAG)해 와서 스스로 컨텍스트를 갈아끼운다.</strong>
+    </p>
+
+    <h3>왜 갈아끼워야 하나 — 문맥 불안 (Context Anxiety)</h3>
+    <p>
+      컨텍스트 윈도우가 차오르면 모델이 <strong>작업을 성급히 마무리하거나 지시사항을 누락</strong>한다. 이걸 '문맥 불안'이라 부른다.
+      대응은 모델 세대에 따라 갈린다.
+    </p>
+    <div class="scroll">
+    <table>
+      <tr><th style="width:130px">전략</th><th>내용</th><th>언제</th></tr>
+      <tr><td class="k">리셋</td><td>컨텍스트를 완전히 비우고, <strong>구조화된 산출물(파일)</strong>로만 상태를 전달</td><td>문맥 불안이 강한 구세대 모델</td></tr>
+      <tr><td class="k">압축</td><td>대화를 요약해 눌러 담으며 연속성 유지</td><td>긴 문맥 유지력이 좋아진 최신 모델</td></tr>
+      <tr><td class="k">외부 메모리</td><td>진행 상황을 <strong>디스크의 마크다운 파일</strong>에 기록</td><td>항상. 루프의 척추.</td></tr>
+    </table>
+    </div>
+
+    <div class="dgm">
+      <svg viewBox="0 0 720 285" role="img" aria-label="컨텍스트 관리 전략 3종">
+        <defs>
+          <marker id="mE" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+          </marker>
+        </defs>
+
+        <!-- row 1: reset -->
+        <text class="lbl" x="8" y="66">리셋</text>
+        <text class="sm"  x="8" y="82">Reset</text>
+        <line x1="130" y1="38" x2="700" y2="38" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text class="sm" x="704" y="41" text-anchor="end" opacity="0">한계</text>
+        <line x1="130" y1="80" x2="700" y2="80" stroke="var(--line)"/>
+        <polyline class="arw nos" fill="none"
+          points="130,80 270,40 270,80 410,40 410,80 550,40 550,80 690,54"/>
+        <text class="sm nof" x="270" y="32" text-anchor="middle">↓ 비움</text>
+        <text class="sm nof" x="410" y="32" text-anchor="middle">↓ 비움</text>
+        <text class="sm nof" x="550" y="32" text-anchor="middle">↓ 비움</text>
+
+        <!-- row 2: compaction -->
+        <text class="lbl" x="8" y="146">압축</text>
+        <text class="sm"  x="8" y="162">Compaction</text>
+        <line x1="130" y1="118" x2="700" y2="118" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <line x1="130" y1="160" x2="700" y2="160" stroke="var(--line)"/>
+        <polyline class="arw acc" fill="none"
+          points="130,160 270,120 270,144 410,120 410,144 550,120 550,144 690,126"/>
+        <text class="sm accf" x="270" y="112" text-anchor="middle">↓ 요약</text>
+        <text class="sm accf" x="410" y="112" text-anchor="middle">↓ 요약</text>
+        <text class="sm accf" x="550" y="112" text-anchor="middle">↓ 요약</text>
+
+        <!-- row 3: external memory -->
+        <text class="lbl" x="8" y="226">외부 메모리</text>
+        <text class="sm"  x="8" y="242">State file</text>
+        <line x1="130" y1="198" x2="700" y2="198" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <line x1="130" y1="240" x2="700" y2="240" stroke="var(--line)"/>
+        <polyline class="arw oks" fill="none" points="130,240 270,224 270,236 410,220 410,234 550,218 550,232 690,222"/>
+        <g class="arw oks" color="var(--ok)" marker-end="url(#mE)">
+          <path d="M270,238 L270,252"/><path d="M410,236 L410,252"/><path d="M550,234 L550,252"/>
+        </g>
+        <rect class="box oks" x="130" y="256" width="560" height="22" rx="3"/>
+        <text class="mn okf" x="410" y="271" text-anchor="middle">progress.md · log.md — 디스크에 남는다</text>
+
+        <text class="mn" x="130" y="20">회차 →</text>
+        <text class="sm" x="700" y="20" text-anchor="end">점선 = 컨텍스트 윈도우 한계</text>
+      </svg>
+    </div>
+    <p class="dgm-cap">세로축은 <strong>컨텍스트 사용량</strong>. 위 두 줄은 서로 대안이고, <strong>세 번째 줄은 항상 같이 쓴다.</strong></p>
+
+    <div class="imgslot">
+      <b>📸 이미지 요청 #1 — 컨텍스트 윈도우 실물</b>
+      Claude Code 세션에서 컨텍스트가 <strong>절반 이상 찼을 때</strong>의 잔량 표시.<br>
+      위 다이어그램이 추상이라, 실제 숫자가 붙은 화면이 하나 있으면 초보자가 바로 이해한다.
+      <div class="how">캡처 대상: 하단 상태줄의 context 잔량 표시 / <code>/context</code> 출력</div>
+    </div>
+
+    <div class="note acc">
+      <span class="nt">외워야 할 한 문장</span>
+      <strong>"에이전트는 잊어버리지만, 저장소는 잊지 않는다."</strong>
+      모델은 실행과 실행 사이에 전부 까먹는다. 그래서 기억은 컨텍스트가 아니라 <strong>디스크</strong>에 있어야 한다.
+      너무 단순해서 안 중요해 보이지만, 장기 실행 에이전트는 전부 이 트릭 위에 서 있다.
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="panel" id="p2">
+
+  <h2>루프 = 5개 부품 + 기억 1개</h2>
+  <p>
+    2025년까지는 루프를 만들려면 bash 스크립트 더미를 직접 짜고 평생 관리해야 했다.
+    지금은 <strong>부품이 제품 안에 그냥 들어 있다.</strong> 그래서 "어느 도구를 쓸까"를 싸울 필요가 없다 — 어느 쪽에 앉아도 <strong>같은 모양</strong>의 루프를 설계하면 된다.
+  </p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 360" role="img" aria-label="루프 6부품 구조도">
+      <defs>
+        <marker id="mF" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+        </marker>
+      </defs>
+
+      <rect class="box acc" x="10" y="8" width="700" height="36" rx="4"/>
+      <text class="lbl accf" x="24" y="31">① 오토메이션</text>
+      <text class="sm" x="140" y="31">매일 09:00 발동 · CI 실패 · 열린 이슈 · 최근 커밋을 스스로 훑는다</text>
+
+      <rect class="fillbox" x="260" y="58" width="200" height="32" rx="4"/>
+      <text class="lbl" x="360" y="79" text-anchor="middle">트리아지 — 할 일 목록</text>
+
+      <rect class="box dash" x="10" y="104" width="700" height="28" rx="4"/>
+      <text class="lbl" x="24" y="123">③ 스킬</text>
+      <text class="sm" x="90" y="123">프로젝트 지식을 매 실행 주입 — 없으면 매번 맨바닥에서 재추론</text>
+
+      <rect class="box" x="40" y="158" width="260" height="104" rx="5"/>
+      <text class="mn" x="54" y="176">② 워크트리 A</text>
+      <rect class="fillbox" x="56" y="186" width="110" height="34" rx="4"/>
+      <text class="lbl" x="111" y="208" text-anchor="middle">생성자</text>
+      <rect class="box oks" x="176" y="186" width="108" height="34" rx="4"/>
+      <text class="lbl okf" x="230" y="208" text-anchor="middle">평가자</text>
+      <text class="sm" x="170" y="244" text-anchor="middle">⑤ 만든 놈 ≠ 검사한 놈</text>
+
+      <rect class="box" x="420" y="158" width="260" height="104" rx="5"/>
+      <text class="mn" x="434" y="176">② 워크트리 B</text>
+      <rect class="fillbox" x="436" y="186" width="110" height="34" rx="4"/>
+      <text class="lbl" x="491" y="208" text-anchor="middle">생성자</text>
+      <rect class="box oks" x="556" y="186" width="108" height="34" rx="4"/>
+      <text class="lbl okf" x="610" y="208" text-anchor="middle">평가자</text>
+      <text class="sm" x="550" y="244" text-anchor="middle">⑤ 서로 파일을 못 건드린다</text>
+
+      <rect class="box" x="200" y="278" width="320" height="34" rx="4"/>
+      <text class="lbl" x="360" y="300" text-anchor="middle">④ 커넥터 — PR 생성 · 티켓 갱신 · 알림</text>
+
+      <rect class="box oks" x="10" y="322" width="700" height="30" rx="4"/>
+      <text class="lbl okf" x="24" y="342">⑥ 상태</text>
+      <text class="sm" x="86" y="342">progress.md — 내일 아침 실행이 여기서 이어받는다. 이게 없으면 루프가 아니다.</text>
+
+      <g class="arw" color="var(--muted)" marker-end="url(#mF)">
+        <path d="M360,44 L360,54"/>
+        <path d="M360,90 L360,100"/>
+        <path d="M360,132 L360,144 L170,144 L170,154"/>
+        <path d="M360,132 L360,144 L550,144 L550,154"/>
+        <path d="M170,262 L170,270 L200,270"/>
+        <path d="M550,262 L550,270 L520,270"/>
+        <path d="M360,312 L360,318"/>
+      </g>
+      <g class="arw oks dash" color="var(--ok)" marker-end="url(#mF)">
+        <path d="M230,220 L230,262 L340,262 L340,290"/>
+      </g>
+      <g class="arw acc dash" color="var(--accent)" marker-end="url(#mF)">
+        <path d="M10,337 L4,337 L4,26 L6,26"/>
+      </g>
+    </svg>
+  </div>
+  <p class="dgm-cap">왼쪽 점선 = 다음 실행이 <strong>상태 파일에서 이어받는</strong> 경로. 여기가 끊기면 매번 처음부터 시작한다.</p>
+
+  <div class="scroll">
+  <table>
+    <tr><th style="width:110px">부품</th><th style="width:170px">루프에서의 역할</th><th>Claude Code</th><th>OpenAI Codex 앱</th></tr>
+    <tr>
+      <td class="k">① 오토메이션</td>
+      <td>정해진 주기로 <strong>할 일을 발굴·분류</strong> (루프의 심장박동)</td>
+      <td class="mono">스케줄 작업·cron, <code>/loop</code>, <code>/goal</code>, 훅, GitHub Actions</td>
+      <td class="mono">Automations 탭, Triage 인박스, <code>/goal</code></td>
+    </tr>
+    <tr>
+      <td class="k">② 워크트리</td>
+      <td>병렬 작업 <strong>충돌 방지</strong></td>
+      <td class="mono">git worktree, <code>--worktree</code>, <code>isolation: worktree</code></td>
+      <td class="mono">스레드마다 워크트리 내장</td>
+    </tr>
+    <tr>
+      <td class="k">③ 스킬</td>
+      <td>프로젝트 지식을 <strong>글로 박제</strong></td>
+      <td class="mono">Agent Skills (<code>SKILL.md</code>)</td>
+      <td class="mono">Agent Skills (<code>SKILL.md</code>), <code>$name</code> 호출</td>
+    </tr>
+    <tr>
+      <td class="k">④ 플러그인<br>커넥터</td>
+      <td>내가 실제로 쓰는 <strong>도구에 연결</strong></td>
+      <td class="mono">MCP 서버 + 플러그인</td>
+      <td class="mono">Connectors(MCP) + 플러그인</td>
+    </tr>
+    <tr>
+      <td class="k">⑤ 서브에이전트</td>
+      <td>한 놈이 <strong>제안</strong>, 다른 놈이 <strong>검사</strong></td>
+      <td class="mono"><code>.claude/agents/</code>, 에이전트 팀</td>
+      <td class="mono"><code>.codex/agents/</code> TOML</td>
+    </tr>
+    <tr>
+      <td class="k">⑥ 상태(기억)</td>
+      <td><strong>뭘 했고 뭐가 남았는지</strong> — 대화 밖에 사는 파일</td>
+      <td class="mono">마크다운(<code>CLAUDE.md</code>, progress) 또는 Linear(MCP)</td>
+      <td class="mono">마크다운(<code>AGENTS.md</code>) 또는 Linear</td>
+    </tr>
+  </table>
+  </div>
+
+  <h2>부품별 해설</h2>
+
+  <h3>① 오토메이션 — 루프를 '루프'로 만드는 것</h3>
+  <p>
+    이게 없으면 그냥 <strong>한 번 돌린 실행</strong>이지 루프가 아니다.
+    주기를 정해 두면 AI가 어제의 CI 실패, 열린 이슈, 최근 커밋을 스스로 훑어서
+    할 일을 <strong>트리아지 인박스</strong>에 쌓아둔다. 찾은 게 없는 실행은 알아서 사라진다.
+  </p>
+  <p class="tight"><strong><code>/loop</code>와 <code>/goal</code>의 차이 — 시험에 나온다:</strong></p>
+  <div class="vs">
+    <div class="l">
+      <div class="vt" style="color:var(--accent)">/loop — 주기 반복</div>
+      <p style="margin:0">정해진 간격으로 <strong>다시 실행</strong>한다. "5분마다 배포 상태 확인해."<br><span class="muted">끝이 정해져 있지 않음.</span></p>
+    </div>
+    <div class="r">
+      <div class="vt">/goal — 조건 달성까지</div>
+      <p style="margin:0">조건이 <strong>참이 될 때까지</strong> 계속 간다. "test/auth 전부 통과하고 lint 깨끗해질 때까지."<br><span class="muted">매 턴 별도 모델이 완료 판정 → 자기 채점 방지.</span></p>
+    </div>
+  </div>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 175" role="img" aria-label="loop 와 goal 타임라인 비교">
+      <text class="mn accf" x="8" y="40">/loop</text>
+      <text class="sm" x="8" y="56">주기 반복</text>
+      <line x1="110" y1="44" x2="690" y2="44" stroke="var(--line)"/>
+      <g fill="var(--accent)">
+        <circle cx="160" cy="44" r="5"/><circle cx="260" cy="44" r="5"/><circle cx="360" cy="44" r="5"/>
+        <circle cx="460" cy="44" r="5"/><circle cx="560" cy="44" r="5"/><circle cx="660" cy="44" r="5"/>
+      </g>
+      <text class="sm" x="210" y="30" text-anchor="middle">5분</text>
+      <text class="sm" x="310" y="30" text-anchor="middle">5분</text>
+      <text class="lbl accf" x="700" y="49">…</text>
+      <text class="sm" x="110" y="76">끝이 정해져 있지 않다. 사람이 멈출 때까지 계속.</text>
+
+      <line x1="8" y1="100" x2="712" y2="100" stroke="var(--line)"/>
+
+      <text class="mn okf" x="8" y="134">/goal</text>
+      <text class="sm" x="8" y="150">조건 달성까지</text>
+      <line x1="110" y1="138" x2="470" y2="138" stroke="var(--line)"/>
+      <line x1="470" y1="138" x2="690" y2="138" stroke="var(--line)" stroke-dasharray="3 3" opacity="0.5"/>
+      <g fill="var(--ok)">
+        <circle cx="160" cy="138" r="5"/><circle cx="240" cy="138" r="5"/>
+        <circle cx="320" cy="138" r="5"/><circle cx="400" cy="138" r="5"/>
+      </g>
+      <line x1="470" y1="118" x2="470" y2="158" stroke="var(--ok)" stroke-width="2"/>
+      <text class="lbl okf" x="480" y="132">정지</text>
+      <text class="sm" x="480" y="150">조건이 참이 됐다</text>
+      <text class="sm" x="110" y="124" >매 턴 별도 모델이 판정</text>
+    </svg>
+  </div>
+  <p class="dgm-cap"><span class="v">/loop</span>은 <strong>주기</strong>가 있고, <span class="v">/goal</span>은 <strong>끝</strong>이 있다. 초보자가 가장 많이 헷갈리는 한 쌍.</p>
+
+  <div class="imgslot">
+    <b>📸 이미지 요청 #2·#3 — 두 명령의 실제 화면</b>
+    #2 <span class="v">/loop</span> 실행 중 화면 (반복 회차가 보이는 상태)<br>
+    #3 <span class="v">/goal</span> 실행 후 <strong>완료 판정이 뜨는 순간</strong> — 이게 "다른 모델이 채점한다"의 증거라 제일 중요하다.
+    <div class="how">캡처 대상: 명령 입력 직후 + 종료 시점 2컷</div>
+  </div>
+
+  <h3>② 워크트리 — 병렬이 아수라장이 되지 않게</h3>
+  <p>
+    에이전트를 두 대 이상 돌리는 순간 파일이 충돌한다. 두 사람이 같은 줄을 서로 말없이 고치는 것과 정확히 같은 문제다.
+    <strong>git worktree</strong>는 같은 저장소 히스토리를 공유하면서 <strong>별도 작업 디렉터리 + 별도 브랜치</strong>를 주기 때문에,
+    한쪽 에이전트의 수정이 다른 쪽 체크아웃을 물리적으로 건드릴 수 없다.
+  </p>
+  <div class="note bad">
+    <span class="nt">오케스트레이션 세금 · Orchestration Tax</span>
+    워크트리는 <strong>기계적 충돌</strong>만 없앤다. 병렬 개수의 진짜 상한은 도구가 아니라 <strong>당신의 리뷰 대역폭</strong>이다.
+    에이전트 10대를 돌려도 결과를 볼 수 있는 사람은 하나다.
+  </div>
+
+  <h3>③ 스킬 — 매번 프로젝트를 다시 설명하지 않으려고</h3>
+  <p>
+    에이전트는 모든 세션을 <strong>차가운 상태로</strong> 시작하고, 의도에 구멍이 있으면 <strong>자신 있게 추측으로 메운다.</strong> 이게 <em>의도 부채(Intent Debt)</em>다.
+    스킬은 그 의도를 바깥에 한 번 적어 두는 것 — 관례, 빌드 절차, "그 사건 때문에 우리는 이렇게 안 한다" 같은 것.
+    스킬이 없으면 루프는 매 사이클마다 프로젝트를 <strong>맨바닥에서 재추론</strong>한다. 있으면 누적된다.
+  </p>
+  <p class="muted"><strong>스킬 vs 플러그인:</strong> 스킬은 <strong>작성 형식</strong>, 플러그인은 <strong>배포 방법</strong>. 저장소 여러 곳에 나눠주고 싶으면 스킬을 플러그인으로 묶는다.</p>
+
+  <h3>④ 플러그인·커넥터 — 루프가 실제 세계를 만진다</h3>
+  <p>
+    파일 시스템밖에 못 보는 루프는 작은 루프다. MCP 위에 세워진 커넥터가 이슈트래커를 읽고, DB에 질의하고, 스테이징 API를 치고, 슬랙에 메시지를 남긴다.
+    <strong>"여기 고치는 법입니다"라고 말하는 에이전트</strong>와 <strong>PR을 열고 티켓을 연결하고 CI 초록불 뜨면 채널에 알리는 루프</strong>의 차이가 여기서 갈린다.
+  </p>
+
+  <h3>⑤ 서브에이전트 — 만든 놈과 검사하는 놈 떼어놓기</h3>
+  <p>
+    루프에서 구조적으로 가장 쓸모 있는 한 수. 루프는 <strong>당신이 안 보는 동안</strong> 돈다.
+    그래서 자리를 뜰 수 있는 유일한 근거는 <strong>믿을 만한 검증자</strong>다.
+    서브에이전트는 각자 모델과 도구를 돌리므로 토큰을 더 태운다 — <strong>두 번째 의견이 값어치 있는 곳에만</strong> 쓴다.
+  </p>
+
+  <h3>⑥ 상태 — 루프의 척추</h3>
+  <p>
+    마크다운 파일 하나, 또는 이슈 보드. <strong>대화 밖에 살면서</strong> 뭐가 끝났고 뭐가 남았는지 붙잡고 있는 것.
+    이게 있어야 내일 아침 실행이 오늘 멈춘 자리에서 이어진다.
+  </p>
+
+  <h2>루프 하나의 실제 모양</h2>
+  <pre><code>매일 아침 09:00  [오토메이션 발동]
+  └─ 트리아지 스킬 호출
+       ├─ 어제 CI 실패 읽기
+       ├─ 열린 이슈 읽기
+       └─ 최근 커밋 읽기
+  └─ 발견 사항을 progress.md 에 기록          ← ⑥ 상태
+
+  각 항목마다:
+    ├─ 격리된 워크트리 생성                    ← ② 충돌 방지
+    ├─ 서브에이전트 A: 수정안 작성             ← ⑤ 생성자
+    └─ 서브에이전트 B: 프로젝트 스킬 + 기존 테스트 기준으로 검수  ← ⑤ 평가자
+
+  통과 시 → 커넥터가 PR 생성 + 티켓 갱신 + 슬랙 알림   ← ④
+  실패 시 → 트리아지 인박스에 남겨 사람에게              ← 에스컬레이션
+
+  [종료] 내일 아침 실행이 progress.md 부터 이어받음</code></pre>
+  <p>
+    여기서 <strong>당신이 프롬프트를 친 단계가 하나도 없다.</strong> 한 번 설계했을 뿐이다. 그게 루프 엔지니어링이다.
+  </p>
+
+  <div class="src">출처 — Addy Osmani, "Loop Engineering" (2026-06-07, addyosmani.com): 5 primitives + state 표 및 도구 매핑</div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="panel" id="p3">
+
+  <div class="note bad">
+    <span class="nt">이 탭이 필요한 신호</span>
+    수강생이 <strong>"토큰이 뭐예요?" "컨텍스트 윈도우가 뭐예요?"</strong>를 물으면 앞 탭은 통하지 않는다.
+    앞 탭을 반복 설명하지 말고 <strong>여기서 30분 먼저</strong> 하고 넘어간다. 순서를 뒤집으면 나머지 90분이 전부 헛돈다.
+  </div>
+
+  <h2>0. 지도 먼저 — AI · 머신러닝 · LLM의 관계</h2>
+  <p>초보자가 가장 먼저 헷갈리는 것은 새 용어가 아니라 <strong>낡은 용어들끼리의 관계</strong>다. 포함 관계 하나면 정리된다.</p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 300" role="img" aria-label="AI 머신러닝 딥러닝 생성형 AI LLM 포함 관계">
+      <rect class="box" x="10" y="8" width="700" height="284" rx="6"/>
+      <text class="lbl" x="28" y="32">인공지능 (AI)</text>
+      <text class="sm"  x="150" y="32">사람이 하던 판단을 기계가 하는 것 전부 — 1950년대부터</text>
+
+      <rect class="box" x="36" y="48" width="648" height="230" rx="5"/>
+      <text class="lbl" x="54" y="72">머신러닝 (ML)</text>
+      <text class="sm"  x="170" y="72">규칙을 사람이 안 짜고 <tspan class="lbl">데이터에서 스스로 찾는</tspan> 방식</text>
+
+      <rect class="box" x="62" y="88" width="596" height="176" rx="5"/>
+      <text class="lbl" x="80" y="112">딥러닝 (DL)</text>
+      <text class="sm"  x="180" y="112">신경망을 깊게 쌓은 머신러닝. 2010년대 이후 주류</text>
+
+      <rect class="box" x="88" y="128" width="544" height="122" rx="5"/>
+      <text class="lbl" x="106" y="152">생성형 AI</text>
+      <text class="sm"  x="196" y="152">분류·예측이 아니라 <tspan class="lbl">새로 만들어내는</tspan> 딥러닝 (글·그림·소리)</text>
+
+      <rect class="fillbox acc" x="114" y="168" width="492" height="68" rx="5"/>
+      <text class="lbl accf" x="132" y="192">LLM — 대규모 언어 모델</text>
+      <text class="sm" x="132" y="212">글을 다루는 생성형 AI. ChatGPT·Claude·Gemini가 전부 여기.</text>
+      <text class="sm" x="132" y="228">우리가 "AI"라고 부를 때 실제로 가리키는 것은 대부분 이 칸이다.</text>
+    </svg>
+  </div>
+  <p class="dgm-cap">"AI가 발전했다"는 말의 99%는 <strong>맨 안쪽 칸</strong> 이야기다.</p>
+
+  <h2>1강. LLM은 무엇인가 — "다음 단어를 맞히는 기계"</h2>
+  <div class="lead">
+    LLM의 본질은 하나다. <strong>지금까지의 글 다음에 올 단어를 확률로 고르는 것.</strong> 그게 전부다.
+  </div>
+  <p>
+    "오늘 날씨가 참 ___" 다음에 뭐가 올까? '좋다'가 높은 확률, '자동차'는 낮은 확률.
+    이걸 한 단어씩 반복하면 문장이 되고 문서가 된다.
+    <strong>이 한 줄을 이해하면 아래 세 가지 문제가 전부 자동으로 설명된다.</strong>
+  </p>
+
+  <h3>학습(Training) vs 추론(Inference) — 초보자가 가장 많이 섞는 둘</h3>
+  <div class="dgm">
+    <svg viewBox="0 0 720 200" role="img" aria-label="학습과 추론의 차이">
+      <defs>
+        <marker id="mG" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+        </marker>
+      </defs>
+      <text class="mn" x="8" y="22">학습 · TRAINING</text>
+      <rect class="fillbox" x="8" y="60" width="100" height="44" rx="4"/>
+      <text class="sm" x="58" y="79" text-anchor="middle">인터넷 규모</text>
+      <text class="sm" x="58" y="94" text-anchor="middle">텍스트</text>
+      <g class="arw" color="var(--muted)" marker-end="url(#mG)"><path d="M108,82 L146,82"/></g>
+      <rect class="box acc" x="150" y="56" width="130" height="52" rx="4"/>
+      <text class="lbl accf" x="215" y="79" text-anchor="middle">모델 만들기</text>
+      <text class="sm" x="215" y="96" text-anchor="middle">가중치가 정해진다</text>
+      <text class="sm" x="8" y="132">수개월 · 수천억 원 · <tspan class="lbl">딱 한 번</tspan></text>
+      <text class="sm" x="8" y="152">끝나면 모델은 <tspan class="lbl">더 이상 안 변한다</tspan></text>
+      <text class="sm" x="8" y="172">→ 내가 대화한 내용은 모델에 저장되지 않는다</text>
+
+      <line x1="336" y1="10" x2="336" y2="190" stroke="var(--line)"/>
+
+      <text class="mn" x="366" y="22">추론 · INFERENCE</text>
+      <rect class="fillbox" x="366" y="60" width="90" height="44" rx="4"/>
+      <text class="sm" x="411" y="87" text-anchor="middle">내 질문</text>
+      <g class="arw" color="var(--muted)" marker-end="url(#mG)"><path d="M456,82 L490,82"/></g>
+      <rect class="box acc" x="494" y="56" width="110" height="52" rx="4"/>
+      <text class="lbl accf" x="549" y="87" text-anchor="middle">모델</text>
+      <g class="arw" color="var(--muted)" marker-end="url(#mG)"><path d="M604,82 L638,82"/></g>
+      <rect class="fillbox" x="642" y="60" width="70" height="44" rx="4"/>
+      <text class="sm" x="677" y="87" text-anchor="middle">답</text>
+      <text class="sm" x="366" y="132">몇 초 · <tspan class="lbl">쓸 때마다 매번</tspan> · 요금은 여기서 발생</text>
+      <text class="sm" x="366" y="152">우리가 하는 건 전부 이쪽이다</text>
+      <text class="sm" x="366" y="172">→ "AI를 학습시킨다"는 말은 대개 <tspan class="lbl">틀린 표현</tspan>이다</text>
+    </svg>
+  </div>
+  <p class="dgm-cap">"제가 AI를 학습시켰어요"라고 말하는 사람의 99%는 <strong>추론 단계에서 프롬프트를 잘 준 것</strong>이다.</p>
+
+  <h3>여기서 파생되는 3가지 — 전부 같은 뿌리</h3>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:130px">현상</th><th>왜 생기나</th><th>대응</th></tr>
+    <tr>
+      <td class="k">할루시네이션<br><span class="mono">환각</span></td>
+      <td>모르는 걸 <strong>모른다고 표시하는 기능이 없다.</strong> 그냥 "그럴듯한 다음 단어"를 계속 이어 쓴다. 거짓말이 아니라 <strong>구조상 그렇게 생겨먹은 것</strong>이다.</td>
+      <td>근거·출처를 같이 요구 / 검색 붙이기(RAG) / 기계로 검증</td>
+    </tr>
+    <tr>
+      <td class="k">지식 컷오프<br><span class="mono">knowledge cutoff</span></td>
+      <td>학습이 끝난 시점 이후의 일은 <strong>존재 자체를 모른다.</strong> 학습은 한 번뿐이니까.</td>
+      <td>최신 정보는 검색 도구를 붙이거나 직접 붙여넣기</td>
+    </tr>
+    <tr>
+      <td class="k">계산·세기 실수</td>
+      <td>계산기가 아니라 <strong>글자 예측기</strong>다. 숫자도 "그럴듯한 다음 글자"로 뱉는다.</td>
+      <td>계산은 코드 실행 도구에 시킨다</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="note acc">
+    <span class="nt">파라미터 (매개변수)</span>
+    "700억 파라미터 모델" 같은 말의 그 숫자. <strong>학습으로 정해진 내부 조절 손잡이의 개수</strong>다.
+    많을수록 대체로 똑똑하고 비싸고 느리다. <strong>초보자는 이 숫자를 신경 쓸 필요가 없다</strong> — 요즘은 크기보다 훈련 방식이 성능을 가른다.
+  </div>
+
+  <h2>2강. 토큰과 컨텍스트 윈도우 — 기억력이자 요금</h2>
+
+  <h3>토큰 (Token)</h3>
+  <p>
+    AI가 글을 세는 단위. 글자도 단어도 아닌 <strong>그 중간</strong>이다.
+    영어는 대략 4글자 ≈ 1토큰, <strong>한글은 1글자 ≈ 1~2토큰</strong>이라 같은 내용이라도 한글이 더 많이 든다.
+    <strong>요금은 글자 수가 아니라 토큰 수로 계산된다.</strong>
+  </p>
+
+  <h3>컨텍스트 윈도우 (Context Window)</h3>
+  <p>
+    <strong>한 번에 책상 위에 펼칠 수 있는 종이의 양.</strong> 이걸 넘으면 오래된 종이부터 책상에서 밀려난다.
+    "아까 말했잖아"가 안 통하는 순간이 바로 이때다. AI가 까먹은 게 아니라 <strong>애초에 안 보이는 상태</strong>가 된 것이다.
+  </p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 220" role="img" aria-label="대화가 길어질수록 매 턴 다시 읽는 양">
+      <line x1="100" y1="172" x2="700" y2="172" stroke="var(--line)"/>
+
+      <rect class="fillbox" x="120" y="142" width="90" height="30"/>
+      <rect class="box acc" x="120" y="128" width="90" height="14"/>
+      <text class="sm" x="165" y="190" text-anchor="middle">1턴</text>
+
+      <rect class="fillbox" x="270" y="112" width="90" height="60"/>
+      <rect class="box acc" x="270" y="98" width="90" height="14"/>
+      <text class="sm" x="315" y="190" text-anchor="middle">2턴</text>
+
+      <rect class="fillbox" x="420" y="77" width="90" height="95"/>
+      <rect class="box acc" x="420" y="63" width="90" height="14"/>
+      <text class="sm" x="465" y="190" text-anchor="middle">3턴</text>
+
+      <rect class="fillbox" x="570" y="37" width="90" height="135"/>
+      <rect class="box acc" x="570" y="23" width="90" height="14"/>
+      <text class="sm" x="615" y="190" text-anchor="middle">4턴</text>
+
+      <text class="sm" x="94" y="150" text-anchor="end">이전 대화 전체</text>
+      <text class="sm accf" x="94" y="36" text-anchor="end">새로 친 질문</text>
+      <text class="sm" x="8" y="208">AI에게는 매 턴이 <tspan class="lbl">첫 대화</tspan>다. 이전 내용을 통째로 다시 읽고 나서 답한다.</text>
+    </svg>
+  </div>
+  <p class="dgm-cap">대화가 길어질수록 <strong>같은 질문도 요금이 비싸진다.</strong> 파란 칸(새 질문)은 그대로인데 회색 칸이 계속 자라기 때문.</p>
+
+  <h3>초보자가 오늘 바로 쓸 규칙 3개</h3>
+  <ul>
+    <li><strong>주제가 바뀌면 새 대화를 연다.</strong> 긴 대화를 이어가는 게 미덕이 아니다. 요금과 정확도 둘 다 나빠진다.</li>
+    <li><strong>필요한 부분만 붙여넣는다.</strong> 파일 전체를 넣으면 중간 내용이 무시되기 쉽다(Lost in the Middle).</li>
+    <li><strong>넘어갈 땐 요약을 들고 간다.</strong> "지금까지 결정된 것만 5줄로 정리해줘" → 그걸 새 대화에 붙인다.</li>
+  </ul>
+
+  <div class="imgslot">
+    <b>📸 이미지 요청 #9 — 토큰·요금 실물</b>
+    사용량 화면 또는 대화 하단의 토큰 표시. 위 막대그래프가 추상이라, <strong>실제 숫자가 붙은 한 장</strong>이 있으면 초보자가 즉시 납득한다.
+    <div class="how">캡처 대상: 사용량 대시보드 또는 세션 토큰 표시</div>
+  </div>
+
+  <h2>3강. 프롬프트 — 말 거는 법의 기본</h2>
+
+  <div class="scroll">
+  <table>
+    <tr><th style="width:150px">종류</th><th>누가 쓰나</th><th>언제 적용되나</th></tr>
+    <tr><td class="k">시스템 프롬프트</td><td>서비스 만든 쪽 (또는 나, 설정에서)</td><td>대화 <strong>전체</strong>에 계속 적용. "너는 ~다" 류의 성격·규칙</td></tr>
+    <tr><td class="k">유저 프롬프트</td><td>나</td><td>이번 <strong>한 턴</strong>. 지금 시키는 일</td></tr>
+  </table>
+  </div>
+
+  <h3>좋은 프롬프트 4요소</h3>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:110px">요소</th><th>질문</th><th>예</th></tr>
+    <tr><td class="k">역할</td><td>누구처럼 답하나</td><td class="mono">너는 10년차 회계사다</td></tr>
+    <tr><td class="k">목표</td><td>무엇을 얻고 싶나</td><td class="mono">이 거래 내역에서 이상 항목을 찾아라</td></tr>
+    <tr><td class="k">제약</td><td>하지 말아야 할 것</td><td class="mono">추측 금지. 근거 행 번호를 반드시 인용</td></tr>
+    <tr><td class="k">출력 형식</td><td>어떤 모양으로</td><td class="mono">표로. 열은 행번호·금액·의심 사유</td></tr>
+  </table>
+  </div>
+
+  <div class="vs">
+    <div class="l">
+      <div class="vt">나쁜 프롬프트</div>
+      <p class="mono" style="margin:0">"엑셀 분석해줘"</p>
+      <p class="muted" style="margin:10px 0 0;font-size:12.5px">역할·목표·제약·형식 전부 없음. AI는 빈칸을 <strong>자신 있는 추측</strong>으로 메운다.</p>
+    </div>
+    <div class="r">
+      <div class="vt">좋은 프롬프트</div>
+      <p class="mono" style="margin:0">"너는 10년차 회계사다. 붙여넣은 거래 내역에서 이상 항목을 찾아라. 추측 금지, 근거 행 번호 인용. 표로 출력하고 열은 행번호·금액·의심 사유."</p>
+    </div>
+  </div>
+
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code># 프롬프트 기본 틀
+
+역할:   너는 ______________ 다.
+목표:   ______________ 를 해라.
+제약:   ______________ 는 하지 마라. 모르면 모른다고 해라.
+형식:   ______________ 형태로 출력해라.
+
+[자료 붙여넣기]</code></pre></div>
+
+  <div class="note acc">
+    <span class="nt">예시 2개의 힘 — Few-shot</span>
+    설명을 세 문단 쓰는 것보다 <strong>원하는 결과의 예시를 2개 보여주는 것</strong>이 훨씬 잘 먹는다.
+    "이런 식으로 나오면 돼" + 예시 2개 → 형식이 즉시 잡힌다.
+  </div>
+
+  <h2>4강. 모델 이름 읽는 법</h2>
+  <p>
+    모델 이름은 대체로 <strong>[제품군] + [등급] + [세대]</strong> 구조다.
+    Claude의 Opus·Sonnet·Haiku, 다른 회사의 Pro·Flash·mini 같은 이름이 <strong>등급</strong>이고, 붙은 숫자가 <strong>세대</strong>다.
+  </p>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:120px">축</th><th>뜻</th><th>고르는 기준</th></tr>
+    <tr><td class="k">등급</td><td>큰 모델일수록 어려운 추론에 강하고, 느리고, 비싸다</td><td>어려운 설계·긴 코드 → 상위 등급 / 요약·분류·번역 → 하위 등급</td></tr>
+    <tr><td class="k">세대</td><td>숫자가 클수록 최신. 같은 등급이면 신세대가 대체로 더 낫다</td><td>특별한 이유 없으면 최신 세대</td></tr>
+    <tr><td class="k">추론 모드<br><span class="mono">thinking</span></td><td>답하기 전에 <strong>스스로 길게 생각하는 단계</strong>를 거친다. 느리고 비싸지만 정확도가 오른다</td><td>수학·디버깅·다단계 계획 → 켠다 / 잡담·요약 → 끈다</td></tr>
+    <tr><td class="k">멀티모달</td><td>글 말고 <strong>이미지·소리·영상</strong>도 입력으로 받는다</td><td>스크린샷·도면·사진을 다룰 일이 있으면 필수</td></tr>
+    <tr><td class="k">공개 방식</td><td>오픈웨이트 = 모델 파일을 받아 내 컴퓨터에서 돌릴 수 있음 / 비공개 = API로만</td><td>보안·오프라인 요구 → 오픈웨이트 / 성능 우선 → 비공개 상위 모델</td></tr>
+  </table>
+  </div>
+  <div class="note bad">
+    <span class="nt">초보자 함정</span>
+    <strong>"제일 비싼 모델 = 항상 정답"이 아니다.</strong> 분류·요약 같은 단순 작업에 상위 모델을 쓰면
+    결과는 똑같은데 요금만 몇 배 나온다. 작업 난이도에 등급을 맞추는 게 실력이다.
+  </div>
+
+  <h2>5강. 내 정보를 AI에 넣는 3가지 방법</h2>
+  <p>초보자 질문 1순위: <em>"우리 회사 문서를 AI가 알게 하려면요?"</em> 답은 셋 중 하나다.</p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 230" role="img" aria-label="정보를 모델에 넣는 세 경로">
+      <defs>
+        <marker id="mH" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+        </marker>
+      </defs>
+      <rect class="fillbox" x="14" y="92" width="110" height="44" rx="4"/>
+      <text class="lbl" x="69" y="119" text-anchor="middle">내 문서</text>
+
+      <rect class="box" x="176" y="24" width="150" height="38" rx="4"/>
+      <text class="lbl" x="251" y="48" text-anchor="middle">① 그냥 붙여넣기</text>
+
+      <rect class="box" x="176" y="94" width="150" height="38" rx="4"/>
+      <text class="lbl" x="251" y="118" text-anchor="middle">② 검색해서 넣기 (RAG)</text>
+
+      <rect class="box" x="176" y="164" width="150" height="38" rx="4"/>
+      <text class="lbl" x="251" y="188" text-anchor="middle">③ 파인튜닝</text>
+
+      <rect class="box acc" x="410" y="14" width="296" height="200" rx="6"/>
+      <text class="lbl accf" x="426" y="36">모델</text>
+
+      <rect class="fillbox" x="430" y="52" width="256" height="62" rx="4"/>
+      <text class="lbl" x="558" y="76" text-anchor="middle">컨텍스트</text>
+      <text class="sm"  x="558" y="96" text-anchor="middle">매번 새로 채운다 · 대화 끝나면 사라진다</text>
+
+      <rect class="fillbox" x="430" y="132" width="256" height="62" rx="4"/>
+      <text class="lbl" x="558" y="156" text-anchor="middle">가중치</text>
+      <text class="sm"  x="558" y="176" text-anchor="middle">학습으로만 바뀐다 · 영구적 · 비싸다</text>
+
+      <g class="arw" color="var(--muted)" marker-end="url(#mH)">
+        <path d="M124,108 L170,44"/><path d="M124,114 L170,114"/><path d="M124,120 L170,182"/>
+        <path d="M326,44 L340,44 L340,72 L426,72"/>
+        <path d="M326,114 L360,114 L360,86 L426,86"/>
+        <path d="M326,183 L426,166"/>
+      </g>
+    </svg>
+  </div>
+  <p class="dgm-cap">①②는 <strong>컨텍스트</strong>에 들어간다(임시). ③만 <strong>가중치</strong>를 건드린다(영구). 대부분의 문제는 ①②로 끝난다.</p>
+
+  <div class="scroll">
+  <table>
+    <tr><th style="width:110px">방법</th><th>이럴 때</th><th>비용·난이도</th><th>주의</th></tr>
+    <tr>
+      <td class="k">① 붙여넣기</td>
+      <td>문서 몇 개, 지금 한 번만</td>
+      <td>공짜에 가까움 / 즉시</td>
+      <td>컨텍스트 윈도우를 넘으면 못 넣는다</td>
+    </tr>
+    <tr>
+      <td class="k">② RAG</td>
+      <td>문서 수백~수만 개. <strong>대부분 여기</strong></td>
+      <td>중간 / 며칠</td>
+      <td>검색이 엉뚱한 걸 물어오면 답도 엉뚱해진다</td>
+    </tr>
+    <tr>
+      <td class="k">③ 파인튜닝</td>
+      <td>말투·형식을 <strong>모델 자체에</strong> 새겨야 할 때</td>
+      <td>높음 / 몇 주</td>
+      <td><strong>지식 주입 용도로는 대개 잘못된 선택.</strong> 최신 정보를 넣으려면 매번 다시 학습해야 한다</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="note acc">
+    <span class="nt">한 줄 판단법</span>
+    <strong>"내용이 자주 바뀌나?"</strong> → 예: RAG. 아니오 + 말투 문제: 파인튜닝.
+    <strong>대부분의 회사는 RAG면 끝난다.</strong> 파인튜닝부터 검토하는 건 거의 항상 과잉이다.
+  </div>
+
+  <h2>6강. 챗봇에서 에이전트로 — 앞 탭과 이어지는 지점</h2>
+  <p>
+    여기까지가 "AI와 대화하기"다. 그런데 2026년의 주제는 <strong>"AI에게 일 시키기"</strong>다.
+    둘을 가르는 선은 딱 하나 — <strong>도구를 쓸 수 있는가.</strong>
+  </p>
+
+  <div class="dgm">
+    <svg viewBox="0 0 720 210" role="img" aria-label="챗봇과 에이전트의 차이">
+      <defs>
+        <marker id="mI" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1"/>
+        </marker>
+      </defs>
+      <text class="mn" x="8" y="22">챗봇 — 말만 한다</text>
+      <rect class="fillbox" x="8" y="70" width="72" height="38" rx="4"/>
+      <text class="sm" x="44" y="94" text-anchor="middle">사람</text>
+      <rect class="box" x="122" y="70" width="80" height="38" rx="4"/>
+      <text class="lbl" x="162" y="94" text-anchor="middle">LLM</text>
+      <rect class="fillbox" x="244" y="70" width="86" height="38" rx="4"/>
+      <text class="sm" x="287" y="94" text-anchor="middle">텍스트 답변</text>
+      <g class="arw" color="var(--muted)" marker-end="url(#mI)">
+        <path d="M80,89 L118,89"/><path d="M202,89 L240,89"/>
+      </g>
+      <text class="sm" x="8" y="140">"이렇게 고치시면 됩니다"</text>
+      <text class="sm" x="8" y="160">→ 실제로 고치는 건 <tspan class="lbl">사람</tspan></text>
+
+      <line x1="360" y1="10" x2="360" y2="196" stroke="var(--line)"/>
+
+      <text class="mn accf" x="388" y="22">에이전트 — 실제로 한다</text>
+      <rect class="fillbox" x="388" y="70" width="66" height="38" rx="4"/>
+      <text class="sm" x="421" y="94" text-anchor="middle">사람</text>
+      <rect class="box acc" x="490" y="70" width="80" height="38" rx="4"/>
+      <text class="lbl accf" x="530" y="94" text-anchor="middle">LLM</text>
+      <rect class="box" x="612" y="46" width="96" height="30" rx="4"/>
+      <text class="sm" x="660" y="65" text-anchor="middle">파일 읽기·쓰기</text>
+      <rect class="box" x="612" y="82" width="96" height="30" rx="4"/>
+      <text class="sm" x="660" y="101" text-anchor="middle">웹 검색</text>
+      <rect class="box" x="612" y="118" width="96" height="30" rx="4"/>
+      <text class="sm" x="660" y="137" text-anchor="middle">코드 실행</text>
+      <g class="arw" color="var(--muted)" marker-end="url(#mI)">
+        <path d="M454,89 L486,89"/>
+        <path d="M570,84 L608,62"/><path d="M570,89 L608,96"/><path d="M570,94 L608,130"/>
+        <path d="M608,70 L586,70 L586,78"/>
+      </g>
+      <text class="sm accf" x="388" y="140">"고쳤습니다. 테스트도 통과했습니다"</text>
+      <text class="sm" x="388" y="160">→ 결과물이 <tspan class="lbl">실제로 바뀌어 있다</tspan></text>
+      <text class="sm nof" x="388" y="184">→ 그래서 <tspan class="lbl">틀렸을 때 피해도 실제로 생긴다</tspan></text>
+    </svg>
+  </div>
+  <p class="dgm-cap">
+    도구를 쥐여준 순간 AI는 <strong>말하는 존재에서 행동하는 존재</strong>가 된다.
+    <strong>하네스와 루프가 필요해진 이유가 정확히 이것</strong>이다 — 행동에는 안전벨트와 정지 버튼이 필요하니까.
+  </p>
+
+  <div class="note good">
+    <span class="nt">여기서 앞 탭으로 넘어간다</span>
+    이 6강이 끝나면 <strong>「핵심 키워드 5」</strong> 탭이 그대로 읽힌다.
+    순서: <strong>AI 기초(이 탭) → 왜 헷갈리는가 → 핵심 키워드 5 → 실습</strong>.
+  </div>
+
+  <h2>기초 용어 30 — 한 줄 사전</h2>
+  <p class="muted">위 6강에 나온 것들의 요약. 수강생 배포용으로 이 표만 잘라 써도 된다.</p>
+
+  <h3>모델·구조</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">인공지능 <span class="en">AI</span></div><div class="gd">사람이 하던 판단을 기계가 하는 것 전부. 가장 넓은 말.</div></div>
+    <div class="gitem"><div class="gt">머신러닝 <span class="en">ML</span></div><div class="gd">규칙을 사람이 안 짜고 <strong>데이터에서 스스로 찾는</strong> 방식.</div></div>
+    <div class="gitem"><div class="gt">딥러닝 <span class="en">DL</span></div><div class="gd">신경망을 깊게 쌓은 머신러닝. 지금 AI 붐의 기반.</div></div>
+    <div class="gitem"><div class="gt">생성형 AI <span class="en">Generative AI</span></div><div class="gd">분류·예측이 아니라 <strong>새로 만들어내는</strong> AI. 글·그림·소리.</div></div>
+    <div class="gitem"><div class="gt">LLM <span class="en">대규모 언어 모델</span></div><div class="gd">글을 다루는 생성형 AI. 다음 단어를 확률로 고르는 게 전부.</div></div>
+    <div class="gitem"><div class="gt">파운데이션 모델 <span class="en">Foundation Model</span></div><div class="gd">특정 용도가 아니라 <strong>바탕</strong>으로 쓰라고 만든 범용 대형 모델.</div></div>
+    <div class="gitem"><div class="gt">파라미터 <span class="en">Parameter</span></div><div class="gd">학습으로 정해진 내부 조절 손잡이 개수. "700억 파라미터"의 그 숫자.</div></div>
+    <div class="gitem"><div class="gt">추론 모델 <span class="en">Reasoning / Thinking</span></div><div class="gd">답하기 전에 <strong>스스로 길게 생각하는 단계</strong>를 거치는 모드. 느리고 비싸고 정확하다.</div></div>
+    <div class="gitem"><div class="gt">멀티모달 <span class="en">Multimodal</span></div><div class="gd">글 말고 이미지·소리·영상도 입력으로 받는 것.</div></div>
+    <div class="gitem"><div class="gt">오픈웨이트 <span class="en">Open-weight</span></div><div class="gd">모델 파일을 받아 <strong>내 컴퓨터에서</strong> 돌릴 수 있는 것. 반대는 API 전용.</div></div>
+  </div>
+
+  <h3>동작·한계</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">학습 <span class="en">Training</span></div><div class="gd">모델을 만드는 단계. 수개월·수천억 원. <strong>딱 한 번</strong>. 내 대화는 여기 안 들어간다.</div></div>
+    <div class="gitem"><div class="gt">추론 <span class="en">Inference</span></div><div class="gd">만들어진 모델을 <strong>쓰는</strong> 단계. 우리가 하는 건 전부 이쪽. 요금도 여기서 발생.</div></div>
+    <div class="gitem"><div class="gt">토큰 <span class="en">Token</span></div><div class="gd">AI가 글을 세는 단위. 영어 4자≈1, 한글 1자≈1~2. <strong>요금의 단위.</strong></div></div>
+    <div class="gitem"><div class="gt">컨텍스트 윈도우 <span class="en">Context Window</span></div><div class="gd">한 번에 책상에 펼칠 수 있는 종이 양. 넘으면 오래된 것부터 밀려난다.</div></div>
+    <div class="gitem"><div class="gt">할루시네이션 <span class="en">Hallucination</span></div><div class="gd">모르는 걸 그럴듯하게 지어내는 것. 거짓말이 아니라 <strong>구조상 그렇게 생긴 것</strong>.</div></div>
+    <div class="gitem"><div class="gt">지식 컷오프 <span class="en">Knowledge cutoff</span></div><div class="gd">학습이 끝난 시점. 그 이후 일은 <strong>존재 자체를 모른다.</strong></div></div>
+    <div class="gitem"><div class="gt">온도 <span class="en">Temperature</span></div><div class="gd">답의 무작위성 조절값. 낮으면 딱딱하고 일관되게, 높으면 다양하고 창의적으로.</div></div>
+    <div class="gitem"><div class="gt">세션 · 스레드 <span class="en">Session</span></div><div class="gd">대화 한 뭉치. 새 세션 = 백지 상태. AI는 세션 사이를 기억하지 못한다.</div></div>
+  </div>
+
+  <h3>쓰는 법</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">프롬프트 <span class="en">Prompt</span></div><div class="gd">AI에게 보내는 지시. 역할·목표·제약·형식 4요소면 충분하다.</div></div>
+    <div class="gitem"><div class="gt">시스템 프롬프트 <span class="en">System prompt</span></div><div class="gd">대화 <strong>전체</strong>에 계속 적용되는 규칙. 유저 프롬프트는 이번 한 턴.</div></div>
+    <div class="gitem"><div class="gt">Few-shot</div><div class="gd">원하는 결과의 <strong>예시를 2~3개</strong> 보여주는 것. 설명 세 문단보다 잘 먹는다.</div></div>
+    <div class="gitem"><div class="gt">RAG <span class="en">검색 증강 생성</span></div><div class="gd">질문에 맞는 문서를 <strong>검색해 와서</strong> 프롬프트에 넣고 답하게 하는 방식.</div></div>
+    <div class="gitem"><div class="gt">파인튜닝 <span class="en">Fine-tuning</span></div><div class="gd">모델 가중치를 조금 다시 학습시키는 것. <strong>지식 주입 용도로는 대개 오답.</strong></div></div>
+    <div class="gitem"><div class="gt">임베딩 <span class="en">Embedding</span></div><div class="gd">글을 숫자 배열로 바꾼 것. "뜻이 비슷하면 숫자도 가깝다" — RAG 검색의 원리.</div></div>
+    <div class="gitem"><div class="gt">벡터 DB <span class="en">Vector DB</span></div><div class="gd">임베딩을 저장하고 "비슷한 것"을 빠르게 찾아주는 저장소.</div></div>
+    <div class="gitem"><div class="gt">API</div><div class="gd">프로그램이 AI를 부르는 창구. 사람이 채팅창에서 쓰는 것과 같은 모델을 코드로 부른다.</div></div>
+    <div class="gitem"><div class="gt">SDK</div><div class="gd">그 API를 언어별로 쉽게 쓰게 만든 꾸러미. <code>pip install anthropic</code> 같은 것.</div></div>
+    <div class="gitem"><div class="gt">챗봇 → 에이전트</div><div class="gd">가르는 선은 <strong>도구를 쓸 수 있는가</strong>. 말만 하면 챗봇, 실제로 하면 에이전트.</div></div>
+    <div class="gitem"><div class="gt">프롬프트 인젝션 <span class="en">Prompt injection</span></div><div class="gd">AI가 읽는 문서·웹페이지 안에 <strong>몰래 지시문을 심어</strong> 조종하는 공격. 에이전트가 도구를 쥐면 실제 피해가 난다.</div></div>
+  </div>
+
+  <div class="note bad">
+    <span class="nt">기초 확인 질문 — 이걸 못 답하면 앞 탭으로 못 넘어간다</span>
+    ① LLM이 하는 일을 한 문장으로? ② 대화가 길어지면 왜 요금이 오르나?
+    ③ 회사 문서 1만 건을 AI가 알게 하려면 셋 중 무엇? ④ 챗봇과 에이전트를 가르는 선은?
+  </div>
+
+  <h2>심화 용어 24 — 앞 탭에서 쓰는 말들</h2>
+  <p class="muted">여기서부터는 <strong>「핵심 키워드 5」 탭을 들은 뒤</strong> 읽는다. 층별로 묶었다.</p>
+
+  <h3>루프 층</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">오토메이션 <span class="en">Automation</span></div><div class="gd">일정에 따라 스스로 발동하는 실행. 루프의 심장박동.</div></div>
+    <div class="gitem"><div class="gt">트리아지 <span class="en">Triage</span></div><div class="gd">AI가 발굴한 할 일을 중요도별로 분류해 쌓아두는 인박스. 사람은 여기만 본다.</div></div>
+    <div class="gitem"><div class="gt">워크트리 <span class="en">git worktree</span></div><div class="gd">같은 저장소, 다른 작업 폴더, 다른 브랜치. 에이전트 병렬 실행의 전제 조건.</div></div>
+    <div class="gitem"><div class="gt">상태 파일 <span class="en">State / Memory</span></div><div class="gd">대화 밖에 사는 진행 기록. <code>progress.md</code>, <code>AGENTS.md</code> 등. 루프의 척추.</div></div>
+    <div class="gitem"><div class="gt">장기 실행 에이전트 <span class="en">Long-running agent</span></div><div class="gd">몇 시간~며칠에 걸쳐 하나의 목표를 붙잡는 에이전트. 기억을 디스크에 둬야 성립.</div></div>
+    <div class="gitem"><div class="gt">런 언틸 던 <span class="en">run-until-done</span></div><div class="gd">"검증 가능한 정지 조건이 참이 될 때까지" 계속 도는 모드. <code>/goal</code>이 이것.</div></div>
+  </div>
+
+  <h3>하네스 층</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">툴 유즈 <span class="en">Tool Use</span></div><div class="gd">AI가 대답만 하는 게 아니라 정해진 함수를 <strong>호출</strong>하는 것. 에이전트의 손발.</div></div>
+    <div class="gitem"><div class="gt">MCP <span class="en">Model Context Protocol</span></div><div class="gd">AI를 외부 도구·데이터에 연결하는 <strong>표준 규격</strong>. 한 번 만들면 여러 도구에서 그대로 쓰인다.</div></div>
+    <div class="gitem"><div class="gt">스킬 <span class="en">SKILL.md</span></div><div class="gd">프로젝트 지식을 담은 폴더 + 지시문 파일. 설명을 <strong>지루하고 정확하게</strong> 써야 잘 불려 나온다.</div></div>
+    <div class="gitem"><div class="gt">플러그인 <span class="en">Plugin</span></div><div class="gd">스킬·커넥터를 묶어 배포하는 단위. 동료가 한 번에 설치.</div></div>
+    <div class="gitem"><div class="gt">훅 <span class="en">Hook</span></div><div class="gd">에이전트 생애주기의 특정 시점에 자동 실행되는 셸 명령. 예: 편집 후 자동 포맷.</div></div>
+    <div class="gitem"><div class="gt">구조화 출력 <span class="en">Structured Output</span></div><div class="gd">결과를 반드시 JSON 스키마에 맞춰 뱉게 강제. 파싱 실패를 원천 차단.</div></div>
+    <div class="gitem"><div class="gt">가드레일 <span class="en">Guardrail</span></div><div class="gd">해도 되는 것과 안 되는 것의 경계. 권한·경로·비용 상한.</div></div>
+    <div class="gitem"><div class="gt">회의적 평가자 <span class="en">Skeptical Evaluator</span></div><div class="gd">일부러 의심 많게 튜닝한 검사 에이전트. 통과 기준을 하드 임계값으로 고정.</div></div>
+    <div class="gitem"><div class="gt">스프린트 계약 <span class="en">Sprint Contract</span></div><div class="gd">작업 시작 <strong>전에</strong> 생성자와 평가자가 "무엇이 완료인가"를 합의하는 절차.</div></div>
+  </div>
+
+  <h3>컨텍스트 층</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">컨텍스트 윈도우 <span class="en">Context Window</span></div><div class="gd">AI가 한 번에 볼 수 있는 텍스트 총량. 토큰 단위로 센다.</div></div>
+    <div class="gitem"><div class="gt">토큰 <span class="en">Token</span></div><div class="gd">AI가 글을 세는 단위. 한글은 대략 1자 = 1~2토큰. <strong>비용의 단위이기도 하다.</strong></div></div>
+    <div class="gitem"><div class="gt">컴팩션 <span class="en">Compaction</span></div><div class="gd">대화가 길어질 때 자동 요약해 눌러 담기. 연속성 유지 전략.</div></div>
+    <div class="gitem"><div class="gt">컨텍스트 리셋 <span class="en">Reset</span></div><div class="gd">컨텍스트를 완전히 비우고 <strong>파일로만</strong> 상태를 넘기기. 압축의 반대 전략.</div></div>
+    <div class="gitem"><div class="gt">문맥 불안 <span class="en">Context Anxiety</span></div><div class="gd">윈도우가 차오를 때 모델이 급하게 마무리하거나 지시를 빠뜨리는 현상.</div></div>
+    <div class="gitem"><div class="gt">Lost in the Middle</div><div class="gd">긴 입력의 <strong>가운데</strong> 정보를 모델이 잘 놓치는 현상. 중요한 건 앞뒤에.</div></div>
+    <div class="gitem"><div class="gt">RAG <span class="en">Retrieval-Augmented Generation</span></div><div class="gd">필요한 문서를 검색해 와 컨텍스트에 넣고 답하게 하는 방식. 동적 컨텍스트의 엔진.</div></div>
+    <div class="gitem"><div class="gt">의도 부채 <span class="en">Intent Debt</span></div><div class="gd">적어두지 않은 의도. 에이전트는 구멍을 <strong>자신 있는 추측</strong>으로 메운다.</div></div>
+  </div>
+
+  <h3>사람 쪽 용어 — 사실 이게 제일 중요하다</h3>
+  <div class="gloss">
+    <div class="gitem"><div class="gt">Human-in-the-loop → Agent-in-the-loop</div><div class="gd">사람이 루프 <strong>안</strong>에 있던 시대 → 사람은 루프 <strong>밖</strong>에서 설계·검수하는 시대.</div></div>
+    <div class="gitem"><div class="gt">이해 부채 <span class="en">Comprehension Debt</span></div><div class="gd">내가 안 쓴 코드가 쌓일수록 <strong>존재하는 것과 내가 이해한 것</strong>의 격차가 벌어진다. 루프가 매끄러울수록 빨리 자란다.</div></div>
+    <div class="gitem"><div class="gt">인지적 항복 <span class="en">Cognitive Surrender</span></div><div class="gd">루프가 알아서 도니까 의견 갖기를 그만두고 나오는 대로 받는 상태. 가장 편한 자세가 가장 위험하다.</div></div>
+    <div class="gitem"><div class="gt">오케스트레이션 세금 <span class="en">Orchestration Tax</span></div><div class="gd">에이전트를 늘려도 <strong>당신의 리뷰 대역폭</strong>이 천장이다. 도구가 아니라 사람이 상한선.</div></div>
+    <div class="gitem"><div class="gt">적대적 코드 리뷰 <span class="en">Adversarial Review</span></div><div class="gd">"이게 왜 틀렸는지 찾아라"를 기본값으로 시키는 리뷰. 동의보다 반박을 시킨다.</div></div>
+  </div>
+
+  <div class="note acc">
+    <span class="nt">수강생 확인 질문 (한 줄로 답하기)</span>
+    ① 하네스와 루프의 차이는? ② 종료 조건을 AI가 판정하면 왜 위험한가? ③ 기억을 컨텍스트가 아니라 디스크에 두는 이유는?
+  </div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="panel" id="p4">
+
+  <h2>실습 설계 원칙</h2>
+  <p>
+    이 강좌의 실습은 <strong>코드 작성이 아니다.</strong> <em>루프를 글로 정의하는 연습</em>이다.
+    루프 엔지니어링에서 실제로 사람이 하는 일이 그것이기 때문이다.
+  </p>
+  <p><span class="tt on">개발자</span><span class="tt">비개발자</span> 트랙을 나눠 표기했다. 실습 4-2는 <strong>공통 필수</strong>.</p>
+
+  <h2>변수 — 여기부터 채운다</h2>
+  <p>
+    실습 전체가 <strong>변수 치환식</strong>이다. 아래 5개를 정하면 나머지 프롬프트는 복사만 하면 된다.
+    주제를 바꿔 다시 돌릴 때도 이 표만 갈아끼운다.
+  </p>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:120px">변수</th><th>뜻</th><th style="width:230px">예시</th></tr>
+    <tr><td class="k"><span class="v">{주제}</span></td><td>반복하려는 작업 한 줄</td><td class="mono">raw/ 자료를 wiki 페이지로 컴파일</td></tr>
+    <tr><td class="k"><span class="v">{산출물}</span></td><td>끝났을 때 손에 남는 물건</td><td class="mono">wiki/sources/*.md + index 한 줄</td></tr>
+    <tr><td class="k"><span class="v">{검증도구}</span></td><td><strong>기계가</strong> 판정하는 수단</td><td class="mono">코드블록·표·헤딩 개수 일치</td></tr>
+    <tr><td class="k"><span class="v">{상한}</span></td><td>최대 횟수 / 금액 / 시간</td><td class="mono">1회 10건, 3회 실패 시 중단</td></tr>
+    <tr><td class="k"><span class="v">{도구}</span></td><td>실제로 돌릴 환경</td><td class="mono">Claude Code / n8n / Dify</td></tr>
+  </table>
+  </div>
+
+  <div class="note bad">
+    <span class="nt">단 하나의 실격 조건</span>
+    <span class="v">{검증도구}</span> 칸에 <strong>"AI가 판단"</strong>이라고 쓰면 이 실습은 거기서 끝난다.
+    테스트·린트·빌드 종료코드·개수 비교·정규식 — <strong>사람이나 프로그램이 셀 수 있는 것</strong>만 적는다.
+  </div>
+
+  <div class="note acc">
+    <span class="nt">배포 파일</span>
+    빈 워크시트: <a href="2026-08_실습-템플릿_루프설계.md">2026-08_실습-템플릿_루프설계.md</a><br>
+    채운 예시: <a href="2026-08_실습-샘플_vault흡수루프.md">2026-08_실습-샘플_vault흡수루프.md</a><br>
+    <span class="muted">복사 → <span class="v">{주제}</span> 전체 치환 → STEP 4까지 채우면 그대로 강의 자료가 된다.</span>
+  </div>
+
+  <h2>실습 4-1 · 루프 6부품 채우기 <span class="tt on">개발자</span><span class="tt on">비개발자</span></h2>
+  <p>내가 반복하는 업무 하나를 <span class="v">{주제}</span>에 넣고 빈칸을 채운다. 도구는 아직 안 건드린다.</p>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code># {주제} 루프 설계서
+
+목표(Goal):     {주제}
+발동 주기:      □ 매일 __:__   □ 커밋할 때마다   □ 수동 실행
+{도구}:         ______________________________________
+
+① 오토메이션:  무엇을 스스로 찾아오게 할 것인가?
+   → ____________________________________________
+
+② 격리:        동시에 돌 작업이 서로 충돌하는가? (Y/N)
+   → ____________________________________________
+
+③ 스킬(지식):  매번 다시 설명하기 싫은 프로젝트 규칙 3개
+   1. __________  2. __________  3. __________
+
+④ 연결(도구):  루프가 만져야 하는 외부 시스템
+   → ____________________________________________
+
+⑤ 검증자:      누가 "잘 됐다"를 판정하는가? (생성자와 달라야 함)
+   → ____________________________________________
+
+⑥ 기억:        진행 상황을 어디에 적을 것인가?
+   → ____________________________________________</code></pre></div>
+  <div class="note bad">
+    <span class="nt">채점 포인트</span>
+    ⑤에 "AI가 스스로"라고 쓴 사람은 <strong>탈락</strong>. ⑥을 비운 사람도 <strong>탈락</strong>. 이 둘이 루프의 성패를 가른다.
+  </div>
+
+  <h2>실습 4-2 · 종료 조건 쓰기 <span class="tt on">개발자</span><span class="tt on">비개발자</span> <span class="star">★ 핵심</span></h2>
+  <p>같은 목표를 <strong>나쁜 종료 조건</strong>과 <strong>좋은 종료 조건</strong> 두 벌로 쓴다.</p>
+
+  <div class="vs">
+    <div class="l">
+      <div class="vt">참가자들이 실제로 써 오는 것</div>
+      <p class="mono" style="margin:0">"블로그 글이 <strong>좋아질 때까지</strong> 고쳐줘"<br><br>"버그가 <strong>다 없어질 때까지</strong> 수정해"</p>
+    </div>
+    <div class="r">
+      <div class="vt">고쳐 쓴 것</div>
+      <p class="mono" style="margin:0">"제목 2개 이상 대안 제시 + 문단당 3문장 이하 + 맞춤법 검사 통과. <strong>3회 수정 후 무조건 정지.</strong>"<br><br>"<code>pytest</code> 전체 통과 &amp;&amp; <code>ruff</code> 오류 0. <strong>같은 테스트 3회 연속 실패 시 중단하고 보고.</strong>"</p>
+    </div>
+  </div>
+
+  <p class="tight"><strong>템플릿:</strong></p>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code>[{주제}] 종료 조건
+
+성공 시 정지:   {검증도구} 가 ______________ 이면
+실패 시 정지:   ______________ 를 ___회 반복해도 안 되면
+사람 호출:      ______________ 상황이 오면
+비용 상한:      {상한} — 토큰 ______ / 금액 $______ / 시간 ______분 / 건수 ______</code></pre></div>
+
+  <p class="tight"><strong>자가 검사:</strong></p>
+  <ul class="check">
+    <li>성공 조건을 <strong>사람 눈 없이</strong> 판정할 수 있는가?</li>
+    <li>실패 종료가 따로 있는가? (성공 조건만 있으면 무한 루프)</li>
+    <li>사람 호출 조건이 있는가?</li>
+    <li>상한이 최소 하나 숫자로 적혔는가?</li>
+  </ul>
+
+  <h2>실습 4-3 · 생성자 / 평가자 갈라보기 <span class="tt on">개발자</span><span class="tt on">비개발자</span></h2>
+  <p>같은 AI에게 세 번 시킨다. <strong>B와 C의 차이</strong>가 오늘의 결론이다.</p>
+
+  <h3>프롬프트 A — 생성자 (1차)</h3>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code>{주제} 를 수행해줘.
+
+산출물: {산출물}
+제약:   (있으면 여기 적기)</code></pre></div>
+
+  <h3>프롬프트 B — 자기평가 (2차, <u>같은 대화창</u>)</h3>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code>방금 네가 만든 결과물 어때? 문제 있어?</code></pre></div>
+  <p class="muted">십중팔구 "잘 만들어졌습니다"가 나온다. <strong>이 답을 그대로 복사해 둔다.</strong> 비교 대상이다.</p>
+
+  <h3>프롬프트 C — 회의적 평가자 (3차, <u>반드시 새 대화창</u>)</h3>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code>너는 깐깐한 리뷰어다.
+아래는 "{주제}" 작업의 결과물이다.
+
+[결과물 붙여넣기]
+
+이 결과물이 실패할 이유 3가지를 찾아라.
+- 판정 기준: {검증도구}
+- "문제가 없다"고 답하는 것은 허용되지 않는다.
+- 추측 금지. 결과물 안의 구체적 위치를 인용해라.</code></pre></div>
+
+  <div class="scroll">
+  <table>
+    <tr><th style="width:180px"></th><th>자기평가 (B)</th><th>회의적 평가자 (C)</th></tr>
+    <tr><td class="k">지적 개수</td><td></td><td></td></tr>
+    <tr><td class="k">실제로 맞는 지적</td><td></td><td></td></tr>
+    <tr><td class="k">놓친 것</td><td></td><td></td></tr>
+  </table>
+  </div>
+
+  <div class="imgslot">
+    <b>📸 이미지 요청 #4 — 실습 4-3의 실제 결과 (강의 하이라이트)</b>
+    B와 C의 답변을 <strong>나란히 놓은 화면</strong>. 이 강좌에서 가장 설득력 있는 한 장이다.<br>
+    본인이 직접 돌린 화면이어야 한다 — 남의 데모로는 이 실습의 의미가 안 산다.
+    <div class="how">캡처 대상: 같은 세션 자기평가 답변 1컷 + 새 세션 회의적 평가자 답변 1컷</div>
+  </div>
+
+  <div class="note good">
+    <span class="nt">이 실습의 목적</span>
+    "왜 검증자를 따로 둬야 하는가"를 설명이 아니라 <strong>체험</strong>으로 이해시킨다. 여기서 대부분의 수강생이 납득한다.
+  </div>
+
+  <h2>실습 4-4 · 실행 기록 <span class="tt on">개발자</span><span class="tt on">비개발자</span> <span class="star">★ 강의 자료가 되는 곳</span></h2>
+  <p>
+    <strong>실제로 적용해 본 것만 강의한다</strong>면, 이 칸이 실습의 본체다.
+    4-1~4-3은 안 채우면 그냥 설계도이지 강의 자료가 아니다.
+  </p>
+  <div class="cpwrap"><button class="cpbtn">복사</button><pre><code># {주제} 실행 기록
+
+| 회차 | 날짜 | 입력 | 결과 | 정지 이유 | 비용 |
+|---|---|---|---|---|---|
+| 1 |  |  |  |  |  |
+| 2 |  |  |  |  |  |
+| 3 |  |  |  |  |  |
+
+## 실제로 부딪힌 것
+- 예상과 달랐던 것:
+- 종료 조건이 안 먹힌 순간:
+- 비용이 튄 지점:
+- 평가자가 잡아낸 것 중 나도 못 본 것:
+
+## 한 줄 결론
+> {주제} 에서 루프는 ______________ 였다.</code></pre></div>
+
+  <div class="note acc">
+    <span class="nt">공유용 요약 — 수강생 배포분</span>
+    여기만 잘라서 슬라이드로 쓴다. <strong>문제 / 설계 / 종료 조건 / 결과 / 배운 것</strong> 다섯 줄이면 충분하다.
+    자세한 건 워크시트 MD로 넘긴다.
+  </div>
+
+  <h2>도구 실습 — 개발자 트랙 <span class="tt on">개발자</span></h2>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:150px">해볼 것</th><th>방법</th></tr>
+    <tr><td class="k">루프 돌리기</td><td class="mono">Claude Code에서 <code>/loop</code> — 주기 반복. 인자 없이 쓰면 모델이 간격을 스스로 정한다.</td></tr>
+    <tr><td class="k">조건까지 돌리기</td><td class="mono"><code>/goal</code> — 검증 가능한 정지 조건을 주고 자리를 뜬다. 매 턴 별도 모델이 완료 판정.</td></tr>
+    <tr><td class="k">서브에이전트 정의</td><td class="mono"><code>.claude/agents/</code>에 마크다운 하나. 이름·설명·지시문·모델·도구 목록.</td></tr>
+    <tr><td class="k">격리 실행</td><td class="mono">서브에이전트에 <code>isolation: worktree</code> — 각자 새 체크아웃, 끝나면 자동 정리.</td></tr>
+    <tr><td class="k">지식 박제</td><td class="mono"><code>CLAUDE.md</code> 작성 → 매 세션 자동 로드. 반복 설명이 사라진다.</td></tr>
+    <tr><td class="k">자동 실행 지점</td><td class="mono">훅(Hook) 설정 — 도구 실행 전후에 셸 명령 자동 실행 (포맷·린트·로그).</td></tr>
+    <tr><td class="k">외부 연결</td><td class="mono">MCP 서버 연결 — 이슈트래커·DB·사내 API.</td></tr>
+  </table>
+  </div>
+  <p class="muted">Codex 앱을 쓴다면 이름만 다르고 모양은 같다: Automations 탭 / 스레드별 워크트리 / <code>.codex/agents/*.toml</code> / Connectors.</p>
+
+  <div class="imgslot">
+    <b>📸 이미지 요청 #5~#8 — 개발자 트랙 증빙</b>
+    #5 <code>.claude/agents/</code> 폴더 + 서브에이전트 파일 하나 열린 화면<br>
+    #6 서브에이전트 <strong>병렬 실행 중</strong> 화면 (여러 개가 동시에 도는 게 보이는 컷)<br>
+    #7 <code>git worktree list</code> 출력 또는 워크트리 폴더 2개가 보이는 탐색기<br>
+    #8 토큰·비용 표시 화면 — "루프는 돈을 태운다"의 증거
+    <div class="how">#6과 #8이 핵심. 나머지는 없으면 다이어그램으로 대체 가능.</div>
+  </div>
+
+  <h2>도구 실습 — 비개발자 트랙 <span class="tt on">비개발자</span></h2>
+  <p>코드 없이 루프의 <strong>모양</strong>을 만져보는 쪽. 셋 중 하나만 골라도 충분하다.</p>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:110px">도구</th><th>성격</th><th>여기서 배울 부품</th></tr>
+    <tr><td class="k">Dify</td><td>웹 화면에서 노드를 이어 붙이는 LLM 앱 빌더</td><td>③ 지식(RAG) · ④ 도구 연결 · 분기 조건</td></tr>
+    <tr><td class="k">n8n</td><td>범용 워크플로우 자동화 (스케줄·웹훅·수백 개 연동)</td><td>① 오토메이션 · ④ 커넥터 · ⑥ 상태 저장</td></tr>
+    <tr><td class="k">LangGraph</td><td>루프·분기를 그래프로 명시하는 에이전트 프레임워크 <span class="muted">(파이썬 필요)</span></td><td>① 루프 구조 · ④ 종료 조건 · ⑤ 검증 노드</td></tr>
+  </table>
+  </div>
+  <div class="note acc">
+    <span class="nt">비개발자에게 강조할 것</span>
+    도구 사용법은 6개월이면 바뀐다. <strong>안 바뀌는 것은 6개 부품과 종료 조건이다.</strong>
+    도구를 배우지 말고 <strong>루프의 모양</strong>을 배우게 하라.
+  </div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="panel" id="p5">
+
+  <h2>루프가 좋아질수록 더 날카로워지는 문제 3가지</h2>
+  <p class="muted">루프는 일을 바꾸지, 당신을 지우지 않는다. 아래 셋은 루프가 매끄러울수록 <strong>쉬워지는 게 아니라 심해진다.</strong></p>
+
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">01</span><span class="kwtitle">검증은 여전히 당신 몫</span></div>
+    <p>
+      <strong>지켜보지 않고 도는 루프는 지켜보지 않고 실수하는 루프이기도 하다.</strong>
+      검증자 서브에이전트를 생성자에서 떼어내는 이유가 루프의 "완료됐습니다"에 <strong>의미를 부여하기 위해서</strong>인데,
+      그렇게 해도 '완료'는 여전히 <em>주장</em>이지 <em>증명</em>이 아니다.
+      당신의 일은 <strong>동작을 확인한 코드를 내보내는 것</strong>이다.
+    </p>
+  </div>
+
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">02</span><span class="kwtitle">이해력은 방치하면 썩는다</span><span class="kwen">Comprehension Debt</span></div>
+    <p>
+      루프가 <strong>내가 쓰지 않은 코드</strong>를 빨리 뱉을수록, <strong>존재하는 것</strong>과 <strong>내가 이해한 것</strong> 사이의 간격이 벌어진다.
+      매끄러운 루프는 이 부채를 <strong>더 빨리</strong> 키운다. 방어책은 하나뿐 — <strong>루프가 만든 걸 읽는 것.</strong>
+    </p>
+  </div>
+
+  <div class="kwblock">
+    <div class="kwhead"><span class="kwnum">03</span><span class="kwtitle">가장 편한 자세가 가장 위험하다</span><span class="kwen">Cognitive Surrender</span></div>
+    <p>
+      루프가 알아서 돌면 의견 갖기를 그만두고 주는 대로 받고 싶어진다.
+      <strong>루프 설계는 판단력을 가지고 하면 해독제이고, 생각을 피하려고 하면 촉진제다.</strong> 같은 행동, 정반대 결과.
+    </p>
+    <div class="note bad">
+      <span class="nt">이 강의에서 가장 중요한 문단</span>
+      두 사람이 <strong>완전히 똑같은 루프</strong>를 만들어도 결과는 정반대일 수 있다.
+      한 사람은 <strong>깊이 이해한 일에서 더 빨라지려고</strong> 쓰고, 다른 한 사람은 <strong>이해 자체를 회피하려고</strong> 쓴다.
+      <strong>루프는 그 차이를 모른다. 당신은 안다.</strong>
+    </div>
+  </div>
+
+  <h2>비용 함정</h2>
+  <ul>
+    <li><strong>토큰 부자와 토큰 빈자의 사용 패턴은 완전히 다르다.</strong> 남이 자랑하는 루프를 그대로 따라 하기 전에 내 예산부터 본다.</li>
+    <li>서브에이전트는 각자 모델을 돌린다 → <strong>에이전트 수 × 토큰</strong>. 두 번째 의견이 값어치 있는 곳에만 붙인다.</li>
+    <li>종료 조건에 <strong>비용 상한</strong>을 반드시 넣는다. 시간·횟수만으로는 안 막힌다.</li>
+    <li>하네스 사례 수치: Solo $9(20분, 작동 불가) vs Harness $200(6시간, 동작). <strong>비쌀 값어치가 있는지</strong>는 만들 물건에 따라 매번 다시 판단한다.</li>
+  </ul>
+
+  <h2>루프 설계 체크리스트</h2>
+  <ul class="check">
+    <li><strong>종료 조건이 기계 판정 가능한가?</strong> ("좋아 보이면"은 조건이 아니다)</li>
+    <li><strong>실패 종료와 에스컬레이션이 따로 있는가?</strong> (성공 조건만 있으면 무한 루프)</li>
+    <li><strong>비용 상한이 있는가?</strong> (토큰·금액·시간 중 최소 하나)</li>
+    <li><strong>생성자와 평가자가 분리돼 있는가?</strong> (같은 대화창 = 자기 채점)</li>
+    <li><strong>평가자가 회의적으로 튜닝됐는가?</strong> ("문제없음" 답변을 금지했는가)</li>
+    <li><strong>완료의 정의를 시작 전에 합의했는가?</strong> (스프린트 계약)</li>
+    <li><strong>상태를 디스크에 적는가?</strong> (컨텍스트에만 있으면 다음 실행 때 증발)</li>
+    <li><strong>병렬 실행이 워크트리로 격리됐는가?</strong> (아니면 파일 충돌)</li>
+    <li><strong>기획자가 기술 세부에 너무 일찍 매몰되지 않았는가?</strong> (연쇄 오류)</li>
+    <li><strong>모델이 좋아져서 이제 필요 없어진 구조물은 없는가?</strong> (스캐폴딩 철거)</li>
+    <li><strong>루프가 만든 결과물을 내가 읽었는가?</strong> (이해 부채)</li>
+  </ul>
+
+  <div class="note acc">
+    <span class="nt">마지막 항목 부연 — 하네스는 고정 장치가 아니다</span>
+    모델의 내재 능력이 늘어나면 기존 하네스 요소는 <strong>불필요한 오버헤드</strong>가 된다.
+    엔지니어의 임무는 <strong>모델이 스스로 하게 된 영역의 발판을 과감히 철거하고, 아직 정복되지 않은 다음 경계로 하네스를 옮기는 것</strong>이다.
+  </div>
+
+  <h2>마무리 한 줄</h2>
+  <div class="lead warn">
+    루프를 만들어라. 단, <strong>'시작 버튼 누르는 사람'이 아니라 '계속 엔지니어로 남을 사람'</strong>처럼 만들어라.
+  </div>
+  <p class="muted">
+    루프 설계가 프롬프트 엔지니어링보다 <strong>쉬워진</strong> 게 아니다. <strong>지렛대의 받침점이 옮겨간 것</strong>이다.
+  </p>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="panel" id="p6">
+
+  <h2>0교시 · AI 기초 30분 (조건부)</h2>
+  <p>
+    수강생이 <strong>토큰·컨텍스트 윈도우·할루시네이션</strong>을 모르면 본 강의는 성립하지 않는다.
+    사전 확인 질문 4개를 던져 보고, 막히면 아래를 먼저 돌린다. <span class="muted">→ 「AI 기초」 탭</span>
+  </p>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:62px">시간</th><th style="width:170px">섹션</th><th>핵심 한 줄</th></tr>
+    <tr><td class="mono">0–4</td><td class="k">0. 지도</td><td>AI ⊃ 머신러닝 ⊃ 딥러닝 ⊃ 생성형 ⊃ LLM. "AI 발전"의 99%는 맨 안쪽 얘기.</td></tr>
+    <tr><td class="mono">4–12</td><td class="k">1강. LLM이란</td><td>다음 단어를 맞히는 기계. <strong>학습 ≠ 추론.</strong> 할루시네이션·컷오프·계산 실수가 전부 여기서 파생.</td></tr>
+    <tr><td class="mono">12–19</td><td class="k">2강. 토큰·윈도우</td><td>기억력이자 요금. 대화가 길수록 같은 질문도 비싸진다. 실전 규칙 3개.</td></tr>
+    <tr><td class="mono">19–23</td><td class="k">3강. 프롬프트</td><td>역할·목표·제약·형식 4요소. 나쁜 예/좋은 예 1쌍.</td></tr>
+    <tr><td class="mono">23–26</td><td class="k">4강. 모델 고르기</td><td>등급·세대·추론 모드. "제일 비싼 게 항상 정답이 아니다."</td></tr>
+    <tr><td class="mono">26–28</td><td class="k">5강. 정보 주입 3법</td><td>붙여넣기 / RAG / 파인튜닝. <strong>대부분 RAG면 끝난다.</strong></td></tr>
+    <tr><td class="mono">28–30</td><td class="k">6강. 챗봇→에이전트</td><td>가르는 선은 <strong>도구 사용</strong>. 여기서 본 강의로 넘어간다.</td></tr>
+  </table>
+  </div>
+  <div class="note acc">
+    <span class="nt">사전 확인 질문 4개</span>
+    ① LLM이 하는 일을 한 문장으로? ② 대화가 길어지면 왜 요금이 오르나?
+    ③ 회사 문서 1만 건을 AI가 알게 하려면 셋 중 무엇? ④ 챗봇과 에이전트를 가르는 선은?<br>
+    <span class="muted">셋 이상 막히면 0교시 필수. 전원이 답하면 건너뛰고 바로 본 강의.</span>
+  </div>
+
+  <h2>90분 진행표 (강사용)</h2>
+  <p class="muted">대상: 기초 용어가 되는 초보자(0교시 통과자). 개발·비개발 혼합 가능. 실습 4-2와 4-3은 빼지 말 것.</p>
+
+  <div class="scroll">
+  <table>
+    <tr><th style="width:62px">시간</th><th style="width:150px">섹션</th><th>내용</th><th style="width:82px">형식</th></tr>
+    <tr><td class="mono">0–10</td><td class="k">왜 헷갈리는가</td><td>챗봇 → 일하는 시스템. 4층 구조. 2024 vs 2026 표.</td><td>강의</td></tr>
+    <tr><td class="mono">10–20</td><td class="k">키워드 ①②</td><td>루프 엔지니어링 · 하네스 엔지니어링. $9 vs $200 사례로 못 박기.</td><td>강의</td></tr>
+    <tr><td class="mono">20–30</td><td class="k">키워드 ③④⑤</td><td>에이전틱 워크플로우 · 종료 조건 · 동적 컨텍스트.</td><td>강의</td></tr>
+    <tr><td class="mono">30–45</td><td class="k">실습 4-3</td><td><strong>자기평가 vs 회의적 평가자 비교.</strong> 각자 실행 후 3~4명 결과 공유.</td><td>실습·공유</td></tr>
+    <tr><td class="mono">45–55</td><td class="k">루프의 6조각</td><td>오토메이션·워크트리·스킬·커넥터·서브에이전트·상태. 도구 매핑 표.</td><td>강의</td></tr>
+    <tr><td class="mono">55–70</td><td class="k">실습 4-1·4-2</td><td><strong>내 업무로 루프 설계서 채우기 + 종료 조건 쓰기.</strong> 2인 1조 상호 첨삭.</td><td>실습</td></tr>
+    <tr><td class="mono">70–80</td><td class="k">함정 3가지</td><td>검증 책임 · 이해 부채 · 인지적 항복. 비용 함정.</td><td>강의</td></tr>
+    <tr><td class="mono">80–90</td><td class="k">체크리스트·Q&amp;A</td><td>11항목 체크리스트 배포. 용어집 24 안내.</td><td>정리</td></tr>
+  </table>
+  </div>
+
+  <h2>대상별 조정</h2>
+  <div class="scroll">
+  <table>
+    <tr><th style="width:130px">대상</th><th>강조점</th><th>덜어낼 것</th></tr>
+    <tr>
+      <td class="k">완전 초보<br><span class="mono">용어부터 막힘</span></td>
+      <td><strong>0교시 30분 필수.</strong> 특히 2강(토큰·윈도우)과 6강(챗봇→에이전트). 본 강의는 키워드 5 + 실습 4-3만 해도 된다</td>
+      <td>루프의 6조각 · 함정 3가지 · 진행표. 2회차로 넘긴다</td>
+    </tr>
+    <tr>
+      <td class="k">개발자<br>IT 실무자</td>
+      <td><code>/goal</code>과 <code>/loop</code>의 차이, 워크트리 격리, 서브에이전트 정의 파일, 훅, MCP</td>
+      <td>토큰·컨텍스트 윈도우 기초 설명</td>
+    </tr>
+    <tr>
+      <td class="k">기획자<br>마케터</td>
+      <td>종료 조건 작성, 생성자–평가자 분리, Dify·n8n으로 흐름 만져보기</td>
+      <td>워크트리, git, 서브에이전트 파일 포맷</td>
+    </tr>
+    <tr>
+      <td class="k">경영진<br>의사결정자</td>
+      <td>$9 vs $200 표, 오케스트레이션 세금(사람이 상한선), 검증 책임 소재</td>
+      <td>실습 전체 → 4-3 데모만 시연</td>
+    </tr>
+  </table>
+  </div>
+
+  <h2>기존 커리큘럼과의 접속</h2>
+  <p class="muted">이 강좌는 사내 세미나 자료의 Part 7·8을 초보자용으로 앞당겨 묶은 것이다. 심화로 넘길 때 연결점:</p>
+  <ul>
+    <li><strong>Part 2. 프롬프트 엔지니어링</strong> → 4층 구조 <span class="mono">맨 아래층</span>. 여전히 유효하되 <strong>루프 안에서 자동 생성</strong>된다는 점만 갱신.</li>
+    <li><strong>Part 3. 컨텍스트 엔지니어링</strong> → 키워드 ⑤ <strong>동적 컨텍스트</strong>로 이어짐. 리셋 vs 압축 전략은 여기서 심화.</li>
+    <li><strong>Part 4. Skills / Part 5. SubAgent</strong> → 루프 6조각 중 ③ ⑤. 이 강좌는 <strong>왜 필요한지</strong>만, 심화는 <strong>어떻게 쓰는지</strong>.</li>
+    <li><strong>Part 6. 오케스트레이션</strong> → 키워드 ③ 에이전틱 워크플로우의 확장.</li>
+    <li><strong>Part 7. 하네스 엔지니어링</strong> → 키워드 ②의 심화. 평가자 보정, Playwright 기반 동적 테스트, 3-에이전트 아키텍처.</li>
+    <li><strong>Part 8. Loop 엔지니어링</strong> → 키워드 ①의 원문. 5 primitives 표의 출처.</li>
+  </ul>
+
+  <div class="note bad">
+    <span class="nt">고지 사항 — 수강생에게 반드시</span>
+    도구 이름과 슬래시 명령은 <strong>2026년 8월 기준</strong>이며 빠르게 바뀐다.
+    <strong>바뀌지 않는 것은 6개 부품과 종료 조건, 그리고 만든 놈이 검사하지 않는다는 원칙이다.</strong>
+  </div>
+</div>
+
+</main>
+
+<footer class="wrap">
+  <strong>2026 AI 용어 최신 지도 — 프롬프트에서 루프로</strong> · 작성 2026-08-04<br>
+  출처: Addy Osmani "Loop Engineering"(2026-06-07) · Anthropic "Harness design for long-running application development" ·
+  사내 세미나 Part 7 하네스 엔지니어링 / Part 8 Loop 엔지니어링 노트 · 인용: Peter Steinberger, Boris Cherny
+</footer>
+
+<script>
+  // theme
+  (function () {
+    var root = document.documentElement;
+    var saved = null;
+    try { saved = localStorage.getItem('theme'); } catch (e) {}
+    if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+
+    document.getElementById('themeBtn').addEventListener('click', function () {
+      var cur = root.getAttribute('data-theme');
+      if (!cur) {
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        cur = prefersDark ? 'dark' : 'light';
+      }
+      var next = cur === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  })();
+
+  // copy buttons
+  document.querySelectorAll('.cpbtn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var pre = b.parentNode.querySelector('pre');
+      if (!pre) return;
+      var text = pre.innerText;
+      var done = function () {
+        b.textContent = '복사됨';
+        b.classList.add('done');
+        setTimeout(function () { b.textContent = '복사'; b.classList.remove('done'); }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () {});
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active'); });
+      document.querySelectorAll('.panel').forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById(t.dataset.p).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

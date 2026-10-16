@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교각 P9 — 촬영 런시트 &amp; 대본</title>
+<style>
+  html{color-scheme:light dark}
+  /* ── 팔레트는 모델 자체에서 가져왔다 ────────────────────────────
+     코핑 주황 · 기둥 파랑 · 기초 초록 · 말뚝 보라. 그 색이 곧 이 영상의 주인공이다. */
+  :root{
+    --ground:#F5F2EE; --surface:#FFFFFF; --slab:#181C22; --slab-ink:#D9E2ED;
+    --line:#DED7CE; --line-soft:#EBE5DC;
+    --ink:#191E25; --ink-2:#4A5462; --ink-3:#7C8794;
+    --cap:#C2732F; --col:#3E7CBC; --ftg:#4E9750; --pil:#8B4A9A; --brg:#C4413F;
+    --ok:#3E8F5C; --warn:#B07E14;
+    --accent:var(--cap);
+    --mono:ui-monospace,"Cascadia Mono","Consolas","D2Coding",monospace;
+    --sans:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0E1116; --surface:#151A21; --slab:#0A0D11; --slab-ink:#CBD6E3;
+      --line:#252C36; --line-soft:#1C222B;
+      --ink:#DDE5EE; --ink-2:#94A2B3; --ink-3:#65717F;
+      --cap:#D68444; --col:#5894D0; --ftg:#74B06C; --pil:#A968B8; --brg:#DC5A58;
+      --ok:#5FBF7F; --warn:#E0B33C;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0E1116; --surface:#151A21; --slab:#0A0D11; --slab-ink:#CBD6E3;
+    --line:#252C36; --line-soft:#1C222B;
+    --ink:#DDE5EE; --ink-2:#94A2B3; --ink-3:#65717F;
+    --cap:#D68444; --col:#5894D0; --ftg:#74B06C; --pil:#A968B8; --brg:#DC5A58;
+    --ok:#5FBF7F; --warn:#E0B33C;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--ground); color:var(--ink);
+       font:15.5px/1.7 var(--sans); -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px; margin:0 auto; padding:36px 22px 90px}
+
+  /* ── 머리 ────────────────────────────────────────────────── */
+  header{display:flex; flex-wrap:wrap; align-items:flex-end; gap:18px 28px;
+         padding-bottom:20px; border-bottom:2px solid var(--ink)}
+  h1{margin:0; font-size:29px; line-height:1.2; letter-spacing:-.02em; text-wrap:balance}
+  h1 small{display:block; font:600 12px/1.6 var(--mono); letter-spacing:.16em;
+           color:var(--accent); text-transform:uppercase; margin-bottom:7px}
+  .facts{margin-left:auto; display:flex; gap:22px; font:600 12px/1.5 var(--mono);
+         font-variant-numeric:tabular-nums; color:var(--ink-3)}
+  .facts b{display:block; font-size:19px; color:var(--ink); letter-spacing:-.01em}
+
+  /* ── 탭 ──────────────────────────────────────────────────── */
+  .tabs{display:flex; flex-wrap:wrap; gap:2px; margin:22px 0 0;
+        border-bottom:1px solid var(--line)}
+  .tabs button{appearance:none; border:0; background:none; cursor:pointer;
+    font:600 13.5px/1 var(--sans); color:var(--ink-3);
+    padding:12px 15px; border-bottom:2px solid transparent; margin-bottom:-1px;
+    transition:color .12s}
+  .tabs button:hover{color:var(--ink-2)}
+  .tabs button[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
+  .tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:3px}
+  .panel{display:none; padding-top:26px}
+  .panel.on{display:block}
+
+  /* ── 타임라인 띠 ─────────────────────────────────────────── */
+  .tl{display:flex; height:34px; border:1px solid var(--line); border-radius:3px;
+      overflow:hidden; margin-bottom:6px}
+  .tl div{position:relative; display:grid; place-items:center; min-width:0;
+    font:600 10.5px/1 var(--mono); color:#fff; letter-spacing:.02em;
+    border-right:1px solid rgba(0,0,0,.28)}
+  .tl div:last-child{border-right:0}
+  .tl span{opacity:.92; white-space:nowrap; overflow:hidden}
+  .tl-key{display:flex; justify-content:space-between; font:600 11px/1 var(--mono);
+    color:var(--ink-3); font-variant-numeric:tabular-nums; margin-bottom:30px}
+
+  /* ── 컷 ──────────────────────────────────────────────────── */
+  .cut{display:grid; grid-template-columns:118px 1fr; gap:0 22px;
+       padding:22px 0; border-top:1px solid var(--line-soft)}
+  .cut:first-of-type{border-top:0}
+  .rail{font:600 12px/1.55 var(--mono); font-variant-numeric:tabular-nums;
+        color:var(--ink-3); padding-top:3px}
+  .rail .tc{display:block; font-size:15px; color:var(--ink); letter-spacing:-.02em}
+  .rail .dur{display:block}
+  .rail .clip{display:inline-block; margin-top:8px; padding:2px 7px; border-radius:3px;
+    background:var(--line-soft); color:var(--ink-2); font-size:11px; letter-spacing:.04em}
+  .cut h3{margin:0 0 3px; font-size:17.5px; letter-spacing:-.01em}
+  .cut .sub{margin:0 0 13px; color:var(--ink-3); font-size:13px}
+  .hookmark{color:var(--accent)}
+
+  pre{margin:0 0 13px; background:var(--slab); color:var(--slab-ink);
+      border-radius:4px; padding:12px 14px; overflow-x:auto;
+      font:12.5px/1.75 var(--mono)}
+  pre .c{color:#6E7D8E}
+  pre .h{color:#E9B872}
+
+  .say{margin:0; padding:14px 16px 14px 18px; background:var(--surface);
+       border:1px solid var(--line); border-left:3px solid var(--accent);
+       border-radius:0 4px 4px 0; font-size:15px}
+  .say b{color:var(--accent)}
+  .say .beat{display:block; height:9px}
+
+  .screen{margin:12px 0 0; padding:0; list-style:none;
+          font:12.5px/1.85 var(--mono); color:var(--ink-2)}
+  .screen li{padding-left:17px; position:relative}
+  .screen li:before{content:"›"; position:absolute; left:3px; color:var(--accent); font-weight:700}
+  .screen b{color:var(--ink); font-weight:600}
+
+  /* ── 표 ──────────────────────────────────────────────────── */
+  table{width:100%; border-collapse:collapse; margin:0 0 24px; font-size:13.5px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line-soft);
+        vertical-align:top}
+  th{font:600 11px/1.5 var(--mono); letter-spacing:.09em; text-transform:uppercase;
+     color:var(--ink-3); border-bottom:1px solid var(--line)}
+  td code{font:12.5px/1.6 var(--mono); color:var(--accent)}
+  .num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+  .tw{overflow-x:auto}
+
+  h2{margin:34px 0 12px; font-size:20px; letter-spacing:-.01em}
+  h2:first-child{margin-top:0}
+  p{margin:0 0 14px; max-width:68ch}
+  .lede{color:var(--ink-2); font-size:14.5px}
+  .chip{display:inline-block; padding:1px 8px; border-radius:3px; font:600 11px/1.7 var(--mono);
+        letter-spacing:.04em}
+  .c-cap{background:color-mix(in srgb,var(--cap) 18%,transparent); color:var(--cap)}
+  .c-ok{background:color-mix(in srgb,var(--ok) 18%,transparent); color:var(--ok)}
+  .c-warn{background:color-mix(in srgb,var(--warn) 20%,transparent); color:var(--warn)}
+  .note{border:1px solid var(--line); border-radius:4px; padding:14px 16px;
+        background:var(--surface); margin:0 0 20px}
+  .note b{display:block; margin-bottom:4px}
+  @media (max-width:660px){
+    .cut{grid-template-columns:1fr; gap:10px}
+    .rail{display:flex; gap:12px; align-items:baseline; padding:0}
+    .facts{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1><small>촬영 런시트 · 컷별 대본</small>2D 도면 한 장에서<br>교각 하나를 세운다</h1>
+  <div class="facts">
+    <span><b>11</b>컷</span>
+    <span><b>5:54</b>총길이</span>
+    <span><b>75</b>부재</span>
+    <span><b>0.0000</b>오차</span>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true"  data-p="p1">컷 순서 · 대본</button>
+  <button role="tab" aria-selected="false" data-p="p2">실행 명령</button>
+  <button role="tab" aria-selected="false" data-p="p3">화면 체크</button>
+  <button role="tab" aria-selected="false" data-p="p4">사고 대응</button>
+  <button role="tab" aria-selected="false" data-p="p5">업로드</button>
+</div>
+
+<!-- ══════════ 1. 컷 순서 · 대본 ══════════ -->
+<section class="panel on" id="p1" role="tabpanel">
+
+  <div class="tl">
+    <div style="flex:14;   background:var(--cap)"><span>HOOK</span></div>
+    <div style="flex:24.4; background:var(--ink-3)"><span>01 도면</span></div>
+    <div style="flex:11.1; background:var(--col)"><span>02</span></div>
+    <div style="flex:12.9; background:var(--col)"><span>03</span></div>
+    <div style="flex:48.5; background:var(--col)"><span>04 진단</span></div>
+    <div style="flex:24.8; background:var(--ftg)"><span>05</span></div>
+    <div style="flex:16.7; background:var(--ftg)"><span>06</span></div>
+    <div style="flex:82;   background:var(--cap)"><span>07 모델링</span></div>
+    <div style="flex:25.3; background:var(--pil)"><span>08</span></div>
+    <div style="flex:44.3; background:var(--pil)"><span>09 IFC</span></div>
+    <div style="flex:50.1; background:var(--brg)"><span>10 마무리</span></div>
+  </div>
+  <div class="tl-key"><span>0:00</span><span>도면 → 진단 → 파라미터 → 모델링 → 검증 → IFC</span><span>5:54</span></div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">0:00</span><span class="dur">14.0초</span>
+      <span class="clip">07 발췌</span></div>
+    <div>
+      <h3 class="hookmark">HOOK — 결과부터 보여준다</h3>
+      <p class="sub">07번에서 교각이 서는 12~15초만 잘라 맨 앞에. 자막·설명 없이 화면만.</p>
+      <p class="say">이거, 사람이 만든 모델이 아닙니다.<span class="beat"></span>
+      2D 도면 한 장을 읽어서, 명령 한 줄로 자동으로 서는 겁니다.<span class="beat"></span>
+      교각 하나. 부재 <b>일흔다섯 개</b>. 오차 <b>0.0000</b>.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">0:14</span><span class="dur">24.4초</span>
+      <span class="clip">01.mp4</span></div>
+    <div>
+      <h3>도면 — 출발점</h3>
+      <p class="sub">CAD 에서 교각 일반도. 뷰를 훑고 표까지.</p>
+      <p class="say">시작은 이 도면입니다. 교각 일반도 한 장.<span class="beat"></span>
+      A1 한 장에 평면도, 정면도, 단면도, 기초 평면도, 그리고 표 세 개.
+      토목 하시는 분들껜 익숙한 화면이죠.<span class="beat"></span>
+      그런데 이 파일 하나에 <b>도면이 놓이는 자리가 열일곱 개</b> 있습니다.
+      옛 작업 흔적이 그대로 쌓여 있는 거죠.
+      <b>출력용 도곽이 씌워진 건 그중 하나뿐</b>입니다.<span class="beat"></span>
+      어느 게 진짜인지 고르는 것부터가 일입니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">0:38</span><span class="dur">11.1초</span>
+      <span class="clip">02.mp4</span></div>
+    <div>
+      <h3>뷰를 가른다</h3>
+      <pre><span class="c">1단계</span>  node src/run.mjs pier-p9</pre>
+      <p class="say">첫 명령입니다. 도면을 읽고 뷰를 가릅니다.<span class="beat"></span>
+      평면도 <b>14,000 × 3,200</b>. 도면에 적힌 치수와 정확히 같습니다.
+      여기가 안 맞으면 뒤는 볼 것도 없습니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">0:50</span><span class="dur">12.9초</span>
+      <span class="clip">03.mp4</span></div>
+    <div>
+      <h3>끊김 진단</h3>
+      <pre><span class="c">2단계</span>  node src/gaps.mjs pier-p9</pre>
+      <p class="say">다음은 끊김 진단입니다.<span class="beat"></span>
+      윤곽이 안 닫히는 이유가 <b>레이어를 잘못 골랐다</b>인지
+      <b>도면에 선이 없다</b>인지를 가릅니다.<span class="beat"></span>
+      앞은 설정 한 줄, 뒤는 도면 수정. 대응 비용이 백 배 차이 납니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">1:02</span><span class="dur">48.5초</span>
+      <span class="clip">04.mp4</span></div>
+    <div>
+      <h3>도면이 말하는 네 가지 방식</h3>
+      <pre><span class="c">3단계</span>  node src/build.mjs pier-p9 --loops
+        node src/build.mjs pier-p9 --circles
+        node src/build.mjs pier-p9 --blocks
+        node src/table.mjs pier-p9 --title "교량받침 ELEVATION TABLE"</pre>
+      <p class="say">도면은 형상으로만 말하지 않습니다.<span class="beat"></span>
+      닫힌 윤곽, 원, 블록, 그리고 표.<span class="beat"></span>
+      기둥은 지름 <b>2,200 원</b>으로 들어 있고,
+      말뚝 <b>마흔네 본</b>은 폐곡선이 아니라 <b>블록</b>입니다.
+      블록 배율 <b>254</b>가 곧 반지름이고요. 도면 주기의 Φ508 과 맞습니다.<span class="beat"></span>
+      받침 여섯 기의 적층 높이와 절대표고는 도면 어디에도 안 그려져 있습니다.
+      <b>표에만</b> 있습니다. 그래서 표도 읽습니다 — 이름표 아래를 찾아서, 병합 셀까지.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">1:51</span><span class="dur">24.8초</span>
+      <span class="clip">05.mp4</span></div>
+    <div>
+      <h3>도면이 파라미터가 된다</h3>
+      <pre><span class="c">4단계</span>  node src/fit.mjs pier-p9
+<span class="c">5단계</span>  node src/build.mjs pier-p9</pre>
+      <p class="say">여기서 도면이 <b>파라미터</b>가 됩니다.<span class="beat"></span>
+      서른 개 중 스물한 개는 도면에서 잰 값,
+      다섯 개는 도면이 안 주는 설계값,
+      네 개는 식으로 나오는 값입니다.<span class="beat"></span>
+      어느 게 어디서 왔는지 전부 기록됩니다.
+      <b>도면에서 읽은 척하지 않는 것</b> — 이게 핵심입니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">2:16</span><span class="dur">16.7초</span>
+      <span class="clip">06.mp4</span></div>
+    <div>
+      <h3>3D 툴 없이 부피부터</h3>
+      <pre><span class="c">6단계</span>  node src/volume.mjs pier-p9</pre>
+      <p class="say">3D 툴을 켜기 전에 부피부터 냅니다.<span class="beat"></span>
+      <b>657.0569</b> 세제곱미터.<span class="beat"></span>
+      이게 <b>우리 의도</b>입니다. 이따 모델러가 만든 것과 대조할 기준이죠.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">2:32</span><span class="dur">82.0초</span>
+      <span class="clip">07.mp4</span></div>
+    <div>
+      <h3 class="hookmark">모델러에 교각이 선다</h3>
+      <pre><span class="c">7단계</span>  node src/emit/egm.mjs out/pier-p9.ir.json
+        python src/run_egm.py out/pier-p9.egm.json --export=out/pier-p9.obj</pre>
+      <p class="say">이제 실행입니다.<span class="beat"></span>
+      78개 파트, <b>329단계</b> 명령이 모델러로 갑니다.<span class="beat"></span>
+      코핑, 원형 기둥 두 본, 확대기초 두 기, 버림,
+      강관말뚝 마흔네 본,
+      받침 여섯 기 — 받침콘크리트, 무수축 모르타르, 탄성받침, 솔플레이트까지.<span class="beat"></span>
+      사람 손은 안 들어갑니다.<span class="beat"></span>
+      <em>(말 없이 20초 — 세워지는 걸 보여준다)</em><span class="beat"></span>
+      중요한 건 속도가 아닙니다.<span class="beat"></span>
+      같은 명령을 다시 돌리면 <b>같은 모델</b>이 나온다는 것.
+      도면이 바뀌면 파라미터만 고쳐서 다시 세울 수 있다는 것입니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">3:54</span><span class="dur">25.3초</span>
+      <span class="clip">08.mp4</span></div>
+    <div>
+      <h3>의도 vs 결과 — 이 영상의 핵심</h3>
+      <pre><span class="c">8단계</span>  egm status
+        node src/measure.mjs pier-p9 --ir</pre>
+      <p class="say">그리고 검증입니다.<span class="beat"></span>
+      <b>우리가 뜻한 부피</b>와 <b>모델러가 실제로 만든 부피</b>를 부재마다 대조합니다.<span class="beat"></span>
+      일흔다섯 개 전부 차이 <b>0.0000</b>. 열린 변 0.<span class="beat"></span>
+      부피가 맞으면 형상이 맞습니다. 눈으로 보고 「비슷하네」로 끝내지 않습니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">4:20</span><span class="dur">44.3초</span>
+      <span class="clip">09.mp4</span></div>
+    <div>
+      <h3>IFC 로 넘긴다</h3>
+      <pre><span class="c">9단계</span>  node src/emit/ifc.mjs out/pier-p9.ir.json</pre>
+      <p class="say">마지막은 IFC 입니다.<span class="beat"></span>
+      IfcBeam, IfcColumn, IfcFooting, <b>IfcPile 마흔네 개</b>, IfcPlate, IfcDiscreteAccessory.<span class="beat"></span>
+      메시로 안 내보냈습니다. 원기둥은 <b>진짜 원</b>으로 나갑니다.
+      그래야 받는 쪽에서 「왜 지름이 508이 아니냐」를 다시 겪지 않습니다.<span class="beat"></span>
+      절대 위치는 <b>IfcMapConversion</b> 으로 넣었습니다.
+      측량좌표와 방위각은 받침배치도 표에서 가져왔고요.<span class="beat"></span>
+      뷰어에서 열면 이렇게 나옵니다.</p>
+    </div>
+  </div>
+
+  <div class="cut">
+    <div class="rail"><span class="tc">5:04</span><span class="dur">50.1초</span>
+      <span class="clip">10.mp4</span></div>
+    <div>
+      <h3>그림으로도 본다 · 마무리</h3>
+      <pre><span class="c">10단계</span> node src/render.mjs pier-p9 --png --width 900</pre>
+      <p class="say">부피가 맞아도 형상이 맞는 건 아닙니다. 그래서 그림으로도 봅니다.<span class="beat"></span>
+      정투영 세 방향. <b>검은 자리는 그 방향으로 재료가 없다</b>는 뜻입니다.
+      관통구나 빠진 부재가 바로 드러나죠.<span class="beat"></span>
+      정리하면 — 도면 한 장에서 부재 일흔다섯 개, 657 세제곱미터,
+      오차 0.0000, IFC 까지.<span class="beat"></span>
+      사람이 판단한 건 <b>「무엇을 어떻게 조립할까」 하나뿐</b>입니다.
+      나머지는 전부 도면이 말한 겁니다.<span class="beat"></span>
+      다음 편에서는 <b>꺾인 교각</b>을 해보겠습니다.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════ 2. 실행 명령 ══════════ -->
+<section class="panel" id="p2" role="tabpanel">
+  <p class="lede">작업 디렉터리 <code>d:\MYCLAUDE_PROJECT\dwg2model</code> · PowerShell.
+  씬은 비워 뒀고 기준선은 문양 제외본으로 갱신돼 있다. 0번부터 순서대로.</p>
+
+  <h2>0 · 촬영 전 확인 <span class="chip c-warn">필수</span></h2>
+<pre>egm guide | python -c "import sys,json;print('명령',len(json.loads(sys.stdin.buffer.read().decode('utf-8-sig'))))"</pre>
+  <p><b>208</b> 이어야 한다. <b>39</b> 면 뷰어 모드 — 모델링 명령이 등록조차 안 된다.
+  모델러 UI 에서 <code>Assistive Features → Working Mode Setting → Viewer &amp; Modeler Use</code>.</p>
+
+  <h2>1–10 · 본편</h2>
+<pre><span class="c"># 1  도면 읽기 — 뷰 분리 · 표 색인          [02.mp4]</span>
+node src/run.mjs pier-p9
+
+<span class="c"># 2  끊김 진단                              [03.mp4]</span>
+node src/gaps.mjs pier-p9
+
+<span class="c"># 3  도면이 말하는 네 방식                   [04.mp4]</span>
+node src/build.mjs pier-p9 --loops
+node src/build.mjs pier-p9 --circles
+node src/build.mjs pier-p9 --blocks
+node src/table.mjs pier-p9 --title "교량받침 ELEVATION TABLE"
+
+<span class="c"># 4+5  파라미터 → 조립 스펙                 [05.mp4]</span>
+node src/fit.mjs pier-p9
+node src/build.mjs pier-p9
+
+<span class="c"># 6  모델러 없이 부피 — 「의도」             [06.mp4]</span>
+node src/volume.mjs pier-p9
+
+<span class="c"># 7  번역 · 실행 — 교각이 선다               [07.mp4] ★</span>
+node src/emit/egm.mjs out/pier-p9.ir.json
+python src/run_egm.py out/pier-p9.egm.json --export=out/pier-p9.obj
+
+<span class="c"># 8  의도 vs 결과                            [08.mp4] ★</span>
+egm status
+node src/measure.mjs pier-p9 --ir
+
+<span class="c"># 9  IFC                                     [09.mp4]</span>
+node src/emit/ifc.mjs out/pier-p9.ir.json
+
+<span class="c"># 10 그림                                    [10.mp4]</span>
+node src/render.mjs pier-p9 --png --width 900</pre>
+
+  <h2>덤 · 파라메트릭 (다음 편 예고용)</h2>
+<pre>node src/ui.mjs pier-p9 --port 7333
+<span class="c"># 브라우저 http://localhost:7333 → 값 수정 → 갱신 → 검증 사슬이 돈다</span></pre>
+
+  <div class="note">
+    <b>미관 문양은 뺐다</b>
+    단면(50 띠 + 하단 100 돌출)은 도면에서 나왔지만 정면도의 내부 능선을 아직 못 살렸다.
+    <code>params/pier-p9.json</code> 의 <code>미관문양_포함</code> 을 <code>1</code> 로 바꾸면 다시 선다.
+    지금 기준선은 <b>문양 제외 · 75파트 · 657.0569 m³</b> 기준이다.
+  </div>
+</section>
+
+<!-- ══════════ 3. 화면 체크 ══════════ -->
+<section class="panel" id="p3" role="tabpanel">
+  <p class="lede">컷마다 <b>화면에 반드시 보여야 할 것</b>. 안 나오면 다시 찍는다.</p>
+  <div class="tw">
+  <table>
+    <tr><th>컷</th><th>화면에 나와야 하는 것</th><th class="num">길이</th></tr>
+    <tr><td><b>HOOK</b></td><td>모델러 뷰포트에 교각이 서는 순간. 색이 부재별로 갈려 있어야 한다 —
+      코핑 주황 · 기둥 파랑 · 기초 초록 · 말뚝 보라</td><td class="num">14.0</td></tr>
+    <tr><td><b>01</b></td><td>도곽 · 평면도 · 정면도 · 단면도 · 기초평면도 · 표. 한 화면에 다 보이는 장면 하나</td><td class="num">24.4</td></tr>
+    <tr><td><b>02</b></td><td><code>평면도 14000 3200 ✓</code> 와 <code>✓ 검증 통과</code>, 그리고 <code>표 3개</code></td><td class="num">11.1</td></tr>
+    <tr><td><b>03</b></td><td>「레이어 오분류 0 / 선 누락 n」 갈라지는 줄</td><td class="num">12.9</td></tr>
+    <tr><td><b>04</b></td><td><code>Ø2200</code> 원 2개 · <code>CSPILEH 배율 254</code> 44개 ·
+      표 6행 18열(NO./h1~h4/A/B/S1/S2)</td><td class="num">48.5</td></tr>
+    <tr><td><b>05</b></td><td><code>measured 21 · design 5 · derived 4</code> · <code>최종 산출 75</code></td><td class="num">24.8</td></tr>
+    <tr><td><b>06</b></td><td><code>합계 657.0569</code></td><td class="num">16.7</td></tr>
+    <tr><td><b>07</b></td><td><code>파트 78 → 단계 329</code> · 뷰포트에 부재가 쌓이는 과정 ·
+      끝에 <code>modelCount 75</code></td><td class="num">82.0</td></tr>
+    <tr><td><b>08</b></td><td><b>차이 0.0000 열이 쭉 이어지는 화면</b> · <code>열린변 0</code> · 재질별 물량</td><td class="num">25.3</td></tr>
+    <tr><td><b>09</b></td><td><code>IFCPILE 44</code> 등 클래스 목록 · IFC 뷰어에서 열린 모델</td><td class="num">44.3</td></tr>
+    <tr><td><b>10</b></td><td>정투영 X·Y·Z 세 장. 검은 배경과 부재 색이 대비되는 것</td><td class="num">50.1</td></tr>
+  </table>
+  </div>
+
+  <h2>영상에서 쓸 숫자</h2>
+  <div class="tw">
+  <table>
+    <tr><th>말할 것</th><th>값</th></tr>
+    <tr><td>도곽 한 장 안에</td><td>뷰 7 + 표 3.<br>
+        그런데 파일에는 도면 자리가 <b>17개</b> — 도곽이 씌워진 건 <b>1개</b>,
+        나머지는 구조선만 남은 옛 작업 흔적</td></tr>
+    <tr><td>단위 확정</td><td>독립 근거 4개로 <b>1단위 = 1 mm</b></td></tr>
+    <tr><td>파단선</td><td>그려진 기둥 6,100 ↔ 실제 <b>33,800</b>. 생략량 27,700 을 도면에서 되찾는다</td></tr>
+    <tr><td>말뚝</td><td>5×5=25 가 아니라 <b>22본</b> — 둘레 16 + 내부 3등분점 6</td></tr>
+    <tr><td>받침</td><td>형상 × 표 × 다른 도면 <b>세 겹 검산</b>, 6/6 일치</td></tr>
+    <tr><td>결과</td><td><b>75 파트 · 657.0569 m³ · 차이 0.0000 · 열린 변 0</b></td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ══════════ 4. 사고 대응 ══════════ -->
+<section class="panel" id="p4" role="tabpanel">
+  <p class="lede">녹화 중 걸릴 만한 것만. 전부 실제로 겪었다.</p>
+  <div class="tw">
+  <table>
+    <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+    <tr><td><code>run_egm</code> 이 「명령이 끝나지 않는다」</td>
+        <td>이전 명령이 물려 있다. <code>egm status</code> 의 <code>command</code> 가 남는다</td>
+        <td><code>egm "Esc"</code> — 접두 <code>~</code> <b>없이</b>. 그리고 재실행</td></tr>
+    <tr><td>씬에 이전 모델이 남음</td><td>—</td>
+        <td><code>egm "Esc"</code> → <code>"SelAll"</code> → <code>"Delete"</code> → <code>"Esc"</code></td></tr>
+    <tr><td><code>modelCount</code> 가 75 가 아님</td>
+        <td>boolean 이 인자를 흘렸다</td>
+        <td>씬 비우고 재실행. 반복되면 촬영 멈추고 확인</td></tr>
+    <tr><td>명령이 조용히 무시됨</td><td>뷰어 모드</td>
+        <td>0단계로 돌아간다. <b>연결 정상 ≠ 모델링 가능</b></td></tr>
+    <tr><td><code>Access to the path is denied</code></td>
+        <td>모델러가 다른 권한으로 떠 있어 파이프에 못 붙는다</td>
+        <td>모델러를 종료하고
+        <code>C:\Program Files\Baron\EG-BIM Modeler\EG-BIM_Modeler.exe</code> 로 다시 띄운다</td></tr>
+    <tr><td>파이프가 죽음 (창은 멀쩡)</td><td>씬 초기화를 여러 번 반복했다</td>
+        <td>재시작 외에 방법 없다. 초기화는 갱신당 1회</td></tr>
+  </table>
+  </div>
+  <div class="note">
+    <b><code>--reset</code> 은 붙이지 않는다</b>
+    지난번 그것 때문에 <code>Select</code> 가 물렸다. 씬은 촬영 전에 미리 비워 둔다.
+  </div>
+</section>
+
+<!-- ══════════ 5. 업로드 ══════════ -->
+<section class="panel" id="p5" role="tabpanel">
+  <h2>제목 후보</h2>
+  <div class="tw">
+  <table>
+    <tr><th>안</th><th>제목</th></tr>
+    <tr><td>A</td><td>2D 도면 한 장으로 교각 3D 모델 자동 생성 — 부재 75개, 오차 0.0000</td></tr>
+    <tr><td>B</td><td>토목 도면을 BIM 으로 바꾸는 법 : 손으로 안 그리고 IFC 까지</td></tr>
+    <tr><td>C</td><td>도면이 말하는 네 가지 방식 — 윤곽 · 원 · 블록 · 표 | 2D→3D 전환설계</td></tr>
+  </table>
+  </div>
+
+  <h2>설명란</h2>
+<pre>교각 일반도(DWG) 한 장을 읽어 3D 솔리드와 IFC 까지 만드는 과정입니다.
+
+부재 75개 · 콘크리트 657.06 m³ · 모델러 실측 대비 오차 0.0000 · 열린 변 0
+
+00:00  결과 먼저
+00:14  도면 — 한 파일에 도형 17벌
+00:38  뷰 가르기
+00:50  끊김 진단 — 레이어 오분류 vs 선 누락
+01:02  도면이 말하는 네 방식 : 윤곽 · 원 · 블록 · 표
+01:51  도면이 파라미터가 된다
+02:16  3D 툴 없이 부피부터
+02:32  모델러에 교각이 선다
+03:54  의도 vs 결과 — 부재마다 대조
+04:20  IFC 로 넘긴다
+05:04  그림으로도 본다 · 정리
+
+다룬 것
+· 도곽 블록으로 시트 경계를 계산한다 (한 파일에 여러 벌이 쌓여 있다)
+· 파단선 — 그려진 길이가 실제가 아니다. 생략량을 도면에서 되찾는 법
+· 말뚝은 폐곡선이 아니라 INSERT 블록. 배율이 곧 치수다
+· 받침 적층·절대표고는 형상에 없고 표에만 있다
+· IFC 는 메시가 아니라 해석 솔리드로. 원기둥은 진짜 원으로</pre>
+
+  <h2>태그</h2>
+<pre>토목엔지니어, BIM, 3D전환설계, 토목BIM, IFC, 교량, 교각, 도면자동화,
+DWG, 캐드, 파라메트릭모델링, 스마트건설, civil engineering, BIM automation</pre>
+
+  <h2>썸네일</h2>
+  <p>왼쪽 <b>흑백 2D 도면</b>(01.mp4 한 프레임), 오른쪽 <b>색 입은 3D 교각</b>(07.mp4 마지막 프레임).
+  가운데 화살표. 카피는 숫자 하나만 — <b>「오차 0.0000」</b> 또는 <b>「부재 75개, 자동」</b>.</p>
+
+  <div class="note">
+    <b>다음 편 훅</b>
+    마지막 컷에서 <b>꺾인 교각(P11)</b> 을 예고했다. 꺾임각 6.30° —
+    코핑 축선이 중간에 꺾여 P9 방식이 그대로는 안 통한다. 그게 다음 편 주제다.
+  </div>
+</section>
+
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(b => b.addEventListener('click', () => {
+    tabs.forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === b.dataset.p));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }));
+</script>
+</body>
+</html>

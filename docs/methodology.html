@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2D 도면 세트 → 파라메트릭 3D 방법론 v0.1</title>
+<style>
+  :root{
+    --bg:#fbfaf7; --fg:#1b1a17; --muted:#6b6862; --line:#e2ded5; --card:#ffffff;
+    --accent:#8a5a2b; --accent-bg:#f6efe6;
+    --ok:#2e6b45; --ok-bg:#e9f3ec; --warn:#8a6d1f; --warn-bg:#fbf3dc; --bad:#8c3a30; --bad-bg:#fbeae7;
+    --code-bg:#f4f1ea; --mono:"Cascadia Mono","Consolas","D2Coding","Menlo",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#16161a; --fg:#e8e6e1; --muted:#9a968e; --line:#2e2e34; --card:#1d1d22;
+      --accent:#d3a06a; --accent-bg:#2a2118;
+      --ok:#7cc79a; --ok-bg:#1a2a20; --warn:#d8bd6a; --warn-bg:#2a2517; --bad:#e08a7c; --bad-bg:#2c1c19;
+      --code-bg:#111114;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.75 -apple-system,"Segoe UI","Pretendard","Malgun Gothic",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:grid; grid-template-columns:250px minmax(0,1fr); gap:44px; max-width:1240px; margin:0 auto; padding:0 24px}
+  nav{position:sticky; top:0; align-self:start; max-height:100vh; overflow:auto; padding:32px 0 48px; font-size:13.5px; line-height:1.55}
+  nav h2{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 12px}
+  nav a{display:block; color:var(--muted); text-decoration:none; padding:3px 10px; border-left:2px solid transparent; margin-left:-2px}
+  nav a:hover{color:var(--fg); border-left-color:var(--accent)}
+  nav a.sub{padding-left:22px; font-size:12.5px}
+  main{padding:32px 0 120px; min-width:0}
+  header.doc{border-bottom:1px solid var(--line); padding-bottom:26px; margin-bottom:36px}
+  header.doc h1{font-size:30px; line-height:1.3; margin:0 0 10px; letter-spacing:-.01em}
+  header.doc .sub{color:var(--muted); font-size:15px; margin:0 0 16px}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 18px; font-size:13px; color:var(--muted)}
+  .meta b{color:var(--fg); font-weight:600}
+  h2{font-size:22px; margin:56px 0 14px; padding-top:8px; letter-spacing:-.01em; scroll-margin-top:20px}
+  h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:10px}
+  h3{font-size:17px; margin:32px 0 10px; scroll-margin-top:20px}
+  h4{font-size:15px; margin:22px 0 8px; color:var(--accent)}
+  p{margin:12px 0}
+  ul,ol{margin:12px 0; padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:var(--mono); font-size:.88em; background:var(--code-bg); padding:1px 5px; border-radius:4px}
+  pre{background:var(--code-bg); border:1px solid var(--line); border-radius:8px; padding:14px 16px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.6}
+  pre code{background:none; padding:0}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:14px; display:block; overflow-x:auto}
+  th,td{border:1px solid var(--line); padding:8px 11px; text-align:left; vertical-align:top}
+  th{background:var(--accent-bg); font-weight:600; white-space:nowrap}
+  td code{white-space:nowrap}
+  blockquote{margin:16px 0; padding:2px 18px; border-left:3px solid var(--accent); color:var(--muted)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:18px 0}
+  .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px}
+  .badge{display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.04em; padding:2px 8px; border-radius:20px; vertical-align:middle}
+  .b-ok{background:var(--ok-bg); color:var(--ok)}
+  .b-warn{background:var(--warn-bg); color:var(--warn)}
+  .b-bad{background:var(--bad-bg); color:var(--bad)}
+  .callout{border:1px solid var(--line); border-left:4px solid var(--accent); background:var(--card); border-radius:0 8px 8px 0; padding:14px 18px; margin:18px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.bad{border-left-color:var(--bad)}
+  .callout.ok{border-left-color:var(--ok)}
+  .callout .t{font-weight:700; display:block; margin-bottom:4px}
+  .rule{counter-reset:r; list-style:none; padding:0}
+  .rule li{position:relative; padding:10px 0 10px 46px; border-bottom:1px dashed var(--line)}
+  .rule li:before{counter-increment:r; content:counter(r); position:absolute; left:0; top:10px; width:28px; height:28px; border-radius:50%; background:var(--accent-bg); color:var(--accent); font-weight:700; font-size:13px; display:grid; place-items:center}
+  .flow{background:var(--card)}
+  .chk{list-style:none; padding-left:0}
+  .chk li{padding-left:26px; position:relative}
+  .chk li:before{content:"☐"; position:absolute; left:4px; color:var(--muted)}
+  .kbd{font-family:var(--mono); font-size:12.5px; color:var(--muted)}
+  hr{border:0; border-top:1px solid var(--line); margin:44px 0}
+  .foot{color:var(--muted); font-size:13px; margin-top:60px; border-top:1px solid var(--line); padding-top:18px}
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr; gap:0}
+    nav{position:static; max-height:none; padding-top:20px; border-bottom:1px solid var(--line)}
+    nav a{display:inline-block; border-left:0; padding:3px 12px 3px 0}
+  }
+  @media print{
+    nav{display:none} .wrap{display:block; max-width:none} main{padding:0}
+    h2{page-break-after:avoid} table,pre,.card,.callout{page-break-inside:avoid}
+    body{font-size:10.5pt}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <h2>목차</h2>
+  <a href="#s0">0. 한 장 요약</a>
+  <a href="#s1">1. 범위와 계층</a>
+  <a href="#s2">2. 좌표계와 기준점</a>
+  <a href="#s3">3. 뷰의 일반 모델</a>
+  <a href="#s3-role" class="sub">뷰 역할 배정</a>
+  <a href="#s3-flip" class="sub">flip 판정 절차</a>
+  <a href="#s4">4. 절차 — 11개 게이트</a>
+  <a href="#s4-read" class="sub">그림으로 읽는다</a>
+  <a href="#s5">5. 조립 스펙(IR)</a>
+  <a href="#s5-tree" class="sub">연산 결정 트리</a>
+  <a href="#s6">6. 파라메트릭화</a>
+  <a href="#s7">7. 검증 체계</a>
+  <a href="#s8">8. 함정 사전</a>
+  <a href="#s9">9. 인테이크 워크시트</a>
+  <a href="#s10">10. 도면 작성자 요청</a>
+  <a href="#s11t">11. 구조물 유형별 차이</a>
+  <a href="#s11-bridge" class="sub">교량 실증 결과</a>
+  <a href="#s11-plate" class="sub">유형 삽도라는 별종</a>
+  <a href="#s11-pier" class="sub">교각 P9 실증</a>
+  <a href="#s11">12. 미검증 영역</a>
+  <a href="#s12">13. 용어·필드 사전</a>
+</nav>
+
+<main>
+
+<header class="doc">
+  <h1>2D 도면 세트 → 파라메트릭 3D 모델<br>일반 방법론</h1>
+  <p class="sub">평면도 · 입면도 · 좌/우측면도 · 종단면 · 횡단면 · 수평단면을 한 좌표계로 묶어<br>솔리드와 설계 파라미터를 만드는 절차와 판단 규칙.</p>
+  <div class="meta">
+    <span><b>버전</b> v0.2 — 교량 삽도 실증 반영</span>
+    <span><b>작성</b> 2026-08-07</span>
+    <span><b>근거</b> 전력구·맨홀 일반도 4매 (평면 1 + 단면 10) 전 구간 관통<br>＋ 교량 설계지침 삽도 7장 (1장 관통 · 6장 어디서 왜 막혔는지 기록)</span>
+    <span><b>다음</b> <b>표기 치수가 있는 교량 일반도</b> — 11.1 기준 체인과 sweep이 아직 미검증이다</span>
+  </div>
+</header>
+
+<div class="callout">
+  <span class="t">이 문서를 읽는 법</span>
+  각 주장에 신뢰 등급을 붙였다.
+  <span class="badge b-ok">검증</span> 실제 도면으로 끝까지 돌려봤다 ·
+  <span class="badge b-warn">부분</span> 원리는 확인했으나 표본이 하나다 ·
+  <span class="badge b-bad">가설</span> 아직 안 해봤다 — 다음 도면에서 확인할 것.
+  <br>기존 문서와의 관계: <code>docs/2d-3d-process.md</code>는 이 저장소의 <b>명령 절차</b>,
+  <code>docs/2d-3d-conversion.md</code>는 <b>사례별 교훈</b>, 이 문서는 그 둘에서 도면 고유값을 걷어낸
+  <b>방법론</b>이다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s0"><span class="num">0</span>한 장 요약</h2>
+
+<p>도면 세트를 3D로 옮기는 일은 형상 작업이 아니라 <b>좌표계 통일 작업</b>이다.
+뷰마다 따로 노는 로컬 좌표를 하나의 프로젝트 좌표로 묶고 나면, 나머지는 기계가 한다.</p>
+
+<pre class="flow"><code>도면 세트 ─┬─ 기준점(datum)  ─→ 전 뷰 공통 Z (또는 X·Y)
+           ├─ 뷰 분리        ─→ 뷰마다 로컬 (u,v)
+           └─ 뷰 앵커        ─→ 프로젝트 (X,Y,Z)
+                                    │
+                          프로파일(폐곡선) · 원 · 개구부
+                                    │
+                    fit ─→ params.json ─→ build ─→ IR ─→ 백엔드(3D/IFC)
+                              ↑ 사람은 여기만 만진다      ↓
+                                                  부피·물량·규칙 검사</code></pre>
+
+<h3>변하지 않는 규칙 12개</h3>
+<ol class="rule">
+  <li><b>게이트에 넣기 전에 「이 도면이 솔리드 대상인가」를 먼저 판정한다.</b> 표기 치수를 숫자형/기호형으로 <b>세고</b>, 구조 윤곽이 닫히는지 본다. 기호 치수뿐이거나(<code>L·β·θ·VAR</code>) 윤곽이 안 닫히는 도면은 <b>어느 게이트에서도 안 통과한다</b> — 교량 삽도 7장 중 6장이 그랬다. 이 판정은 몇 초면 된다.</li>
+  <li><b>단위와 축척을 도면에서 되찾고 두 치수로 교차검증한다.</b> DWG 모델단위는 도면군마다 다르고(1m vs 1mm), 도형마다 배율이 또 다를 수 있다(5.805배). 상수로 두면 <b>모든 값이 조용히 배수만큼 틀린다</b> — 폐곡선도 부피도 정상으로 보인다.</li>
+  <li><b>기준점을 먼저 확정한다.</b> 형상보다 앞이다. 기준점 없이 뽑은 형상은 정합 단계에서 전부 다시 한다. <b>단, 기준선이 아예 없는 도면이 실재한다</b> — 그때는 검출을 끄고 뷰별 <code>v0</code>로 간다. 아무 선이나 자동으로 고르지 않는다.</li>
+  <li><b>기준은 텍스트가 아니라 선에서 잡고, 도면 치수 2개 이상으로 교차검증한다.</b> 라벨은 후보를 좁히는 힌트일 뿐이다.</li>
+  <li><b>뷰 하나는 [좌표평면 · 반전 · 원점 · <span class="kbd">축척</span> · 용도] 다섯 속성으로 서술된다.</b> 도면 종류는 9가지지만 좌표평면은 XY·XZ·YZ 셋뿐 — 나머지 차이는 보는 방향(좌우 반전)이다. <b>종류마다 코드를 늘리지 마라.</b></li>
+  <li><b>입면도·측면도로 솔리드를 만들지 않는다.</b> 잘린 면이 아니라 투영 윤곽이라 깊이가 없다. 검증과 위치에만 쓴다.</li>
+  <li><b>구간 배정표는 종방향 뷰에만 있다.</b> 횡단면은 "그 지점의 모습"일 뿐 어디까지 유효한지 말해주지 않는다.</li>
+  <li><b>뽑아낸 도형 목록에서 무엇을 쓸지 고를 때, 목록 순서가 아니라 치수로 지정한다.</b> "2,700×2,750 인 것"처럼. 순서로 집으면 도면이 조금 바뀔 때 아무 말 없이 다른 도형을 집는다.</li>
+  <li><b>손으로 적은 수를 넣지 않는다.</b> 도면과의 끈이 없는 값은 도면이 바뀌어도 안 바뀌고, 파라미터로 올릴 자격도 없다.</li>
+  <li><b>속을 파낼 때는 빈 곳 없이 꽉 찬 덩어리를 먼저 만들고, 거기서 뺀다.</b> 외곽선이 오목하면 파인 자리에 애초에 재료가 없어 벽을 만들 수 없다. 빼는 솔리드는 <b>한 번에 하나씩</b>, 대상보다 조금 크게.</li>
+  <li><b>의도와 결과를 따로 잰다.</b> IR을 직접 평가한 부피와 백엔드 결과 부피를 대조해야 "우리가 틀렸나 툴이 흘렸나"가 갈린다.</li>
+  <li><b>조용히 틀리느니 예외를 던진다.</b> 못 찾거나 여럿이면 멈춘다. 자동 선택은 나중에 몇 시간짜리 추적으로 돌아온다.</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s1"><span class="num">1</span>범위와 계층</h2>
+
+<h3>1.1 입력과 출력</h3>
+<table>
+  <tr><th>항목</th><th>내용</th><th>상태</th></tr>
+  <tr><td>입력 형식</td><td>DWG (acadrust wasm, read-only). 한 모델스페이스에 여러 뷰가 나열된 형태</td><td><span class="badge b-ok">검증</span> R2018</td></tr>
+  <tr><td>입력 형식 — DXF</td><td>파서가 DWG 전용이다. DXF는 ① 변환(ODA File Converter 등) 후 투입 ② DXF 리더 추가 중 하나. 엔티티 모델이 같으므로 <b>하류는 그대로</b></td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>읽는 엔티티</td><td><code>LINE</code> · <code>LWPOLYLINE</code> → 선분, <code>CIRCLE</code> → 원(따로), <code>TEXT/MTEXT</code> → 표제·주기·치수</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td>버리는 엔티티</td><td><code>ARC</code> · <code>ELLIPSE</code> · <code>SPLINE</code> · 해치 · 블록 내부 로컬 좌표</td><td><span class="badge b-warn">부분</span> 비중은 쟀다 — 교량 도면 7장에서 ARC 0~17%(거더배치 249/1,433). 원호가 형상인 도면은 아직 미검증</td></tr>
+  <tr><td><b>모델단위</b></td><td>DWG 1단위가 몇 mm인가. <b>도면군마다 다르다</b> — 맨홀군 1m, 교량 삽도군 1mm. 게다가 <b>도형마다 배율이 또 다를 수 있다</b>(5.805배 사례)</td><td><span class="badge b-ok">검증</span> <code>cfg.unitMm</code> · <code>viewBoxes[뷰].unitMm</code></td></tr>
+  <tr><td><b>치수의 성격</b></td><td>표기 치수가 <b>숫자</b>인가 <b>기호</b>(<code>L·β·θ·VAR</code>)인가. 기호뿐이면 방법론 전체가 기대는 「도면 치수와 대조」가 성립하지 않는다</td><td><span class="badge b-ok">검증</span> 세어서 판정한다 (11.0)</td></tr>
+  <tr><td>출력</td><td>솔리드 파트(이름·재질 부착) · 설계 파라미터 · 재질별 물량 · 부피 기준선</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td>출력 — IFC</td><td>IR의 <code>extrude</code>가 <code>IfcExtrudedAreaSolid</code>, <code>union/difference</code>가 <code>IfcBooleanResult</code>와 1:1. 매핑 초안은 있고 emit은 미구현</td><td><span class="badge b-bad">가설</span></td></tr>
+</table>
+
+<h3>1.2 계층 — 무엇이 어디에 있어야 하는가</h3>
+
+<p>이 경계가 방법론의 뼈대다. 무너지면 두 번째 도면에서 <b>파이프라인이 아니라 복사본</b>이 생긴다.</p>
+
+<table>
+  <tr><th>계층</th><th>아는 것</th><th>절대 몰라야 하는 것</th></tr>
+  <tr><td><b>도면 설정</b> <code>drawings/*.mjs</code></td><td>레이어명 · 뷰 제목 · 임계값 · 앵커 · 기준점 검증항목 · 조립 판단</td><td>—</td></tr>
+  <tr><td><b>코어</b> <code>core/*</code></td><td>파싱 · 뷰 분리 · 좌표 변환 · 폐곡선 추출 · 개구 기호 · 자기교차</td><td>도면 고유값 일체. <code>'-전력구'</code> 같은 문자열이 들어가면 설계가 틀린 것</td></tr>
+  <tr><td><b>파라미터</b> <code>params.mjs · fit.mjs · rules.mjs</code></td><td>스키마 · 식 · 검증 · 규칙</td><td>도면도 3D도 모른다</td></tr>
+  <tr><td colspan="3" style="background:#2a1d1d">
+    <b>이 경계는 두 곳에서 이미 새 있었다</b>(교량 도면에서 드러남).<br>
+    ① <code>core/datum.mjs</code>의 <code>UNIT_MM = 1000</code> — <b>도면 고유값이 코어에 상수로</b> 있었다.
+    같은 파일의 라벨 대역(<code>±3</code>)·뷰 분리 문턱(<code>2</code>)도 「1단위=1m」를 전제한 길이였다.<br>
+    ② <code>rules.mjs</code>는 "도면도 3D도 모른다"고 적혀 있었지만 실제로는
+    <code>챔퍼_시작X · 샤프트 · 맨홀_벽두께</code>처럼 <b>첫 도면의 파라미터 이름</b>에 묶여 있었다.
+    두 번째 도면에서 <code>undefined</code> 비교가 전부 위상 위반으로 떨어져 <code>build</code>가 죽었다.<br>
+    <b>교훈:</b> 경계 위반은 <b>두 번째 도면을 넣기 전에는 안 보인다.</b> 문서에 "안 들어간다"고 쓰는 것으로는 안 지켜진다.
+  </td></tr>
+  <tr><td><b>IR</b> <code>ir.mjs</code></td><td>"이 프로파일을 이 축으로 밀고 저걸 뺀다"</td><td>백엔드 사정 · 도면 사정</td></tr>
+  <tr><td><b>백엔드</b> <code>emit/*</code></td><td>모델러 명령 순서 · 비동기 대기 · boolean 이항 접기</td><td>도면 사정</td></tr>
+</table>
+
+<div class="callout ok">
+  <span class="t">IR을 중간에 둔 이유</span>
+  도면 해석과 3D 툴을 직접 붙이면 툴을 바꿀 때 전부 다시 짠다. IR은 도구 중립이라
+  <b>3D 툴 없이도 검증·diff·부피 평가가 된다.</b> 실제로 이 성질 하나가 "모델러가 흘리는가"를
+  판정하는 유일한 수단이 됐다(7장).
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s2"><span class="num">2</span>좌표계 · 원점 · datum</h2>
+
+<div class="callout">
+  <span class="t">셋을 구분한다 — datum은 프로젝트 원점이 아니다</span>
+  <b>datum은 Z 축 하나만 잡는 장치다.</b> 3축 원점 전체가 아니다.
+  <b>Z는 datum이, X·Y는 뷰 앵커가</b> 준다. 갈라놓은 이유는 도면 관행 때문이다 —
+  토목 도면은 모든 단면을 <b>같은 표고선에 맞춰</b> 배치하므로 Z는 전 뷰 공통으로 한 번에
+  잡히지만, 가로축 원점은 뷰마다 제각각이라 뷰별로 잡아야 한다.
+</div>
+
+<table>
+  <tr><th>개념</th><th>무엇을 정하는가</th><th>이 저장소</th><th>Revit 대응</th></tr>
+  <tr><td><b>프로젝트 원점</b></td><td>3축 원점 전체. <b>선언</b>한다</td><td><code>frame.origin</code></td><td>Project Base Point</td></tr>
+  <tr><td><b>datum</b></td><td>그중 <b>Z=0 평면 하나</b>. 도면에서 <b>검출</b>한다(점이 아니라 <b>선</b>)</td><td><code>datum.levelLabel</code> + <code>checks</code></td><td>Level (기준 레벨)</td></tr>
+  <tr><td><b>앵커</b></td><td>뷰별 가로·세로축 원점 (X·Y)</td><td><code>anchors.u0 / v0</code></td><td>없음 — Revit은 뷰가 원점을 공유한다</td></tr>
+  <tr><td>도면 월드 좌표</td><td>측량 좌표. 빼고 버린다</td><td>DWG <code>x,y</code> (예 <code>y=483623.477</code>)</td><td>Survey Point / 공유 좌표</td></tr>
+</table>
+
+<p><b>선형 구조물이면 X 원점을 측점에 맞추는 것이 유리하다</b>(측점 0k000의 좌표를 프로젝트 원점으로).
+그건 datum이 아니라 <b>앵커 <code>u0</code></b> 로 준다 — 그 측점 선의 뷰 좌표를 <code>u0</code>에 넣고,
+<code>frame.origin</code>에 "측점 0k000"이라고 적어 근거를 남긴다.
+대상 도면은 측점이 아니라 구조물 최좌단을 X=0으로 잡았다(<code>u0: 1000</code>).
+<span class="badge b-warn">부분</span> 측점 기반 원점은 미검증 — 곡선 선형·구배와 함께 12장 항목이다. 교량은 11장을 볼 것.</p>
+
+<h3>2.1 프로젝트 좌표계를 먼저 선언한다</h3>
+
+<p>축 셋과 원점을 <b>문장으로</b> 적고 시작한다. 이걸 안 적으면 뷰마다 다른 해석이 섞인다.</p>
+
+<pre><code>frame: {
+  x: '길이방향 (기점 → 종점)',
+  y: '폭방향 (중심선이 0, 평면도 위쪽이 +)',
+  z: '표고 (기준고가 0, 아래로 음수)',
+  origin: '구조물 최좌단 × 중심선 × 기준고',
+}</code></pre>
+
+<table>
+  <tr><th>구조물 종류</th><th>X</th><th>Y</th><th>Z 원점 후보</th></tr>
+  <tr><td>선형 토목(전력구·암거·터널)</td><td>측점 방향</td><td>중심선 기준 폭</td><td>도로 계획고 · 토공 계획고 · GL · EL 기준선</td></tr>
+  <tr><td>점형 토목(맨홀·수조·기초)</td><td>도면 가로</td><td>도면 세로</td><td>GL · 상단 슬래브 상면</td></tr>
+  <tr><td>건축</td><td>그리드 X 통심선</td><td>그리드 Y 통심선</td><td>1FL · 기준층 FL</td></tr>
+</table>
+
+<p><b>단위는 내부 mm 정수.</b> 백엔드에 넘기기 직전에만 m로 나눈다. mm 정수 반올림이 DWG의
+부동소수 노이즈(<code>-500.00000000001455</code>)를 자동으로 흡수한다. 반올림을 뒤로 미루면
+boolean 단계에서 터진다. <span class="badge b-ok">검증</span></p>
+
+<h3>2.2 datum(Z=0 기준선) 검출 — 4단계</h3>
+
+<ol>
+  <li><b>라벨이 한 무리인지 먼저 본다.</b> <span class="kbd">신규</span> 라벨 y를 정렬해 2m 이상 벌어진 곳에서 끊는다.
+      무리가 둘 이상이면 <b>공통 기준선이 없는 도면</b>이므로 여기서 <b>예외를 던진다.</b> 아래 2단계의 숨은 전제가 바로 이것이다.</li>
+  <li><b>후보 수집.</b> 여러 뷰에 <b>반복해서 나타나는</b> 수평선(또는 수직 그리드선)을 모은다. 출현 횟수는 잡음 문턱으로만 쓴다.</li>
+  <li><b>라벨 근접으로 확정.</b> 후보가 둘 이상이면(계획고는 보통 도로/토공 두 줄이다) <b>라벨 바로 아래·옆의 선</b>을 고른다. 라벨은 자기 선을 가리킨다.</li>
+  <li><b>선에서 값을 읽는다.</b> 텍스트 삽입점이 아니다. 실제로 713mm 틀렸다.</li>
+  <li><b>도면 치수 2개 이상과 대조.</b> 하나만 두면 우연히 맞을 수 있다. 하나라도 어긋나면 datum이 틀린 것이므로 <b>다음 단계로 가지 않는다.</b></li>
+</ol>
+
+<div class="callout warn">
+  <span class="t">왜 1단계가 추가됐나 — 검출기가 <b>예외 없이 틀린 답</b>을 냈다 <span class="badge b-ok">검증</span></span>
+  3단계는 라벨 y를 <b>평균</b>내고 「그 평균 바로 아래 선」을 고른다. 숨은 전제는
+  <b>「라벨 하나가 선 하나를 가리킨다」</b>, 즉 라벨이 한 곳에 모여 있다는 것이다.
+  전력구 도면은 11개 뷰가 같은 계획고 선을 공유해 그 전제가 참이었고, <b>그래서 안 보였다.</b>
+  <br>유형 삽도는 같은 라벨을 도형마다 반복한다. 횡단경사 삽도에서
+  <code>교량 계획고</code>·<code>토공 계획고</code> 라벨 10개가 y 27,533~81,177에 흩어져
+  평균 56,453은 <b>어느 도형에도 속하지 않는 값</b>이 됐다. 결과:
+  <pre style="margin:8px 0"><code>교량 계획고 → y=54,885.8
+토공 계획고 → y=54,885.8      ← 정의상 다른 표고인데 같은 답
+라벨별 국소 선 → 9개가 전부 다르다. 54,885.8 은 그중 어느 것도 아니다</code></pre>
+  <b>예외가 아니라 그럴듯한 숫자가 나왔다.</b> 규칙 12(조용히 틀리느니 예외)는
+  <b>검출기 자신에게도 적용된다</b> — 전제가 깨졌는지 스스로 검사하지 않으면
+  실패가 답의 모습으로 나온다.
+</div>
+
+<pre><code>datum: {
+  levelLabel: /도로\s*계획고/,          // 후보를 좁히는 힌트
+  checks: [                             // 최소 2개. 도면에 적힌 치수를 그대로
+    ['B-B 구체 상단', (v) =&gt; v['단 면 B-B']?.layerZ['-전력구']?.[1], -4907],
+    ['B-B 기초 하단', (v) =&gt; v['단 면 B-B']?.layerZ['!-기초']?.[0],  -7757],
+  ],
+}</code></pre>
+
+<div class="callout ok">
+  <span class="t">공통 datum이 있으면 무조건 그것부터 찾는다 <span class="badge b-ok">검증</span></span>
+  단면도를 배치할 때 <b>표고선을 맞춰 그리는 관행</b>이 그대로 3D 정합 데이터가 된다.
+  대상 도면은 11개 뷰가 같은 y에 계획고 선을 공유해 <b>뷰별 Z 오프셋 계산이 통째로 사라졌다.</b>
+  건축이면 FL/층레벨, 선형이면 EL 기준선이 같은 역할을 한다.
+  <br><b>먼저 확인할 것:</b> 뷰별로 검출한 기준선 y가 전부 같은 값인가. 다르면 뷰마다 Z 오프셋이 필요하고, 방법론 비용이 한 단계 올라간다.
+</div>
+
+<div class="callout ok">
+  <span class="t">공통 datum이 <b>없는</b> 도면이 실재한다 <span class="badge b-ok">검증</span></span>
+  <b>교량 삽도 7장 전부가 그랬다.</b> 지반 레이어는 7장 중 1장(<code>CS-GRND</code>)뿐이고
+  <code>계획고</code> 라벨은 1장(10개)뿐이다. 나머지는 표고선 자체가 안 그려져 있고,
+  도형마다 제 바닥이 서로 다른 y에 앉는다.
+  <br>당시 코드는 이 경우 <b>예외로 죽었다</b> — <code>표고 기준선을 찾지 못했다</code>.
+  그 자리에서 아무 수평선이나 자동으로 고르는 것은 <b>틀린 대응</b>이다(조용히 어긋난다).
+  <br><b>대응(구현됨):</b> <code>datum: {mode:'none'}</code> 으로 검출을 끄고 DWG y를 그대로 두되,
+  표고는 뷰마다 <code>anchors[뷰].v0</code> 로 준다. 위 후보 ①이 그대로 맞았다 —
+  앵커 규칙을 세로축으로 확장한 것 이상이 필요하지 않았다.
+  <br>중앙분리대 삽도에서 두 단면의 기준면 y가 실제로 달랐다(포장면 48,812.1 vs 바닥판면 49,096.5).
+  그 차이가 곧 「토공용은 포장에 49mm 묻히고 교량용은 바닥판 위에 얹힌다」라는 <b>형상 정보</b>였다.
+</div>
+
+<div class="callout warn">
+  <span class="t">datum이 없으면 <b>G2의 교차검증도 같이 사라진다</b> <span class="badge b-warn">부분</span></span>
+  위 4단계의 마지막 항목(도면 치수 2개 이상과 대조)은 datum이 있을 때의 절차다.
+  datum을 끄면 대조할 것이 없어져 <code>datum.checks</code>가 빈 배열이 되고,
+  <b>G2가 「통과」가 아니라 「해당 없음」이 된다.</b> 방법론은 이 구멍을 안 다뤘다.
+  <br>대신 검증을 <b>G3로 미룬다</b> — 폐곡선의 폭·높이가 도면 표기 치수와 맞는지로 옮긴다.
+  중앙분리대에서는 단면 폐곡선이 <code>585 × 1,270</code>으로 나온 것이 곧 기준·축척·앵커를
+  한꺼번에 검증한 것이었다. <b>다만 이건 늦은 검증이다</b> — 틀렸을 때 원인 후보가
+  기준·축척·앵커 셋으로 늘어난다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s3"><span class="num">3</span>뷰의 일반 모델</h2>
+
+<p><b>도면 한 장을 3D 공간에 스티커처럼 붙인다</b>고 보면 된다. 붙이려면 네 가지를 알아야 한다.</p>
+
+<table>
+  <tr><th>속성</th><th>묻는 것</th><th>예</th></tr>
+  <tr><td><code>plane</code></td><td>어느 <b>면</b>에 붙이나</td><td>평면도 → XY면, 정면도 → XZ면, 측면도 → YZ면</td></tr>
+  <tr><td><code>flip</code></td><td><b>뒤집어</b> 붙였나</td><td>배면도는 정면도를 좌우 뒤집은 것</td></tr>
+  <tr><td><code>anchor</code></td><td><b>어디에 맞춰</b> 붙이나</td><td>이 그림의 가로 1,000 자리가 X=0</td></tr>
+  <tr><td><code>role</code></td><td>붙여서 <b>뭘 하나</b></td><td>형상을 만든다 / 검증만 한다</td></tr>
+</table>
+
+<div class="callout">
+  <span class="t">핵심 일반화 — 도면 종류는 9가지, 좌표평면은 3가지</span>
+  <code>plane</code>은 <b>평면도가 아니라 좌표평면</b>이다(용어가 겹치니 주의).
+  그림이 놓이는 면은 셋뿐이다.
+  <pre style="margin:8px 0 0"><code>XY면 ← 평면도 · 저면도 · 수평단면
+XZ면 ← 정면도 · 배면도 · 종단면
+YZ면 ← 좌측면도 · 우측면도 · 횡단면</code></pre>
+  같은 면에 놓인 것들끼리의 차이는 <b>보는 방향뿐</b>이고 그건 좌우 반전이다.
+  정면도와 배면도는 둘 다 XZ면에 놓이고 X 방향만 반대다.
+  <b>도면 종류가 9개여도 처리 코드는 3개면 된다 — 종류마다 코드를 늘리지 마라.</b>
+  <br><span class="kbd">현재 코드의 <code>plan/long/cross/horizontal</code>이라는 <code>kind</code> 이름은 이 사실을 가린다.</span>
+</div>
+
+<h3>3.1 뷰 → 평면 대응표</h3>
+
+<table>
+  <tr><th>뷰</th><th>보는 방향</th><th>평면</th><th>도면 (u,v) →</th><th>반전</th><th>절단면?</th><th>상태</th></tr>
+  <tr><td>평면도</td><td>−Z (위에서)</td><td>XY</td><td>(X, Y)</td><td>—</td><td>아니오</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td>저면도</td><td>+Z</td><td>XY</td><td>(X, −Y)</td><td><code>flipV</code></td><td>아니오</td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>수평 단면</td><td>−Z</td><td>XY</td><td>(Y, X) <code>swapUV</code></td><td>도면마다</td><td><b>예</b></td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td>정면도</td><td>+Y</td><td>XZ</td><td>(X, Z)</td><td>—</td><td>아니오</td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>배면도</td><td>−Y</td><td>XZ</td><td>(−X, Z)</td><td><code>flip</code></td><td>아니오</td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>종단면</td><td>±Y</td><td>XZ</td><td>(X, Z)</td><td>절단 방향</td><td><b>예</b></td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td>좌측면도</td><td>+X</td><td>YZ</td><td>(Y, Z)</td><td>투상법</td><td>아니오</td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>우측면도</td><td>−X</td><td>YZ</td><td>(−Y, Z)</td><td><code>flip</code></td><td>아니오</td><td><span class="badge b-bad">가설</span></td></tr>
+  <tr><td>횡단면</td><td>±X</td><td>YZ</td><td>(Y, Z)</td><td>절단 방향</td><td><b>예</b></td><td><span class="badge b-ok">검증</span></td></tr>
+</table>
+
+<h3 id="s3-role">3.2 뷰 역할 — 무엇을 주는 뷰인가</h3>
+
+<p>평면만 정해서는 부족하다. <b>같은 XZ 평면이라도 종단면과 정면도가 하는 일이 전혀 다르다.</b>
+역할을 배정하지 않으면 입면도로 압출하는 사고가 난다.</p>
+
+<table>
+  <tr><th>역할</th><th>주는 것</th><th>전형적인 뷰</th><th>쓰는 법</th></tr>
+  <tr><td><b>생성</b> generator</td><td>재료 영역 폐곡선 → 그대로 압출·로프트</td><td>횡단면 · 종단면 · 수평단면</td><td><code>loop(뷰, 폭, 높이).ring</code></td></tr>
+  <tr><td><b>배정</b> assigner</td><td>어느 구간에 어느 단면이 유효한가</td><td>종단면 (선형은 필수)</td><td>수평선을 Z 내림차순 × X 범위로 늘어놓는다</td></tr>
+  <tr><td><b>위치</b> locator</td><td>개구부·관통·부속물의 좌표</td><td>평면도 · 수평단면 · 입면도</td><td><code>opening()</code> · <code>circles()</code> · <code>rect()</code>+<code>expect()</code></td></tr>
+  <tr><td><b>검증</b> validator</td><td>만든 3D가 맞는지 대조할 윤곽·치수</td><td><b>입면도 · 좌/우측면도</b> · 상세도</td><td>3D를 그 방향으로 정투영해 윤곽 비교</td></tr>
+</table>
+
+<div class="callout bad">
+  <span class="t">입면도·측면도로 솔리드를 만들지 마라 <span class="badge b-warn">부분</span></span>
+  단면도는 <b>잘린 면</b>만 그리지만 입면도는 <b>보이는 모든 것</b>을 그린다. 그래서 입면도의
+  폐곡선은 재료 영역이 아니라 <b>여러 깊이가 겹친 투영 윤곽</b>이다. 압출하면 깊이가
+  거짓이 된다. 실제 압출은 <b>평면도(footprint) + 단면도(높이)</b>로 하고, 입면도는
+  ① 외곽 검증 ② 개구부의 XZ/YZ 위치 ③ 마감선·레벨선 확인에만 쓴다.
+  <br><b>판별법:</b> 그 뷰에 해치(절단면 표시)가 있으면 단면, 없으면 투영이다. 제목만 믿지 말 것.
+</div>
+
+<h3 id="s3-flip">3.3 앵커와 flip 판정 절차 <span class="badge b-ok">검증</span></h3>
+
+<p>뷰 안의 좌표는 <b>뷰 좌단이 0인 u</b>와 <b>기준고가 0인 v</b>다. 프로젝트 축으로 옮기려면
+뷰마다 "어느 u가 프로젝트 0인가"를 정해야 한다. <b>투상법(1각/3각)을 가정하지 마라</b> —
+도면마다 다르고, 틀려도 치수만 보는 동안은 안 걸린다.</p>
+
+<ol>
+  <li><b>뷰 폭·높이를 도면 표기 치수와 대조.</b> 여기가 안 맞으면 뷰 분리부터 틀린 것이다.</li>
+  <li><b>앵커를 지어내지 말고 유도한다.</b> 예: 뷰 세로 범위 −11,678~−1,478이 전폭 10,200이고 아래 끝이 Y=−1,900이면 <code>v0 = -11,678 + 1,900 = -9,778</code>.</li>
+  <li><b>비대칭 특징 하나로 flip을 판정한다.</b> 중심선 대칭 형상만 보면 뒤집힘이 안 드러난다. 샤프트·개구부·노치처럼 한쪽에만 있는 것을 고른다.</li>
+  <li><b>다른 뷰에서 이미 확정한 좌표와 교차검증.</b> 최소 2개. 세 개면 확정이다.</li>
+</ol>
+
+<pre><code>// 실제로 이렇게 확정했다 — 셋이 동시에 맞으면 앵커는 틀릴 수 없다
+샤프트 사각 1,300×1,300   v -10,428..-9,128 → Y -650..+650     중심선 대칭 ✓
+Ø900 보어 2개             v -9,778          → Y 0               ✓
+맨홀 내부 2,000×7,200     v -11,278..-4,078 → Y -1,500..5,700   ✓</code></pre>
+
+<div class="callout warn">
+  <span class="t">치수만 보는 동안은 틀린 앵커도 안 걸린다 <span class="badge b-ok">검증</span></span>
+  평면도에서 <code>expect(뷰, 폭, 높이)</code>로 치수만 확인하는 동안은 <code>v0</code>가 없어도 아무 문제가
+  없었다. 원(CIRCLE) 좌표를 쓰는 순간 보어가 Y=−9,778로 튀어나왔다.
+  <b>좌표를 쓰기 시작하면 숨어 있던 앵커가 드러난다.</b> 수평 단면에서 이미 겪은 문제를
+  평면도에서 반복했다 — "세로축이 표고겠거니" 하고 넘어갔기 때문이다.
+</div>
+
+<p>축을 뒤집거나 맞바꾸면 <b>감김 방향이 반대가 된다.</b> 뒤집기 횟수가 홀수면 꼭짓점 순서를
+되돌려 면적을 양수로 유지한다. 코어가 자동으로 하지만, 새 평면을 추가할 때 잊기 쉬운 자리다.</p>
+
+<h3>3.4 뷰 분리 알고리즘 <span class="badge b-warn">부분</span></h3>
+
+<p>여러 뷰가 한 모델스페이스에 나열돼 있으면 먼저 갈라야 한다. <b>간격 임계값 하나로는 절대 안 된다</b> —
+넓게 잡으면 이웃이 딸려오고 좁게 잡으면 한 뷰가 쪼개진다. 둘 다 실제로 터졌다.</p>
+
+<div class="callout warn">
+  <span class="t">배지를 <b>검증 → 부분</b>으로 내린다 — 이 알고리즘은 전제가 둘 있다</span>
+  아래 절차는 <b>(가) 뷰 사이에 간격이 존재하고 (나) 뷰마다 유일한 제목이 있다</b>를 전제한다.
+  전력구 도면 4매에서는 둘 다 참이었다. <b>교량 삽도 7장에서는 둘 다 거짓이었다.</b>
+  <br>· (가) 실패 — 상세 확대 <b>테두리 상자</b>가 상세행과 단면행을 세로로 잇는다.
+  임계값을 10mm까지 좁혀도 조각이 <b>1개</b>였다. 구조선과 같은 레이어·같은 색이라 걸러낼 수도 없다.
+  <br>· (나) 실패 — 표제 중복률 47~84%. <code>단면A</code>가 4벌, <code>교량 시·종점</code>이 6벌.
+  교량폭원은 <b>뷰 제목이 아예 없다</b>(표제는 시트명 하나, 나머지는 <code>A·B·L of Road</code>).
+  <br><b>대응(구현됨):</b> <code>cfg.viewBoxes</code> — 뷰마다 <code>{box:[x0,y0,x1,y1], kind}</code>를 설정에 적는다.
+  <b>선분 단위</b>로 나눈다(조각 단위로 나누면 뷰를 잇는 다리 조각이 통째로 한쪽에 붙는다).
+  양 끝이 다 들어오는 선만 취해 경계를 넘나드는 선을 자동으로 버리고, 상자가 겹치면 예외를 던진다.
+</div>
+
+<p>제목이 있고 간격이 있는 도면에서는 아래가 여전히 최선이다 — 좌표를 설정에 적지 않아도 되기 때문이다.</p>
+
+<pre><code>1. 구조 레이어 기하만 모은다 (넉넉한 struct 정규식)
+2. x ↔ y 를 번갈아 가며 더 이상 갈라지지 않을 때까지 잘게 쪼갠다 (임계 0.2m)
+   ↳ y로 나눈 뒤에야 드러나는 x 간격이 있다. 한 번씩만 하면 부족하다
+3. 조각마다 "바로 위에 있는 표제"를 찾아 귀속시킨다
+4. 같은 표제를 가진 조각끼리 합치면 그게 뷰다</code></pre>
+
+<table>
+  <tr><th>장치</th><th>왜</th><th>튜닝 값</th></tr>
+  <tr><td>표제 최소 글자 높이</td><td>부재 방향 라벨(h=0.30)이 표제로 잡히면 뷰를 훔쳐간다</td><td><code>minHeight</code> — 도면의 글자 높이 분포를 먼저 세어본다</td></tr>
+  <tr><td>표제 세로 여유</td><td>크게 잡으면 옆 표제가 뷰를 통째로 가져간다 (0.6m→0.2m로 해결)</td><td><code>ySlack</code></td></tr>
+  <tr><td>상세도·재료표도 표제 후보에 넣기</td><td>자기 조각을 가져가므로 뷰로 새어들지 않는다. 뷰가 아닌 표제에 귀속된 조각은 버린다</td><td>—</td></tr>
+  <tr><td>시트 영역 밖 버리기</td><td>유령 기하와 블록 로컬 좌표가 bbox·축척을 깨뜨린다</td><td><code>sheet: {x0,x1,y0,y1}</code></td></tr>
+</table>
+
+<div class="callout warn">
+  <span class="t">다중 시트 <span class="badge b-bad">가설</span> · 축척 혼재 <span class="badge b-ok">검증</span></span>
+  현재 <code>sheet</code>는 사각형 하나다. 도면이 여러 장으로 나뉘어 각각 다른 좌표대에 있으면
+  <b>배열로 확장</b>하고 시트별 오프셋을 둬야 한다. 대상 도면은 4매가 한 좌표대에 있어 필요 없었고,
+  교량 삽도도 도형이 한 덩어리라 필요 없었다(빈 시트 테두리가 옆에 하나 더 있었지만 유령이다).
+  <br><b>축척 혼재는 실재한다.</b> 같은 삽도 묶음 안에서 교량폭원은 1:1인데
+  중앙분리대 방호벽 단면은 5.805배였다. <code>unitMm</code>을 뷰 스펙에 두는 것으로 해결했다.
+</div>
+
+<div class="callout ok">
+  <span class="t">DWG를 뷰별로 미리 쪼개지 마라 <span class="badge b-ok">검증</span></span>
+  "뷰마다 별도 파일로 나누면 편하지 않나"는 손해다. 가장 큰 이득이었던
+  <b>"모든 단면이 같은 표고선에 맞춰 배치돼 있다"</b>는 한 모델스페이스에 함께 있어야만 성립한다.
+  분리하면 3D 정합의 절반을 버린다. 절단기호 ↔ 단면 매핑도 끊긴다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s4"><span class="num">4</span>절차 — 11개 게이트</h2>
+
+<p><b>3D부터 세우면 어디가 틀렸는지 알 수 없다.</b> 아래 순서를 건너뛰지 않는다.
+각 게이트는 통과 기준이 있고, 실패하면 그 자리에서 멈춘다.</p>
+
+<table>
+  <tr><th>게이트</th><th>통과 기준</th><th>실패 시 도구</th><th>대표 함정</th></tr>
+  <tr>
+    <td><b>G0</b> 백엔드 준비</td>
+    <td>모델링 명령이 <b>등록</b>돼 있는가 (연결 여부가 아니다)</td>
+    <td><code>egm guide</code> 개수 — 39면 뷰어 모드</td>
+    <td>파이프는 살아 있고 <code>status</code>도 정상인데 생성만 조용히 실패</td>
+  </tr>
+  <tr>
+    <td><b>G1</b> 파싱·시트</td>
+    <td>엔티티 수가 나오고, 시트 밖 좌표가 걸러졌는가</td>
+    <td><code>inspect</code> — 레이어 무관 전수</td>
+    <td>유령 기하 · INSERT 블록 로컬 좌표 · <b>캐시 파일명 슬러그 충돌</b></td>
+  </tr>
+  <tr style="background:#1d2a22">
+    <td><b>G1.5</b> 도면 적격 <span class="kbd">신규</span></td>
+    <td><b>표기 치수가 숫자인가</b>(기호 <code>L·β·θ·VAR</code> 비율) · <b>모델단위·축척이 확정되는가</b> · 구조 윤곽이 닫히는가</td>
+    <td>치수 텍스트 분류 계수 · <code>DIMENSION.actualMeasurement</code> ↔ 치수 글자 대조 · <code>gaps</code>의 「선 없음」 비율</td>
+    <td>기호 치수뿐이라 <b>대조할 상대가 없다</b> · 단위가 1000배 · 구성 도해라 애초에 안 닫힌다</td>
+  </tr>
+  <tr>
+    <td><b>G2</b> 기준점</td>
+    <td>도면 치수 <b>2개 이상</b>과 일치. <b>기준선이 없는 도면이면 「해당 없음」으로 명시</b>하고 검증을 G5로 미룬다</td>
+    <td><code>datum.checks</code> 확장 · <code>datum.mode:'none'</code> + 뷰별 <code>v0</code></td>
+    <td>텍스트 위치로 잡음(713mm) · 계획고 후보 둘(420mm) · <b>기준선이 아예 없는데 아무거나 자동 선택</b></td>
+  </tr>
+  <tr>
+    <td><b>G3</b> 뷰 분리</td>
+    <td>뷰 폭·높이가 도면 표기와 일치. 서로 다른 뷰의 심도가 같게 나오는가</td>
+    <td>임계값·<code>minHeight</code> 조정 → 안 되면 <code>viewBoxes</code>(명시 영역)</td>
+    <td>이웃 뷰 혼입(폭 부풀음) · 뷰 잘림(하단 누락) · <b>제목 없음/중복</b> · <b>테두리 상자가 뷰를 이어 조각이 1개</b></td>
+  </tr>
+  <tr>
+    <td><b>G4</b> 평면·앵커·flip</td>
+    <td>비대칭 특징 좌표가 다른 뷰와 일치 (2개 이상). <b>뷰별 축척이 다르면 여기서 확정</b>한다 — 표기 치수 2개로 역산</td>
+    <td>3.3 절차 · <code>viewBoxes[뷰].unitMm</code></td>
+    <td>수평 단면의 세로축을 Z로 봄 · 평면도 <code>v0</code> 누락 · <b>도형마다 축척이 다름</b></td>
+  </tr>
+  <tr>
+    <td><b>G5</b> 프로파일 품질</td>
+    <td><b>자기교차 0</b>. 꼭짓점 수가 예상과 맞는가. 끊김의 원인이 분류됐는가.
+        <b>폐곡선의 폭·높이가 도면 표기와 맞는가</b> — G2를 건너뛴 도면은 여기가 유일한 검증점이다</td>
+    <td><code>gaps</code> · <code>--loops</code> · <code>report</code>(그림)</td>
+    <td>개구 기호가 링 오염 · 가구(케이블랙) 혼입 · 레이어 오분류 ·
+        <b>끊김 0인데 폐곡선 0</b>(겹치는 동일선상 선분) · <b>윤곽이 진짜로 안 닫힘</b></td>
+  </tr>
+  <tr>
+    <td><b>G6</b> 조립(IR)</td>
+    <td>참조 무결성 · 소모 파트 <code>keep</code> 플래그 · loft 단면 꼭짓점 수 일치</td>
+    <td><code>validateIR</code></td>
+    <td>loft 위상 불일치 · 중간 파트가 최종에 남음</td>
+  </tr>
+  <tr>
+    <td><b>G7</b> 파라미터화</td>
+    <td>등급 분포가 납득되는가. 위상 규칙 위반 0</td>
+    <td><code>fit</code> → <code>params.json</code> · <code>rules</code></td>
+    <td>도면과 끈 없는 값을 파라미터로 올림</td>
+  </tr>
+  <tr>
+    <td><b>G8</b> 좌표 검산</td>
+    <td><code>--dry</code> 출력의 좌표가 예상과 같은가</td>
+    <td>명령 목록 육안 검산</td>
+    <td>압출 방향 미지정 · 단위 환산 누락</td>
+  </tr>
+  <tr>
+    <td><b>G9</b> 생성·부피</td>
+    <td>파트 수 == <code>modelCount</code>. <b>IR 의도 부피 == 실측 부피</b>. 기준선 회귀 통과</td>
+    <td><code>measure --ir</code> · <code>--primitives</code></td>
+    <td>boolean이 인자를 흘림 · 면으로만 맞닿은 union · 커터가 자기 부피보다 많이 뺌</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <span class="t">게이트를 CI로 걸어둔다 <span class="badge b-ok">검증</span></span>
+  G2·G3 단계는 실패 시 <b>exit 1</b>을 낸다. 도면이 갱신될 때마다 자동으로 돌려두면
+  기준점이나 뷰 분리가 깨지는 순간 바로 잡힌다. G9의 기준선 회귀도 마찬가지다.
+</div>
+
+<h3>4.1 새 도면 인테이크에서 실제로 드는 시간</h3>
+
+<table>
+  <tr><th>단계</th><th>사람 판단</th><th>비용</th></tr>
+  <tr><td>파싱 · 끊김 진단 · 폐곡선 추출 · 명령 생성</td><td><b>없음</b></td><td>0 — 도면이 바뀌어도 그대로 돈다</td></tr>
+  <tr><td>레이어 · 뷰 제목 · 앵커 · 기준점 검증항목</td><td>설정값 채우기</td><td>설정 파일 하나. 반나절</td></tr>
+  <tr><td><b>조립 스펙</b></td><td><b>필요 — 여기 한 군데뿐</b></td><td>형상 복잡도에 비례</td></tr>
+  <tr><td>변형 도면(같은 형식, 다른 치수)</td><td>params 값만</td><td><b>도면을 아예 안 읽는다</b></td></tr>
+</table>
+
+<h3 id="s4-read">4.2 그림으로 읽는다 — 기하가 못 주는 의미</h3>
+
+<p><b>기하 파싱은 "이 선이 무엇인지" 모른다.</b> 구체 외곽선인지 치수보조선인지,
+여기가 벽인지 개구인지 좌표만으로는 안 갈린다. 실제로 맨홀 좌측 X=15,400 이
+벽인지 개구인지 <b>선만 보고는 판정이 안 됐다.</b> 사람은 그림을 보면 즉시 안다.</p>
+
+<p>그래서 <b>그림과 좌표를 한 쌍으로 묶는다.</b> 이게 조립(5장) 판단의 재료다 —
+조립이 "사람 판단이 들어가는 유일한 자리"인데, 그 판단을 그림 없이 하면 추측이 된다.</p>
+
+<pre class="flow"><code>          ①캡처                    ②사이드카                ③조회
+도면 ────────────→ 이미지 ──── 픽셀↔좌표 변환 ────→ 프로젝트 mm ────→ 엔티티·링·레이어
+                     ↑                                                      │
+                     └──────────── ④오버레이(추출 결과를 그림 위에) ─────────┘
+
+사람: 이미지에 표시  →  ②로 좌표 확정  →  ③으로 "그 자리에 무슨 엔티티가 있나"</code></pre>
+
+<h4>캡처 규칙 셋</h4>
+<table>
+  <tr><th>규칙</th><th>왜</th></tr>
+  <tr><td><b>전 레이어를 그린다</b></td><td>우리가 <b>버린 것까지</b> 보여야 "왜 안 잡혔나"를 판단한다. 프로파일 레이어는 진하게, 나머지는 흐리게. 파싱이 버리는 ARC·ELLIPSE도 그린다 — 그게 빠진 자리가 보여야 한다</td></tr>
+  <tr><td><b>축척은 지정하고 캔버스를 역산</b></td><td>렌더 결과에서 축척을 되짚으면 여백·DPI·레터박싱 어딘가에서 반드시 어긋난다. 뷰 bbox는 이미 아니까 "5 mm/px"을 <b>정하고</b> 캔버스 크기를 거기서 계산한다 → <code>unitsPerPx</code>가 계산값이 아니라 <b>내가 정한 값</b>이 된다</td></tr>
+  <tr><td><b>사이드카를 같이 떨군다</b></td><td>이미지만 있으면 "여기"를 말로 설명해야 한다. 변환식이 붙어 있으면 <b>픽셀이 곧 좌표</b>가 된다</td></tr>
+</table>
+
+<h4>사이드카 — 그림과 좌표를 잇는 다리</h4>
+<pre><code>{ "view": "단 면 B-B", "kind": "cross",
+  "image": { "w": 1675, "h": 1388 },
+  "originDwg": [-48351.647, 483619.770],   // 이미지 좌상단 픽셀의 도면 좌표
+  "unitsPerPx": 0.004,                     // 내가 정한 값 (역산 아님)
+  "yFlipped": true,                        // 화면 y는 아래로, 도면 y는 위로
+  "datumY": 483623.477,                    // 프로젝트 Z=0
+  "viewLeftDwgX": -48350.447,              // 뷰 좌단 = 로컬 u=0
+  "anchor": { "u0": 2150 },
+  "howTo": [ "dwgX = originDwg[0] + px * unitsPerPx",
+             "dwgY = originDwg[1] - py * unitsPerPx",
+             "u(mm) = round((dwgX - viewLeftDwgX) * 1000)",
+             "z(mm) = round((dwgY - datumY) * 1000)",
+             "프로젝트 좌표 = anchor 적용 (u0/v0/flip/swapUV)" ] }</code></pre>
+
+<div class="callout">
+  <span class="t">핵심 — 사람이 표시한 자리를 엔티티로 되찾는다</span>
+  이 경로가 있어야 협업이 성립한다. 사람이 이미지에서 <b>동그라미 친 자리</b>가
+  픽셀 → 도면 좌표 → 프로젝트 mm 으로 내려가고, 거기서 <b>그 자리의 선분·레이어·소속
+  폐곡선</b>을 찾아낸다. 그래야 "여기 이상하다"가 <b>"레이어 <code>-환기구</code>의 이 선분
+  때문에 링이 안 닫힌다"</b>로 확정된다. 말로 주고받으면 서로 다른 곳을 본다.
+</div>
+
+<h4>지금 되는 것 / 없는 것</h4>
+<table>
+  <tr><th>단계</th><th>수단</th><th>상태</th></tr>
+  <tr><td>① 뷰별 캡처 (SVG·PNG)</td><td><code>capture.mjs</code>. <code>--crop</code>으로 접합부만 확대</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>② 픽셀 → 프로젝트 좌표</td><td>사이드카 <code>.json</code></td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>③ 좌표 → 엔티티 조회</td><td><code>inspect.mjs</code>(뷰 전수) · <code>probe.mjs --ring</code>(링 좌표) — <b>사람이 목록에서 눈으로 찾는다</b></td><td><span class="badge b-warn">거칠다</span></td></tr>
+  <tr><td>③′ <b>점·영역으로 엔티티 집기</b></td><td>"이 좌표 반경 200mm 안의 선분·링·원·개구부를 나열" 하는 도구</td><td><span class="badge b-bad">없다</span></td></tr>
+  <tr><td>④ 추출 결과를 <b>도면 위에</b> 겹쳐 그리기</td><td><code>report.mjs</code>는 링만 따로 그린다. 캡처 위 오버레이는 아니다</td><td><span class="badge b-bad">없다</span></td></tr>
+  <tr><td>3D 결과를 같은 규칙으로 렌더</td><td><code>render.mjs</code> → <code>model-X/Y/Z.svg</code> + 치수선</td><td><span class="badge b-ok">있다</span></td></tr>
+</table>
+
+<p><b>③′와 ④가 다음에 만들 것이다.</b> 둘이 있으면 왕복이 닫힌다 —
+사람이 그림에 표시 → 엔티티 확정 → 설정 한 줄 수정 → 다시 그림으로 확인.
+지금은 ③에서 목록을 눈으로 훑느라 끊긴다.</p>
+
+<blockquote>3D 렌더도 <b>같은 축척 규칙</b>으로 뽑아야 도면과 나란히 놓고 대조된다.
+입면도·측면도 검증(3.2 validator)이 붙는 자리가 여기다.</blockquote>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s5"><span class="num">5</span>조립 스펙(IR) — 사람 판단이 들어가는 유일한 자리</h2>
+
+<h3>5.1 IR 연산</h3>
+<table>
+  <tr><th>op</th><th>필드</th><th>쓰는 곳</th><th>상태</th></tr>
+  <tr><td><code>box</code></td><td><code>min[x,y,z]</code>, <code>max[x,y,z]</code></td><td>순수 직육면체</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><code>extrude</code></td><td><code>profile</code>, <code>axis</code>, <code>from</code>, <code>to</code>, <code>cap</code>, <code>drift</code></td><td>구간 내 단면 불변. <code>drift</code> 면 <b>빗각 기둥</b>(단면이 평면 안에서 미끄러짐)</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><code>loft</code></td><td><code>sections:[{profile, at}, …]</code></td><td>두 지점 사이 단면 선형 변화</td><td><span class="badge b-bad">boolean 금지</span> 결과가 안 닫힌다 → 11.4.6</td></tr>
+  <tr><td><code>intersect</code></td><td><code>members:[id,…]</code></td><td><b>두 방향이 동시에 맞아야 하는 형상</b> — 평면 윤곽 ∩ 정면 윤곽</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><code>cylinder</code></td><td><code>radius</code>, <code>from</code>, <code>to</code></td><td>원형 관통·기둥</td><td><span class="badge b-warn">부분</span> Z축 한정</td></tr>
+  <tr><td><code>union</code></td><td><code>members:[id,…]</code></td><td>봉투 만들기 · 구간 합치기</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><code>difference</code></td><td><code>base</code>, <code>cutters:[id,…]</code></td><td>공동·개구부</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><code>sweep</code></td><td>(측점 기반. 미구현)</td><td>곡선 선형·구배</td><td><span class="badge b-bad">가설</span></td></tr>
+</table>
+
+<h3 id="s5-tree">5.2 연산 결정 트리</h3>
+<pre><code>이 형상을 어떻게 만들까?
+
+┌ 단면이 구간 내내 같은가?
+│   예 → extrude.  압출축 = 단면 평면의 법선
+│   아니오 ↓
+├ 두 지점 사이에서 선형으로 변하는가?
+│   예 → loft.  ★ 꺾이는 자리마다 단면을 놓고 구간을 끊는다
+│   아니오 ↓
+├ 축이 곡선이거나 구배가 있는가?
+│   예 → sweep (미구현). 지금은 구간을 잘게 끊어 loft/extrude로 근사
+│   아니오 ↓
+├ 원형 관통·기둥인가?
+│   예 → cylinder.  지름으로 집는다. 선분과 섞지 않는다
+│   아니오 ↓
+└ 층 구조가 수평 단면들로 주어지는가?
+    예 → 층별 XY 프로파일을 Z로 쌓아 union (조각이 Z로 진짜 겹치게)</code></pre>
+
+<h3>5.3 조립 5원칙</h3>
+
+<div class="grid2">
+  <div class="card">
+    <h4>① 치수로 집는다</h4>
+    <p>순서(<code>loops[0]</code>)로 집으면 도면이 조금만 바뀌어도 조용히 다른 면을 집는다. 면적 순위는 흔들리고 치수는 안 흔들린다. 못 찾거나 여럿이면 <b>예외를 던진다.</b></p>
+    <pre><code>loop('단 면 B-B', 2700, 2750).ring
+circles('평 면 도', 900, /^-전력구$/)
+opening('단 면 H-H', 1200, 2000)</code></pre>
+  </div>
+  <div class="card">
+    <h4>② 꽉 찬 덩어리부터 만든다</h4>
+    <p>외곽선이 <b>오목</b>하면(ㄷ자·계단형) 그대로 압출한 솔리드는 파인 자리가 비어 있다. 그 자리에 벽을 세우려고 공동을 빼도 <b>뺄 재료가 없어</b> 아무 일도 안 일어난다. 파인 면을 따로 압출해 합쳐서 <b>빈 곳 없는 덩어리</b>를 만든 다음에 뺀다.</p>
+    <pre><code>shell = 오목한 외곽 압출
+fill  = 파인 면 압출        ← 폐곡선 추출이 이미 뽑아준 면
+solid = union(shell, fill)  ← 여기서 비로소 꽉 찬다
+body  = solid − 공동들      ← 이제 벽이 남는다</code></pre>
+  </div>
+  <div class="card">
+    <h4>③ 구간은 합친 뒤 한 번만 뺀다</h4>
+    <p>단면이 다른 구간을 각각 빼면 <b>경계에서 반드시 구멍이 난다</b> — 큰 쪽 공동이 여유만큼 작은 쪽으로 넘어가 단차 벽면을 파먹는다. 공동끼리는 전이점에서 겹치지도 벌어지지도 않게 나눈다.</p>
+  </div>
+  <div class="card">
+    <h4>④ 커터는 하나씩, 밖으로</h4>
+    <p>떨어진 커터끼리는 교차하지 않아 union이 죽는다. 커터는 하나씩 먹인다. 대상 면에서 정확히 시작하면 boolean이 불안정해지므로 <b>모든 방향</b>으로 여유(<code>OVER</code>)를 준다.</p>
+  </div>
+  <div class="card">
+    <h4>⑤ 꺾이는 자리마다 단면</h4>
+    <p>loft는 두 단면 <b>사이를 곧게 이을 뿐</b> 꺾인 자리를 만들지 못한다. 꺾이는 좌표가 방향마다 다르면(옆·위 −300, 아래 −100) loft를 또 끊는다. 중간 단면 값은 상수로 박지 말고 <b>내분점을 코드가 계산</b>하게 둔다.</p>
+  </div>
+  <div class="card">
+    <h4>보조: 수직 단차는 저절로 생긴다</h4>
+    <p>앞 구간이 작게 끝나고 뒤 구간이 크게 시작하면 <b>그 차이가 곧 단차 벽면</b>이다. 따로 만들 것이 없다. 종방향 헌치만 별도 쐐기로 되붙인다.</p>
+  </div>
+</div>
+
+<h3>5.4 압출축과 벽 방향 <span class="badge b-ok">검증</span></h3>
+
+<pre><code>YZ 단면을 X축으로 밀면 → Y 방향 벽만 생긴다. X 방향은 열린다
+XZ 단면을 Y축으로 밀면 → X 방향 벽만 생긴다. Y 방향은 열린다</code></pre>
+
+<p>나머지 방향 벽은 두 단면을 교집합할 필요 없이 <b>공동의 압출 범위를 좁혀서</b> 만든다.
+외곽은 전 구간을 채우고 공동만 안쪽으로 줄이면 앞뒤로 벽이 남는다. 공동의 끝이 솔리드
+<b>내부</b>라 면이 겹치지 않아 여유도 필요 없다.</p>
+
+<p><b>단면이 어느 평면인지는 절단 기호가 결정한다.</b> 절단선 양끝 두 점의 x가 같으면 YZ,
+y가 같으면 XZ다. 폭 치수만으로는 구분이 안 되는 경우가 있다(X도 2,600, Y도 2,600).</p>
+
+<h3>5.5 프로파일이 못 쓸 때 — bbox 재구성</h3>
+
+<p>링은 못 믿어도 <b>bbox는 믿을 수 있다.</b> 형상이 직사각형이라는 걸 알면 bbox만으로 복원된다.
+단, <code>expect()</code>를 남겨 도면과의 끈을 유지한다 — 값이 어긋나면 거기서 걸린다.</p>
+
+<pre><code>expect('단 면 H-H', 1200, 2000, '환기 OPEN부 (2.0x1.2)');   // 실재 확인만
+profile('mh.ventHole', 'XY', rect(15800, -500, 17000, 1500)); // 실제 프로파일</code></pre>
+
+<p><b>오목한 외곽은 <code>rect()</code>로 못 만든다.</b> 그때는 X자 교차 분할이 필요하거나,
+수평 단면에서 층별로 다시 세우는 쪽이 낫다.</p>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s6"><span class="num">6</span>파라메트릭화</h2>
+
+<pre class="flow"><code>DWG ──fit──→ params/&lt;이름&gt;.json ──build --params──→ IR ──→ 3D
+              ↑ 사람은 여기만 만진다.   build 는 도면을 안 본다</code></pre>
+
+<div class="callout ok">
+  <span class="t">불변식: build가 도면을 안 본다 <span class="badge b-ok">검증</span></span>
+  이것 하나가 나머지를 거의 다 푼다. 조립이 <code>loop('단 면 B-B', 2700, 2750)</code>처럼
+  <b>치수를 도면 조회 키로</b> 쓰는 한, 사용자가 2700을 3000으로 바꾸면 그런 폐곡선이 없어 예외가 난다.
+  도면에 묶여 있으면 파라메트릭이 성립하지 않는다.
+  <br>검증: <code>views.json</code>을 치운 채 <code>--params</code>로 빌드해 명령 목록이 <b>바이트 단위로 동일</b>했다.
+</div>
+
+<h3>6.1 값 하나의 생김새</h3>
+<pre><code>{
+  "구체_외폭": { "v": 3800, "src": "measured", "from": "단 면 C-C 외곽 폭",
+                "fitted": 3800, "grade": "exact" },
+  "벽두께":    { "v": 400,  "src": "design", "min": 300, "max": 600, "step": 50 },
+  "구체_내폭": { "expr": "구체_외폭 - 2*벽두께" },
+  "샤프트":    [ { "no":1, "x0":1900, "x1":3200 }, { "no":2, … } ]
+}</code></pre>
+
+<table>
+  <tr><th>필드</th><th>뜻</th><th>파생 효과</th></tr>
+  <tr><td><code>src: measured</code></td><td>도면에서 뽑았다</td><td>바꾸면 "도면과 다름" 경고. <b>막지는 않는다</b> — 설계를 바꾸는 게 목적이다</td></tr>
+  <tr><td><code>src: design</code></td><td>사람이 정한다</td><td>자유롭게 바꾼다</td></tr>
+  <tr><td><code>expr</code></td><td>식 → 자동으로 derived</td><td>위상 정렬로 평가. <b>순환이면 예외</b>(구속 솔버가 아니다)</td></tr>
+  <tr><td><code>min/max/step</code></td><td>유효 범위</td><td>검증이자 <b>UI 위젯</b>이 그대로 나온다</td></tr>
+  <tr><td><code>fitted</code></td><td>도면에서 뽑은 원값</td><td>현재값과 비교해 도면 이탈 표시</td></tr>
+  <tr><td>배열</td><td>치수가 아니라 <b>개수</b>가 바뀌는 것</td><td>샤프트 2→3, 환기구 없음</td></tr>
+</table>
+
+<h3>6.2 재현 등급 — 파라미터로 못 만드는 형상 다루기 <span class="badge b-ok">검증</span></h3>
+
+<p>프로파일을 파라미터로 "생성"하면 도면의 실제 형상을 잃는다. 50mm 보도 단차 같은 자잘한 것이
+생성기로 재현이 안 되면 <b>조용히 빠진다.</b> 그래서 완전일치를 요구하지 않고 등급을 매긴다.</p>
+
+<table>
+  <tr><th>등급</th><th>조건</th><th>처리</th></tr>
+  <tr><td><code>exact</code></td><td>꼭짓점 집합이 mm 단위로 일치</td><td>파라미터로 완전 대체</td></tr>
+  <tr><td><code>tolerant</code></td><td>bbox·면적·꼭짓점 수 일치, 개별 점 ±ε</td><td>경고를 남기고 파라미터 사용</td></tr>
+  <tr><td><code>opaque</code></td><td>생성기로 재현 불가</td><td><b>도면 링을 좌표째 얼려</b> params에 박는다</td></tr>
+</table>
+
+<p><code>opaque</code>가 핵심이다. "재현 못 하면 파라미터화 안 한다"가 아니라 <b>"재현 못 하는 링은 값으로
+얼려 넣는다"</b>. 그러면 build가 도면을 안 봐도 되면서 자잘한 형상이 빠지지도 않는다.
+그 링은 못 바꾸는 것일 뿐이고, 그게 정직하다.
+<b>등급 분포가 곧 "이 도면이 얼마나 파라메트릭한가"의 척도다</b>
+(대상 도면: opaque 8 · exact 2 · tolerant 1).</p>
+
+<h3>6.3 파라미터로 올릴 자격 <span class="badge b-ok">검증</span></h3>
+<div class="callout bad">
+  <span class="t">도면과의 끈이 없는 값은 파라미터가 아니다</span>
+  <code>const BORE_R = 450;  // 원본 엔티티에서 눈으로 읽어 적음</code> — 이런 값은 바꿔도
+  <b>도면과 대조할 방법이 없다.</b> 도면이 바뀌어도 안 바뀐다. 먼저 <code>circles()</code>·<code>loop()</code>·
+  <code>opening()</code>으로 도면에서 집게 만들고, 다른 값과 대조해 어긋나면 빌드가 죽게 한 뒤에
+  파라미터로 올린다.
+</div>
+
+<h3>6.4 규칙 층 — 폼과 도구를 가르는 것</h3>
+
+<table>
+  <tr><th>종류</th><th>뜻</th><th>동작</th><th>예</th></tr>
+  <tr><td><b>위상</b> topology</td><td>형상을 만들 수 <b>없게</b> 된다</td><td><b>막는다</b> (exit 1)</td><td>loft 단면 위치 역전 · 벽두께가 절반 초과 · 보어가 벽을 뚫음 · 구간이 안 맞닿음</td></tr>
+  <tr><td><b>설계</b> design</td><td>만들어지지만 기준 미달</td><td>경고. 사람이 판단</td><td>내공 높이 &lt; 2,100 · 토피 &lt; 1,000 · 최소 벽두께 · 개구 Ø600</td></tr>
+</table>
+
+<p>규칙은 <b>부재 종류</b>에 붙는 것이지 도면에 붙는 게 아니다. 도면별 예외가 필요하면
+문턱 자체를 파라미터로 노출한다. 모델러까지 가서 비틀린 면으로 만나는 것보다 훨씬 싸다.</p>
+
+<h3>6.5 편집 UI는 얇다 <span class="badge b-ok">검증</span></h3>
+<pre><code>build --params → emit → run --reset --export → measure --ir → render --dims</code></pre>
+<p>파이프가 이미 CLI 단계 사슬이라 UI가 한 일은 <b>params 편집 + 그 사슬 순서대로 실행</b>뿐이다.
+<code>min/max/step</code>이 그대로 입력 위젯이 됐고 <code>src</code>는 태그, <code>fitted</code>는 변경 표시가 됐다.
+<b>갱신 버튼이 검증을 태워야 도구가 된다</b> — 단순 실행이면 폼이다.</p>
+
+<div class="callout warn">
+  <span class="t">못 박을 것 둘</span>
+  ① <b>모델러에서 직접 편집하지 않는다.</b> 갱신하면 UID가 전부 바뀌어 날아간다. 편집은 params에서만.<br>
+  ② <b>갱신 1회당 씬 초기화 1번.</b> 초기화를 연달아 반복하면 모델러 파이프가 죽는다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s7"><span class="num">7</span>검증 체계</h2>
+
+<h3>7.1 의도와 결과를 따로 잰다 <span class="badge b-ok">검증</span></h3>
+
+<p>부피가 이상할 때 물어야 할 것은 둘이다. 이걸 못 가르면 엉뚱한 데를 판다 —
+실제로 손으로 기대값을 세 번 조립했는데 세 번 다 커터 범위를 놓쳐 틀렸고,
+그 값으로 모델러를 의심하며 시간을 버렸다.</p>
+
+<pre><code>우리 조립(IR)이 틀렸나?         ← 의도 : IR을 격자로 CSG 평가 (모델러 없이)
+백엔드가 IR대로 안 만들었나?     ← 결과 : OBJ 삼각형을 발산 정리로 실측
+
+파트                    부피 m³     IR 의도       차이
+전력구_구체             100.5403   100.5350     0.0053 ✓
+맨홀2_구체               65.3577    74.6819    −9.3242 ✗  ← 여기만 백엔드가 흘렸다</code></pre>
+
+<p>격자 평가는 25mm 격자에서 0.1% 안팎이라 소수 셋째 자리는 못 보지만,
+<b>boolean이 죽는 사고는 언제나 m³ 단위로 어긋나므로 충분하다.</b></p>
+
+<div class="callout warn">
+  <span class="t">「의도」를 재는 쪽이 <b>근사면 대조가 무너진다</b> <span class="badge b-ok">검증</span></span>
+  IR을 격자로 평가하던 방식은 <b>얇은 부재에서 몇 %가 틀린다.</b> 25mm 격자로 두께 240을 재면
+  셀 중심이 10개 잡혀 <b>250 두께</b>로 계산된다(+4.2%). 교량 상부공 바닥판(240)·마모층(50)·
+  방호울타리에서 그대로 나왔고, <b>멀쩡한 모델 6파트 중 5개에 ✗가 찍혔다.</b>
+  같은 부재 3기가 서로 다른 값(8.4625 / 8.7125 / 8.4625)으로 나온 것도 격자 정렬 탓이다.
+  <br><b>대응:</b> boolean이 없으면 격자를 안 쓴다 — <code>box</code>는 변의 곱,
+  <code>extrude</code>는 신발끈 면적 × 길이, <code>loft</code>는 심프슨(꼭짓점 선형 보간이면
+  단면적이 2차식이라 <b>정확</b>), <code>union</code>은 멤버 bbox가 안 겹치면 합.
+  전부 <code>0.0000 ✓</code>로 떨어졌다. 출력에 <b>해석/격자</b>를 같이 찍는다.
+  <br><b>교훈:</b> 검사기가 거짓 경보를 내면 사람이 ✗를 무시하게 되고, 그때 진짜 사고가 지나간다.
+</div>
+
+<h3>7.2 이상 신호 우선순위</h3>
+
+<table>
+  <tr><th>#</th><th>신호</th><th>확정력</th><th>뜻</th></tr>
+  <tr><td>1</td><td><b>자기교차 링</b></td><td>확정</td><td>그 자체가 결함. 압출하면 솔리드가 쓰레기가 되고 이후 boolean이 <b>조용히</b> 무력화된다</td></tr>
+  <tr><td>2</td><td><b>커터가 자기 부피보다 많이 뺌</b></td><td>확정</td><td>물리적으로 불가능 → boolean이 죽었다. 형상 논쟁이 필요 없다</td></tr>
+  <tr><td>3</td><td><b>파트 수 ≠ modelCount</b></td><td>확정</td><td>boolean이 인자를 흘렸다. 남은 커터가 겹쳐 있어 <b>겉보기엔 멀쩡하다</b></td></tr>
+  <tr><td>4</td><td>IR에 없는 그룹이 결과에 등장</td><td>확정</td><td>3과 같은 사고인데 어느 커터가 남았는지까지 알려준다</td></tr>
+  <tr><td>5</td><td>뷰 폭·높이 ≠ 도면 치수</td><td>강함</td><td>뷰 분리 또는 앵커 문제</td></tr>
+  <tr><td>6</td><td>꼭짓점 수 이상</td><td>의심</td><td>4=정상 사각형 · 8=개구 기호 오염 · 114=가구 혼입 · 10=헌치 있는 정상</td></tr>
+  <tr><td>7</td><td>의도 vs 실측 부피 차</td><td>강함</td><td>차이가 일정하면 union 조각 손실, 커터마다 다르면 커터 문제</td></tr>
+  <tr><td>8</td><td>기준선 회귀 실패</td><td>강함</td><td>이전에 사람이 확인한 형상이 바뀌었다</td></tr>
+  <tr><td>9</td><td>열린 변(비다양체)</td><td>참고</td><td>이음매 T 정점. 부피·렌더링은 정상이나 IFC에서 걸릴 수 있다</td></tr>
+</table>
+
+<h3>7.3 기대값은 자동으로 안 나온다 — 그리고 그게 맞다</h3>
+<p>커터는 관통을 확실히 하려고 대상 밖으로 튀어나와 있고 공동끼리 겹치기도 한다. 그래서
+<code>Σ멤버</code>도 <code>base − Σ커터</code>도 틀린 값이 된다. <b>틀린 기대값은 기대값이 없는 것보다 나쁘다.</b>
+새 형상의 기대값은 원시 파트 부피표를 재료로 사람이 한 번 조립하고, 맞으면 기준선으로 얼린다.</p>
+
+<p>두 단면 사이 면적은 t의 2차식이므로 심프슨 <code>V = L·(A0 + 4·A(½) + A1)/6</code>이
+<b>근사가 아니라 정확</b>하다. loft 검산에 그대로 쓴다.</p>
+
+<div class="callout ok">
+  <span class="t">기준선은 커밋한다</span>
+  <code>baselines/&lt;도면&gt;.volumes.json</code>은 <code>out/</code>과 달리 재생성으로 복구되지 않는다.
+  <b>사람이 한 번 확인한 부피</b>가 남아 있어야 다음 변경이 형상을 건드렸는지 알 수 있다.
+</div>
+
+<h3>7.4 그림으로 보는 검증 <span class="badge b-ok">검증</span></h3>
+<ul>
+  <li><b>추출 결과 뷰어</b> — 뷰별 링을 SVG로 그리고 자기교차·꼭짓점 수·원·IR·부피를 한 장에. 숫자로 반나절 걸린 원인이 <b>그림에서는 빨간 X 두 개로 즉시</b> 보였다.</li>
+  <li><b>도면 캡처 + 좌표 사이드카</b> — 픽셀↔도면 좌표 변환을 JSON으로 같이 떨군다. 이미지에서 짚은 지점이 곧 프로젝트 좌표가 된다.</li>
+  <li><b>3D 정투영 렌더</b> — 만든 모델을 X·Y·Z로 투영. <b>입면도·측면도 대조가 여기 붙는다</b>(3.2의 validator 역할).</li>
+  <li><b>치수선 렌더</b> — 파라미터를 가리키는 치수선을 렌더에 얹는다. 2D 도면이 치수로 형상을 증명하듯이.</li>
+</ul>
+
+<div class="callout bad">
+  <span class="t">뷰어는 조립과 <b>같은</b> 변환 함수를 써야 한다</span>
+  뷰어가 자기 변환을 따로 가지면 보여주는 것과 조립되는 것이 갈라진다.
+  <b>거짓말하는 뷰어는 없는 것보다 나쁘다.</b> 캡처 변환도 역산하지 말고
+  "뷰 박스를 지정하고 캔버스를 축척에서 역산"한다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s8"><span class="num">8</span>함정 사전</h2>
+
+<p>전부 실제로 밟은 것이다. 증상 → 원인 → 대응 순.</p>
+
+<h3>8.1 도면·데이터</h3>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>bbox·축척이 통째로 이상</td><td>유령 기하가 먼 좌표대에 있다</td><td><code>sheet</code> 영역 밖을 먼저 버린다</td></tr>
+  <tr><td>원점 근처 뷰에 남의 원이 무더기</td><td>INSERT 블록 <b>로컬 좌표</b></td><td>같은 시트 필터로 거른다</td></tr>
+  <tr><td>뷰가 통째로 빠진다</td><td>구조 외곽선이 뷰마다 <b>다른 레이어</b>에 있다</td><td>후보 레이어를 넉넉히. <code>struct</code>는 넓게</td></tr>
+  <tr><td>프로파일 꼭짓점이 100개 넘음</td><td>케이블랙·철근 같은 <b>가구</b>가 섞임</td><td><code>body</code>는 좁게. <code>struct</code>와 분리</td></tr>
+  <tr><td>폐곡선이 안 닫힘</td><td>대부분 <b>레이어 오분류</b>(선은 있다)</td><td>진단 도구로 "오분류 / 누락"을 가른다 — <b>대응 비용이 100배 차이</b>난다</td></tr>
+  <tr><td>기존 닫힌 폴리라인이 쓸모없음</td><td>전부 해치·심볼 조각</td><td>기대하지 말 것. 좌표만 뽑아 새로 만든다</td></tr>
+  <tr><td>치수 정의점이 0으로 옴</td><td>파서 한계</td><td><code>actualMeasurement</code>·<code>textMidPt</code>는 정상. <code>DEFPOINTS</code> 활용</td></tr>
+  <tr><td><b>그려진 길이가 실제가 아니다</b></td><td><b>파단선</b>. 기둥이 6,100 으로 그려져 있는데 실제 33,800. 폐곡선·부피가 그럴듯해 <b>숫자로 안 걸린다</b></td><td><code>CS-CUTL</code> 류가 뷰 안에 있으면 의심한다. 생략량은 <b>표고 텍스트 차 − 도형 길이</b> 로 되찾는다</td></tr>
+  <tr><td>한 파일에 도형이 여러 벌 쌓여 있다</td><td>도면집 스택. 제목·치수 없는 잔재가 65,000 간격으로 17벌</td><td>뷰 상자를 눈으로 잡지 말고 <b>도곽 블록에서 계산</b>한다 — INSERT 위치 × scale × 용지(A1 841×594)</td></tr>
+  <tr><td>「단면도」 안쪽 선을 다른 부재로 읽음</td><td><b>절단면이 아니라 투영</b>이다. 먼 쪽 모서리가 겹쳐 보인다</td><td>그 치수가 <code>외곽 − 2×R</code> 로 떨어지면 투영이다</td></tr>
+  <tr><td>평면 모서리가 45° 모따기</td><td>파서가 LWPOLYLINE <code>bulges</code> 를 버려 90° 호가 <b>현 하나</b>로 눌린다</td><td>호 끝점은 정확하므로 R 은 되찾는다. 링 면적을 그대로 쓰면 코너당 71,350 mm² 부푼다</td></tr>
+  <tr><td>구조 형상이 <b>표</b>로 잡힌다</td><td>격자로 보면 평면도가 73행×83열짜리 표다</td><td>표 색인에 레이어 필터(<code>CS-TABL-*</code>)를 준다</td></tr>
+  <tr><td><b>다른 DWG인데 엔티티 수·좌표가 똑같다</b></td><td>파싱 캐시 키 충돌. <b>두 번 다르게 밟았다.</b>
+      ① 슬러그 <code>[^\w.-]→_</code> — <code>\w</code>가 한글을 안 먹어 <code>거더배치·교대배치·교량폭원</code>이 같은 이름이 됐다.
+      ② 고쳐서 쓴 <b>목록 인덱스</b> — 폴더에 파일이 하나 늘자 전부 한 칸씩 밀려 <code>[6]</code>이 옆 도면 캐시를 읽었다</td>
+      <td>캐시 키는 <b>파일 경로 해시</b>. 인덱스는 목록 순서에, 슬러그는 문자 집합에 의존한다.
+      캐시는 <b>틀린 답을 조용히 재사용</b>하므로 "같은 결과가 나온다"를 우연으로 넘기지 말 것</td></tr>
+  <tr><td><b>모든 치수가 정확히 1000배</b></td><td>DWG 모델단위가 <b>도면군마다 다르다</b>. 맨홀군 1단위=1m, 교량 삽도군 1단위=1mm</td><td><code>unitMm</code>을 설정으로. <code>DIMENSION.actualMeasurement</code>와 치수 <b>글자</b>를 비교하면 즉시 확정된다(3000.00 ↔ <code>3.000</code>m)</td></tr>
+  <tr><td><b>도면 표기 치수와 대조가 불가능</b></td><td>유형별 삽도는 치수가 <b>기호</b>다 — <code>L · L1 · β · θ · VAR · n@3,600</code></td><td>숫자 치수 대 기호 치수를 <b>세어서</b> 먼저 판정한다. 기호뿐이면 G2를 통과할 방법이 없으므로 그 도면은 대상에서 뺀다</td></tr>
+  <tr><td><b>구조선과 치수선이 같은 레이어</b></td><td>표준 레이어(<code>CS-CONC-MAJR</code>)에 둘 다 올린 도면이 있다</td><td>레이어 말고 <b>색</b>이 가른다 — <code>colorIndex 0</code>(ByBlock, 치수 블록 안) vs <code>7</code>(ByLayer, 구체). 걸 수 있는 축을 레이어 하나로 두면 안 된다</td></tr>
+  <tr><td><b>뽑힌 형상이 어느 도면에도 없는 조합</b></td>
+      <td><b>한 시트에 날짜 다른 작업본이 겹쳐 그려져 있다.</b> 교량시종점 삽도는 TYPE1~4 한 벌(주황 테두리)과
+      「교량 시·종점 …전면」 한 벌(자홍)이 서로 어긋나게 포개져 있다. 뷰 상자가 그 경계에 걸치면 두 벌이 섞인다</td>
+      <td>시트 <b>전체를 먼저 뜬다</b> → 테두리·표제로 벌을 가른다 → 도형 하나를 떠서 눈으로 확인 → 그 다음 상자.
+      <b>숫자로는 안 걸린다</b> — 폐곡선도 치수도 그럴듯하게 나온다. 날짜 도장은 개정 이력이 아니라 <b>작업본 구분</b>일 수 있다</td></tr>
+  <tr><td><b>같은 뷰에 축척이 다른 도형</b></td>
+      <td>확대 상세가 같은 도형 안에 들어 있다(교좌받침 상세). 가로·세로 배율이 서로 다르기도 하다 — 받침이 153×182 인데 상세에서는 461×196</td>
+      <td>치수로 집으면 저절로 갈리지만 <b>갈렸는지 확인</b>한다. <code>fit()</code> 에 좌표 범위 검사를 넣는다</td></tr>
+  <tr><td><b>같은 부재가 1 mm 다르게 나온다</b></td>
+      <td>DWG 부동소수를 <b>꼭짓점마다 따로</b> 반올림한다. 대칭 배치된 부재에서만 드러난다 (교대 5,192/5,191 · 받침 154/153×3)</td>
+      <td><code>loops(…, tol)</code> 로 열되 기본값은 0. <b>여는 것은 부르는 쪽의 판단</b>이고 1~2 mm 는 형상이 아니라 잡음이라는 뜻이다</td></tr>
+  <tr><td><b>표제·개정 도장이 같은 좌표에 여러 개</b></td><td>개정판을 지우지 않고 겹쳐 둔다(<code>240912/241031/241115</code>)</td><td>기하는 대체로 안 겹친다(중복률 1~10%). 표제 개수로 뷰 수를 세지 말 것</td></tr>
+</table>
+
+<h3>8.2 좌표·뷰</h3>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>Z가 713mm 어긋남</td><td>기준을 <b>텍스트 위치</b>로 잡음</td><td>선에서 잡는다</td></tr>
+  <tr><td>Z가 420mm 어긋남</td><td>계획고 선 후보가 둘(도로/토공)</td><td>라벨 바로 아래 선</td></tr>
+  <tr><td><b>서로 다른 두 표고 라벨이 같은 선을 가리킨다</b></td><td>라벨 y를 <b>평균</b>내는데, 같은 라벨이 도형마다 반복돼 평균이 어느 도형에도 안 속한다. <code>교량 계획고</code>·<code>토공 계획고</code> 10개가 y 27,533~81,177에 흩어져 있었다</td><td>라벨 y를 무리로 끊어보고 <b>둘 이상이면 던진다.</b> 예외가 아니라 그럴듯한 숫자가 나오는 실패라 대조 항목이 없으면 영영 안 잡힌다</td></tr>
+  <tr><td>뷰 폭이 부풀음</td><td>이웃 상세도 조각이 붙어옴</td><td>교대 분할 + 표제 귀속. 상세도도 표제 후보에</td></tr>
+  <tr><td>뷰 하단이 잘림</td><td>부재 방향 라벨이 표제로 잡힘</td><td><code>minHeight</code> 상향</td></tr>
+  <tr><td>좌표가 엉뚱한 값</td><td>수평 단면·평면도의 세로축을 Z로 봄</td><td><code>v0</code>·<code>swapUV</code>. 3.3 절차로 판정</td></tr>
+  <tr><td>면적이 음수 / 면이 뒤집힘</td><td>반전·맞바꿈으로 감김 방향이 반대</td><td>뒤집기 홀수면 링 역순</td></tr>
+  <tr><td><b>임계값을 10mm까지 좁혀도 조각이 1개</b></td><td>상세 확대 <b>테두리 상자</b>(Δy=5,117)가 상세행과 단면행을 세로로 잇는다. 구조선과 같은 레이어·같은 색이라 못 거른다</td><td>임계값 조절을 포기하고 <b>명시 뷰 영역</b>으로 간다. 「간격이 존재한다」는 전제 자체가 깨진 경우다</td></tr>
+  <tr><td><b>같은 제목이 N벌</b> — 뷰가 하나로 뭉침</td><td>유형별 삽도는 사례마다 같은 제목을 붙인다 (<code>단면A</code>×4 · <code>교량 시·종점</code>×6)</td><td>제목은 뷰의 유일 키가 아니다. (제목, 위치) 쌍이거나 명시 영역이 필요하다. 표제 중복률을 먼저 센다 — 7장 전부 47~84%였다</td></tr>
+  <tr><td><b>뷰 제목 자체가 없다</b></td><td>표제가 시트명 하나뿐이고 나머지는 <code>A · B · L of Road</code> 같은 기호</td><td>글자 높이 하한을 어떻게 잡아도 안 나온다. 명시 영역 외에 길이 없다</td></tr>
+  <tr><td><b>도형마다 축척이 다르다</b></td><td>모델스페이스가 1:1이라는 전제가 삽도에서 깨진다. 중앙분리대 방호벽 단면은 <b>5.805배</b>로 그려져 있었다</td><td>배율은 <b>도면 하나가 아니라 뷰마다</b> 받는다. 값은 표기 치수 <b>2개</b>로 역산해 교차검증한다 (높이 7,372.3↔1,270 · 바닥폭 3,393.9↔585, 차이 0.06%)</td></tr>
+</table>
+
+<h3>8.3 프로파일</h3>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>부피가 정확히 <b>2배</b></td><td>개구 기호(X 표시)가 링을 자기교차시킴</td><td>기호를 기하 서명(같은 bbox·반대 기울기 대각선 쌍)으로 걷어낸다. <b>레이어로는 못 거른다</b></td></tr>
+  <tr><td>사람 눈엔 멀쩡한데 안 잡힘</td><td>모서리가 몇 mm 안 닫혀 있다</td><td>bbox → <code>rect()</code> 재구성 + <code>expect()</code></td></tr>
+  <tr><td>재료가 한 덩어리로 뭉침</td><td>경계선 레이어를 추출에서 뺐다</td><td>면이 갈리려면 경계선이 있어야 한다 — 함께 넣고 배정은 나중에</td></tr>
+  <tr><td>폐곡선이 원 윤곽을 따라 돔</td><td>원을 다각형으로 근사해 선분에 섞음</td><td>원은 따로 모아 지름으로 집는다</td></tr>
+  <tr><td>X자 교차가 안 쪼개짐</td><td>평면 분할이 T자 교차만 처리</td><td>기호는 사전 제거. 남으면 X자 분할 추가 필요 <span class="badge b-warn">부분</span></td></tr>
+  <tr><td><b>끊김이 0인데 폐곡선도 0</b></td><td>같은 직선 위에서 <b>겹치는</b> 두 선(끝점은 다르다). 중복 제거는 T자 분할 <b>전에만</b> 돌아서, 분할이 겹친 구간을 양쪽에서 똑같이 잘라 <b>같은 변을 두 벌</b> 만든다 → 반변이 4개가 되어 면 순회가 엉킨다</td><td>T자 분할 <b>뒤에 한 번 더</b> 중복 제거. 증상이 "닫혔는데 안 나온다"라 끊김 진단으로는 절대 안 잡힌다</td></tr>
+  <tr><td><b>폭·높이만 틀리고 면적은 맞다</b></td>
+      <td>끝이 아무 데도 안 닿는 <b>매달린 변</b>이 있으면 면 순회가 거기까지 갔다 되돌아온다. 왕복이라 면적은 0 인데 bbox 는 부푼다.
+      게다가 bbox 를 <b>collinear 제거 전</b> 링으로 재고 있었다 (상부공 폭 12,752 → 12,951)</td>
+      <td>bbox 는 collinear 를 뺀 링으로 잰다. <code>area</code> 만 보면 절대 못 잡는다</td></tr>
+  <tr><td><b>진단 도구와 본편이 다른 값</b></td>
+      <td>진단 도구가 <code>projectViews</code> 를 안 거치고 <code>buildLoops</code> 를 직접 불렀다 — 개구 기호 제거·앵커·평면 변환이 빠진다</td>
+      <td>본편과 <b>같은 함수</b>를 쓴다. 다르면 도구를 못 믿게 되고, 그 순간 검증 체계 전체가 죽는다</td></tr>
+  <tr><td><b>윤곽이 진짜로 안 닫혀 있다</b></td><td>구성 도해(폭원·배치)는 <b>닫힌 단면을 그리지 않는다</b>. 띠와 열린 외곽선만 있다</td><td>끊김 원인 분류에서 <b>「선 없음」 비율</b>을 본다. 교량폭원은 56곳 중 54곳이 그랬다 — 설정으로 못 고친다. 그 도면은 솔리드 대상이 아니다</td></tr>
+</table>
+
+<h3>8.4 조립</h3>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>전 구간이 같은 단면으로 나옴</td><td>횡단면 하나를 전체에 압출</td><td>종단면이 <b>구간 배정표</b>다. 수평선을 Z 내림차순 × X 범위로 읽는다</td></tr>
+  <tr><td>안이 들여다보임</td><td>한 평면 단면만 압출해 반대 방향 벽이 없다</td><td>공동의 압출 범위를 좁혀 벽을 남긴다</td></tr>
+  <tr><td>구간 경계에 구멍</td><td>구간별로 따로 difference</td><td>몸통을 union한 뒤 한 번만 뺀다</td></tr>
+  <tr><td>union이 예외로 죽음</td><td>떨어진 커터끼리 union 시도</td><td>커터는 하나씩. union하는 건 "구간 몸통"이지 커터가 아니다</td></tr>
+  <tr><td>커터가 46 m³를 파먹음</td><td>커터를 대상 <b>바깥면에서</b> 시작</td><td>모든 방향으로 <code>OVER</code> 여유</td></tr>
+  <tr><td>difference가 조각을 통째로 흘림</td><td><b>면으로만 맞닿은</b> 솔리드를 union</td><td>부피로 겹치게 만든 뒤 union. 단 <b>압출축 방향으로만</b> 늘린다 (통째로 부풀리면 더 나빠진다)</td></tr>
+  <tr><td>같은 커터 재사용 실패</td><td>boolean이 피연산자를 소모</td><td>조각 수만큼 커터를 따로 만든다. 안 겹치는 조각엔 아예 넣지 않는다</td></tr>
+  <tr><td>경사면 하나가 끝까지 올라감</td><td>loft로 두 번 꺾으려 함</td><td>꺾이는 자리마다 단면. 방향별로 꺾이는 좌표가 다르면 또 끊는다</td></tr>
+  <tr><td>loft 면이 비틀림</td><td>두 단면의 시작 꼭짓점이 어긋남</td><td>링 정규화(반시계 · v최소→u최소 시작) + 꼭짓점 수 일치 강제</td></tr>
+  <tr><td>loft가 부풂</td><td>단면 3개 이상 → 스플라인 보간</td><td>2단면씩. 결과 정점에 <b>중간 행이 없으면</b> 직선 룰드다</td></tr>
+  <tr><td><b>두 번째 도면의 build가 위상 위반으로 죽음</b></td><td>설계 규칙이 <b>첫 도면의 파라미터 이름</b>에 묶여 있다. 없는 값이 <code>undefined</code>로 비교돼 전부 실패로 떨어진다</td><td>규칙에 <code>needs</code>(요구 파라미터)를 붙여 <b>해당 없으면 건너뛴다</b>. 규칙 층은 "도면 고유값 없음"을 자처했지만 실제로는 지켜지지 않았다</td></tr>
+</table>
+
+<h3>8.5 백엔드(모델러)</h3>
+<p><b>백엔드 특이사항은 전부 <code>emit/</code> 안에 가둔다.</b> 아래는 EGModeler 사례지만,
+다른 툴로 바꿔도 같은 성격의 함정이 그 자리에 온다.</p>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>명령이 <b>조용히</b> 무시됨, <code>created:[]</code></td><td>뷰어 모드라 모델링 명령이 등록조차 안 됐다</td><td>작업 <b>시작 전</b>에 등록 명령 개수 확인. 연결 정상 ≠ 모델링 가능</td></tr>
+  <tr><td>커터 8개가 씬에 남음</td><td>boolean이 <b>이항</b>이다 — 셋 이상은 무시</td><td>둘씩 접는다. <code>modelCount</code> 대조로 즉시 잡힌다</td></tr>
+  <tr><td>압출이 엉뚱한 방향</td><td>Cap 단독은 항상 +Z로 민다</td><td>항상 방향을 명시. Cap 플래그는 방향 지정 <b>앞</b>에</td></tr>
+  <tr><td>서피스가 나옴</td><td>loft 기본이 서피스</td><td>Cap으로 막아 솔리드. 원본 삭제 플래그는 건드리지 않는다</td></tr>
+  <tr><td><b>부피는 맞는데 boolean 이 샌다</b></td><td><b>loft 결과가 안 닫힌다.</b> Cap 을 덧대도 4각형 단면조차 열린 변 12개. 발산 정리 부피는 정확해서 <b>부피 검사로는 절대 안 걸린다</b></td><td>loft 를 boolean 인자로 쓰지 않는다. 단면이 평행이동만 하면 <b>자유방향 압출</b>(<code>drift</code>)로 대체 — 그건 닫힌다. → 11.4.6</td></tr>
+  <tr><td>이후 명령이 전부 무시</td><td>선택 명령을 안 닫음</td><td>Esc로 닫는다</td></tr>
+  <tr><td>파일이 안 생기는데 오류도 없음</td><td>경로의 <code>_</code>가 스크립트 특수문자</td><td>큰따옴표 필수 + <b>파일 존재·mtime을 직접 확인</b></td></tr>
+  <tr><td><b>씬 초기화 명령이 조용히 무시됨</b></td><td>뷰 조작 명령을 <code>~</code> 접두로 보내 <b>끝나지 않는 상태</b>로 물렸다. <code>status.command</code>가 그 이름으로 남는다</td><td>명령 상태를 매번 확인. 접두 없는 <code>Esc</code>로 푼다. <b>연결 정상 ≠ 명령 수용</b>은 뷰어 모드 말고 여기서도 성립한다</td></tr>
+  <tr><td>파이프가 죽음(프로세스는 살아 있음)</td><td>씬 초기화 반복</td><td>초기화는 갱신당 1회. 죽으면 재시작 외에 방법 없다</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s9"><span class="num">9</span>새 도면 인테이크 워크시트</h2>
+
+<h3>9.1 채워야 할 것 (순서대로)</h3>
+<ol class="chk">
+  <li><b>도면 적격 판정</b> <span class="kbd">먼저</span> — 표기 치수를 <b>숫자형/기호형으로 세고</b>, 구조 윤곽이 닫히는지 본다. 기호뿐이거나 안 닫히면 <b>솔리드 대상이 아니다.</b> 여기서 걸러야 나머지 아홉 항목을 헛되이 채우지 않는다</li>
+  <li><b>모델단위</b> — <code>DIMENSION.actualMeasurement</code> ↔ 치수 <b>글자</b>를 비교해 <code>unitMm</code> 확정. 도면군마다 다르다</li>
+  <li><b>구조물 종류·좌표계 선언</b> — X·Y·Z 방향과 원점을 문장으로</li>
+  <li><b>시트 영역</b> — 전체 좌표 분포를 히스토그램으로 보고 유령 기하를 가른다</li>
+  <li><b>레이어 4갈래</b> — <code>struct</code>(넓게) / <code>body</code>(좁게) / <code>material</code> / <code>ground</code>. <code>body ⊆ struct</code>.
+      <b>레이어가 구조선과 치수선을 안 가르면</b> 색·선종으로 거른다(<code>entityFilter</code>)</li>
+  <li><b>표제 글자 높이 분포</b> — 시트명 / 뷰 제목 / 부재 라벨의 h를 세어 <code>minHeight</code> 결정.
+      <b>표제 중복률도 같이 센다</b> — 높으면 제목으로 뷰를 못 가른다</li>
+  <li><b>뷰 목록</b> — 제목 → <code>{plane, flip, role}</code>. 단면은 절단 기호 좌표로 평면 판정.
+      제목이 없거나 중복이면 <code>viewBoxes</code>로 좌표를 짚는다</li>
+  <li><b>기준점</b> — 라벨 정규식 + 도면 치수 검증 2개 이상. <b>기준선이 없으면 <code>mode:'none'</code></b>으로 명시하고 검증을 G5로 미룬다</li>
+  <li><b>앵커</b> — 뷰별 <code>u0/v0/flip/flipV/swapUV</code><b>/unitMm</b>. 비대칭 특징으로 교차검증.
+      축척이 다르면 표기 치수 <b>2개</b>로 역산해 교차검증한다</li>
+  <li><b>구간 배정표</b> — 종방향 뷰에서 X 범위 × 단면 대응</li>
+  <li><b>조립 스펙</b> — 5장의 결정 트리와 5원칙</li>
+  <li><b>규칙</b> — 이 부재 종류의 위상 규칙 · 설계 기준</li>
+</ol>
+
+<h3>9.2 설정 파일 스켈레톤</h3>
+<pre><code>export default {
+  name: '&lt;도면이름&gt;',
+  dwg: path.join(DRAWINGS_SRC, '&lt;파일&gt;.dwg'),
+
+  // 이 밖의 좌표는 버린다 (유령 기하 · 블록 로컬 좌표)
+  sheet: { x0: …, x1: …, y0: …, y1: … },
+
+  // DWG 1단위가 몇 mm인가. **도면군마다 다르다** (맨홀군 1000, 교량 삽도군 1).
+  // DIMENSION.actualMeasurement 와 치수 글자를 비교해 확정한다.
+  unitMm: 1000,
+
+  // 레이어로 못 가르는 것을 거른다. colorIndex 0 = ByBlock = 치수 블록 안.
+  // 구조선과 치수선이 같은 레이어인 도면에서만 쓴다.
+  entityFilter: (e) =&gt; (e.entityHeader?.colorIndex ?? -1) === 7,
+
+  layers: {
+    struct:   /…/,   // 뷰 분리용. 넉넉하게 — 가구·주기가 들어가도 된다
+    body:     /…/,   // 프로파일용. 좁게 — 가구가 섞이면 링이 오염된다
+    material: /…/,   // 기초·잡석 등 별개 재료. 추출엔 함께 넣는다
+    ground:   /…/,   // 기준선(계획고·GL·FL) 검출용
+  },
+
+  titles: {
+    minHeight: 0.32,             // 부재 라벨과 뷰 제목을 가르는 글자 높이
+    views: {
+      '평 면 도':  'plan',        // → XY
+      '단 면 A-A': 'long',        // → XZ  (절단 기호 두 점의 y가 같다)
+      '단 면 B-B': 'cross',       // → YZ  (두 점의 x가 같다)
+      '단 면 H-H': 'horizontal',  // → XY  (다른 단면 위에 찍힌 수평 절단)
+      // 입면도·측면도를 넣을 때: 평면은 XZ/YZ지만 role은 validator다.
+      // 절단면이 아니므로 여기서 프로파일을 뽑아 압출하면 안 된다.
+    },
+  },
+
+  segment: { gap: 0.2, xTol: 0.5, ySlack: 0.2 },   // 단위는 DWG 단위다 (unitMm 에 맞춘다)
+
+  // 제목이 없거나 중복이면 **좌표로 짚는다**. titles.views 와 둘 중 하나만 쓴다.
+  // y 값은 눈대중이 아니라 구조선 좌표 뭉치의 경계에서 뽑고, 상자는 그 빈틈 안에 둔다.
+  viewBoxes: {
+    '&lt;뷰&gt;': { box: [x0, y0, x1, y1], kind: 'cross',
+              unitMm: 1 / 5.805 },   // 도형마다 축척이 다르면 여기서 준다
+  },
+
+  datum: {
+    mode: 'none',                // 기준선이 도면에 없을 때. 표고는 뷰별 v0 가 준다
+    levelLabel: /…/,             // 기준선 후보를 좁히는 힌트. 값은 선에서
+    checks: [                    // 최소 2개. 도면에 적힌 치수 그대로
+      ['&lt;설명&gt;', (v) =&gt; v['&lt;뷰&gt;']?.layerZ['&lt;레이어&gt;']?.[1], -0000],
+    ],
+  },
+
+  frame:  { x: '…', y: '…', z: '…', origin: '…' },
+
+  anchors: {                     // 유도하고 교차검증한다. 지어내지 않는다
+    '평 면 도':  { u0: …, v0: … },        // 평면도도 v0가 필요하다
+    '단 면 B-B': { u0: … },                // 수직 단면은 v가 이미 표고
+    '단 면 H-H': { u0: …, v0: …, swapUV: true },
+  },
+
+  expectExtents: { '&lt;뷰&gt;': [폭, 높이] },   // 분리 자동 확인
+
+  fit({ loop, circles, opening, expect }) {
+    // 도면을 보는 **유일한** 통로. 여기서 params.json이 나온다
+    expect('&lt;뷰&gt;', 폭, 높이, '왜 이게 있어야 하는가');
+    return { params: { … }, rings: { … } };
+  },
+
+  assemble({ p, ring, profile, part, rect }) {
+    // 도면 조회 도우미를 주지 않는다 — 주면 다시 도면에 묶인다
+  },
+};</code></pre>
+
+<div class="callout warn">
+  <span class="t">현재 구조의 알려진 거친 부분</span>
+  뷰 하나의 서술이 <code>titles.views</code>(평면)와 <code>anchors</code>(앵커) <b>두 곳에 흩어져</b> 있다.
+  3장의 모델대로 <code>{ plane, u0, v0, flip, flipV, swapUV, role }</code> 한 덩어리로 합치는 것이 맞다.
+  뷰 종류를 늘리는 작업(입면도·측면도)을 시작하기 전에 정리하는 편이 싸다.
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s10"><span class="num">10</span>도면 작성자에게 요청할 것</h2>
+
+<p>효과 대비 비용이 큰 순서. <b>1번 하나로 검출 로직 전체가 사라진다.</b></p>
+
+<table>
+  <tr><th>요청</th><th>없앨 수 있는 것</th><th>비용</th></tr>
+  <tr><td><b>레이어 <code>3D-ORIGIN</code>에 뷰마다 기준점 POINT 하나</b></td><td>기준점 검출 · 앵커 유도 · 텍스트/선 혼동 사고 전부</td><td>뷰당 클릭 한 번</td></tr>
+  <tr><td>구조체 외곽선 레이어 통일</td><td>레이어 오분류 진단(끊김 50곳 중 20곳이 이것이었다)</td><td>낮음</td></tr>
+  <tr><td>개구 기호를 별도 레이어로</td><td>자기교차 링 · bbox 재구성 우회</td><td>낮음</td></tr>
+  <tr><td>가구(케이블랙·철근)를 구조 레이어에서 분리</td><td><code>body</code>/<code>struct</code> 이중 정의</td><td>낮음</td></tr>
+  <tr><td>시트 영역 밖 기하 정리</td><td>유령 기하 필터</td><td>낮음</td></tr>
+  <tr><td>뷰 제목 표기·글자 높이 규약</td><td>표제 임계값 튜닝</td><td>낮음</td></tr>
+  <tr><td>단면 절단 기호를 <b>모든</b> 단면에 표기</td><td>평면 판정을 제목 추측에 의존하는 것</td><td>낮음</td></tr>
+</table>
+
+<blockquote>도면을 뷰별 파일로 <b>쪼개달라고 하지는 말 것.</b> 표고 정합과 절단기호 매핑을 같이 잃는다(3.4).</blockquote>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s11t"><span class="num">11</span>구조물 유형별 차이</h2>
+
+<p>1~4장(정렬 · 뷰 · 게이트)과 7장(검증)은 <b>구조물이 뭐든 안 바뀐다.</b>
+바뀌는 것은 <b>좌표 기준</b>과 <b>쓰는 연산</b>이다.</p>
+
+<table>
+  <tr><th></th><th>선형 토목<br><span class="kbd">전력구·터널·도로</span></th><th>교량</th><th>점형 토목<br><span class="kbd">맨홀·수조·기초</span></th><th>건축</th></tr>
+  <tr><td><b>좌표 기준</b></td><td>중심선 + 계획고</td><td><b>선형(측점) + 받침</b><br>둘로 나뉜다</td><td>구조물 외면 + GL</td><td>그리드 통심선 + FL</td></tr>
+  <tr><td><b>주 연산</b></td><td>extrude · loft</td><td>sweep · loft · 프리미티브 · revolve</td><td>extrude · 프리미티브</td><td>extrude (층별)</td></tr>
+  <tr><td><b>구간 배정 뷰</b></td><td>종단면</td><td><b>측면도(일반도)</b></td><td>없음 — 단면이 하나</td><td>층 평면도</td></tr>
+  <tr><td><b>반복 단위</b></td><td>구간</td><td>경간 · 거더 · 말뚝</td><td>—</td><td>층 · 스팬</td></tr>
+  <tr><td><b>상태</b></td><td><span class="badge b-ok">검증</span></td><td><span class="badge b-warn">부분</span></td><td><span class="badge b-ok">검증</span></td><td><span class="badge b-bad">가설</span></td></tr>
+</table>
+
+<h3 id="s11-bridge">11.0 실증 결과 — 교량 도면 7장에서 실제로 일어난 일 <span class="badge b-ok">검증</span></h3>
+
+<div class="callout warn">
+  <span class="t">먼저: <b>대상이 예상과 달랐다</b></span>
+  받은 7장은 <b>교량 일반도가 아니라 설계지침 삽도</b>였다 — 번호가 붙은 유형 도해
+  (<code>03 교량시종점 · 04 교량폭원 · 05 중앙분리대 · 09 거더배치 · 10 횡단경사 · 13 교대배치</code>).
+  한 구조물을 여러 방향에서 본 <b>좌표가 물린 도면 세트가 아니라</b>, 서로 다른 개념을
+  각각 N벌 변형으로 그린 낱장들이다. <b>아래 결론은 그 조건에서 나온 것</b>이고,
+  실제 교량 일반도(측면도+평면도+횡단면이 물린 것)에는 11.1~11.3이 그대로 남아 있다.
+</div>
+
+<table>
+  <tr><th>도면</th><th>엔티티</th><th>숫자 치수</th><th>기호 치수</th><th>ARC</th><th>막힌 곳</th></tr>
+  <tr><td>거더배치</td><td>1,433</td><td><b>2</b></td><td>62</td><td>249 (17%)</td><td>G1 — 치수가 <code>L·β</code> 뿐</td></tr>
+  <tr><td>교대배치</td><td>2,138</td><td>51</td><td>37</td><td>181 (8%)</td><td>G1 — <code>θ</code> 가변 도해</td></tr>
+  <tr><td><b>교량시종점</b></td><td>4,432</td><td><b>0</b></td><td>6</td><td>492 (11%)</td><td><b>관통</b> — 2지간 교량 95파트 820.36 m³ (11.0.4). <b>「치수 0개 → 대상 아님」은 오판이었다</b></td></tr>
+  <tr><td><b>교량폭원</b></td><td>2,824</td><td>151</td><td>10</td><td>0</td><td><b>관통</b> — 상부공 7파트 180.36 m³ (11.0.3). <b>처음엔 G5에서 죽었다</b> — 폐곡선 버그를 고치자 나왔다</td></tr>
+  <tr><td>교면포장</td><td>1,304</td><td>14</td><td>2</td><td>0</td><td>G1 — 층상 구성표</td></tr>
+  <tr><td><b>중앙분리대</b></td><td>2,159</td><td><b>108</b></td><td>7</td><td>0</td><td><b>관통</b> — 방호벽 4.8058 m³ (11.0.1)</td></tr>
+  <tr><td>횡단경사</td><td>5,635</td><td>156</td><td>139</td><td>64 (1%)</td><td>G1 — <code>S% · TL</code> 가변</td></tr>
+</table>
+
+<div class="callout">
+  <span class="t">가장 값싼 사전 판정 — <b>숫자 치수와 기호 치수를 세어본다</b></span>
+  방법론 전체가 <b>「도면 표기 치수와 대조한다」</b>에 걸려 있다(G2·G3·7.3).
+  치수가 기호(<code>L · β · θ · VAR · n@3,600 · S%</code>)면 <b>대조할 상대가 없다.</b>
+  파싱 직후 <code>TEXT/MTEXT</code>를 숫자형/기호형으로 나눠 세는 것만으로
+  「이 도면은 솔리드 대상이 아니다」가 몇 초에 판정된다. 위 표가 그 결과다.
+  <br>이 판정은 <b>게이트 이전</b>에 온다 — G0.5쯤이다. 방법론에 없던 단계다.
+</div>
+
+<h4>11.0.1 통과한 것 — 중앙분리대 방호벽</h4>
+
+<p>7장 중 <b>닫힌 구조 단면을 가진 유일한 도면</b>이었다. 세운 것은
+<b>토공용 구간 → 변화구간(2m) → 교량용 구간</b>의 방호벽 한 줄이다.</p>
+
+<pre class="flow"><code>단면A (토공용, 585×1319)  ──extrude X 0→5,000──┐
+                                               ├─ loft 5,000→7,000  ← 변화구간
+단면B (교량용, 584×1270)  ──extrude 7,000→12,000┘
+                    union → 중앙분리대_방호벽
+
+부피  모델러 4.8058 m³   IR 격자(25mm) 4.7970   해석 프리즈모이드 4.8058
+modelCount 1 = 최종 파트 수 1</code></pre>
+
+<ul class="chk">
+  <li><b>축척을 되찾아야 했다.</b> 이 단면은 5.805배로 그려져 있다. 표기 치수 2개(높이 1,270 · 바닥폭 585)로 역산해 교차검증했다 — 차이 0.06%</li>
+  <li><b>두 단면의 기준면 y가 달랐다.</b> 포장면 48,812.1 vs 바닥판면 49,096.5. 그 차이가 곧 「토공용은 포장에 49mm 묻힌다」는 형상이었다</li>
+  <li><b>difference가 하나도 없는 첫 모델.</b> 방호벽은 속이 찬 콘크리트다. 뺄 게 없으니 boolean 함정(8.4)이 통째로 안 나왔다 — <b>즉 8.4는 아직 교량에서 검증되지 않았다</b></li>
+  <li><b>loft 하나로 끝났다.</b> 변화구간이 실제로 직선 전이(꺾이는 자리 없음)였기 때문이다. 교훈 #16(꺾이면 끊는다)이 여기서는 해당 없었다</li>
+</ul>
+
+<h4>11.0.3 교량 상부공 — <b>폐곡선 버그를 고치자 나왔다</b></h4>
+
+<p>교량폭원은 처음에 G5에서 죽었다 — 끊김 56곳 중 54곳이 「도면에 선 없음」이었다.
+그런데 <b>겹치는 동일선상 선분 버그(8.3)를 고치고 다시 돌리자 폐곡선이 새로 나왔다.</b>
+「도면이 안 닫는다」의 상당 부분이 실은 <b>우리가 못 닫은 것</b>이었다.
+<b>판정을 내리기 전에 도구부터 의심할 것.</b></p>
+
+<pre class="flow"><code>폭원 띠 상    24,300 × 240   바닥판 전폭   ↔ 도면 표기 24,300
+분리교량      12,300 × 240 · 15,900 × 240   좌·우 상판
+                 440 × 1,320 ×3            방호울타리
+              11,400 ×  50   마모층        ↔ 도면 표기 11,400 (도로 폭)</code></pre>
+
+<table>
+  <tr><th>값</th><th>이 도면에서</th><th>다른 도면에서</th></tr>
+  <tr><td>바닥판 두께</td><td>폐곡선 240</td><td><b>교면포장 삽도</b> 「콘크리트 교량 바닥판 240mm」</td></tr>
+  <tr><td>마모층 두께</td><td>폐곡선 50</td><td><b>교면포장 삽도</b> 「마모층 50mm」</td></tr>
+  <tr><td>방호울타리 높이</td><td>폐곡선 1,320 (포장면 위 1,270)</td><td><b>중앙분리대 삽도</b> 표기 1,270</td></tr>
+</table>
+
+<p><b>서로 다른 삽도가 같은 값을 준다.</b> 유형 삽도 묶음은 좌표가 물려 있지 않아
+뷰 사이 교차검증이 안 된다고 봤는데(11.0), <b>치수 값 수준에서는 물려 있다.</b>
+공통 datum이 없는 도면군에서 쓸 수 있는 교차검증 경로가 이것이다.</p>
+
+<p>세운 것: 좌·우 상판 · 마모층 · 방호울타리 4기를 경간 20m(설계값)로 직선 압출.
+<b>7파트 180.356 m³, 의도 대비 전부 0.0000.</b>
+넷째 방호울타리는 도면 윤곽이 안 닫혀 <b>재구성</b>했다 — 들임(10mm) 규칙을
+측정된 두 부재로 확인한 뒤 적용했고, 그렇게 놓은 외면 좌표가 <code>gaps</code>가
+짚은 끊김 좌표와 <b>같은 값</b>으로 떨어지는 것이 검증이다. 등급은 <code>tolerant</code> —
+도면 좌표를 옮긴 게 아니라 만든 것이므로 <code>opaque</code>가 아니다.</p>
+
+<h4>11.0.4 교량 한 기 — 「표기 치수 0개」를 <b>잘못 잘랐다</b></h4>
+
+<div class="callout warn">
+  <span class="t">이 문서가 두 번 틀렸다</span>
+  <b>①</b> 11.0 표에서 교량시종점을 「숫자 치수 0개 → 솔리드 대상 아님」으로 잘랐다.
+  <b>표기 치수가 없으면 <i>검증</i>을 못 하는 것이지 <i>추출</i>을 못 하는 게 아니다.</b>
+  모델스페이스가 1:1 이면 좌표가 곧 mm 다.
+  <br><b>②</b> 「대조할 상대가 없다」도 틀렸다 — 그 <b>도면 안에</b> 없다는 뜻일 뿐이고,
+  <b>다른 도면과 표준 부재 치수</b>는 여전히 상대가 된다.
+</div>
+
+<p>1:1 인지는 <b>크기를 아는 표준 부재</b>로 확정했다. 도면 밖에서 온 눈금이다.</p>
+
+<pre class="flow"><code>폐곡선 153×182 이 4개    ← 탄성받침 150×180. 다른 게 이 치수로 4개 나란할 이유가 없다
+교대 벽체 4,680×6,506     교량 교대 자릿수
+상부공 형고 1,421         지간 12,752 에 L/h≈9 — 반일체식으로 타당
+접속슬래브 두께 383        표준 300~400
+
+넷이 **동시에** 타당해지는 배율은 1 뿐이다. 10배만 달라도 받침이 1.5 m 나 15 mm 가 된다.</code></pre>
+
+<p>그 도면 하나로 <b>2지간 교량 한 기</b>가 열렸다 — 이 도면군에서 하부공이
+부재로 그려진 유일한 도면이다.</p>
+
+<pre class="flow"><code>바닥판 26,178×277 · 거더 12,303/12,748×1,144 ×5본씩
+교대(벽체+확대기초) 4,680×7,953 ×2 · 날개벽 4,563×6,932 ×4
+교각 두부 2,244×1,334 · 기둥 1,586×3,904 · 확대기초 5,081×1,334
+교좌받침 153×182 ×8열 · 받침콘크리트 ×3 · 접속슬래브 3,705×383 ×2
+말뚝 Ø518 ×10위치 (연직이라 IR 의 Z축 cylinder 가 그대로 맞았다)
+
+95파트 · 820.36 m³ · 의도 대비 전부 0.0000</code></pre>
+
+<div class="callout warn">
+  <span class="t">뷰 상자를 두 번 잘못 잡았다 — <b>숫자로는 안 걸렸다</b></span>
+  처음 상자가 <b>날짜 다른 두 작업본의 경계에 걸쳐</b> 있었다. 한 시트에
+  TYPE1~4 한 벌(주황 테두리)과 「교량 시·종점 …전면」 한 벌(자홍)이 서로 어긋나게
+  포개져 있다. 뽑힌 것은 두 도형의 <b>혼합</b>이었고 — 교대라고 부른 것이 실은
+  옆 도형의 날개벽이었으며 기초·교각이 통째로 빠졌다.
+  <br><b>폐곡선 25개가 나왔고 치수도 그럴듯했다.</b> 검증표는 전부 통과했다.
+  그림을 보고서야 알았다. 4.2(캡처)가 선택이 아니라 <b>필수</b>인 이유다.
+</div>
+
+<h4>11.0.5 도면이 정보를 주는 방식 — 형상만이 아니다</h4>
+<table>
+  <tr><th>부재</th><th>도면이 주는 형태</th><th>읽는 법</th><th>현재</th></tr>
+  <tr><td>구체·교대·교각</td><td>닫힌 윤곽</td><td>폐곡선</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>관통구·기둥</td><td>CIRCLE</td><td>지름으로 집는다</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>개구부</td><td>X 기호</td><td>기하 서명으로 되살린다</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td><b>말뚝</b></td><td><b>해치 + 중심선</b></td><td>중심선 x = 위치, 윤곽 두 줄 간격 = 지름</td><td><span class="badge b-bad">없다</span> — <code>pick</code> 이 선을 못 집는다</td></tr>
+  <tr><td>철근·수량</td><td>주기 텍스트</td><td>—</td><td><span class="badge b-bad">없다</span></td></tr>
+</table>
+<p><b>형상이 없다고 정보가 없는 게 아니다.</b> 개구 기호를 되살린 것과 같은 종류의
+이득이 중심선·해치에 남아 있다. <code>circles()</code> 를 만든 것과 같은 이유로
+<code>centerlines()</code> 가 필요하다.</p>
+
+<h4>11.0.2 <b>범위에서 뺀 것</b> — 명시</h4>
+<table>
+  <tr><th>뺀 것</th><th>왜</th></tr>
+  <tr><td>상부공(거더·바닥판)·하부공(교대·교각·말뚝)</td><td>표기 치수가 있는 도면이 없다. 교량시종점은 측면도가 6벌 있지만 <b>숫자 치수가 0개</b>다</td></tr>
+  <tr><td>교량 바닥판 횡단면(교량폭원)</td><td>폭원 <b>구성 도해</b>라 닫힌 단면을 안 그린다. 끊김 54곳이 「도면에 선 없음」 — 설정으로 못 고친다</td></tr>
+  <tr><td>방호벽 설치 연장</td><td>도면이 「중앙분리대 설치 범위」로만 표시한다. 각 5,000mm를 <b>설계값</b>으로 명시했다 — 도면에서 읽은 척하지 않는다</td></tr>
+  <tr><td>변화구간 2,000의 기하 교차검증</td><td>평면도 쪽 표기 치수가 하나뿐이라 그쪽 축척을 독립으로 되찾을 수 없었다. 출처를 「도면 주기 글자」로 남겼다</td></tr>
+  <tr><td>ARC · SPLINE</td><td>모델링한 도면에는 <b>0개</b>였다(운이 좋았다). 버린 도면들에는 8~17%가 있다 — 11.2 참고</td></tr>
+</table>
+
+<h3>11.1 교량 — 기준이 하나가 아니라 <b>체인</b>이다 <span class="badge b-bad">가설</span></h3>
+
+<div class="callout warn">
+  <span class="t">이 절은 아직 실증되지 않았다 — 확인할 도면이 없었다</span>
+  받은 7장 중 하부공을 <b>받침 중심 좌표 + 받침 표고</b>로 기술한 도면은 없었다.
+  교량시종점 삽도가 교대·교각·말뚝을 측면으로 그리긴 하지만 <b>표기 치수가 0개</b>라
+  기준 체인이 실제로 그렇게 기술되는지 확인할 수 없었다. 아래는 그대로 가설이다.
+</div>
+
+<p>전력구는 프로젝트 원점 하나로 전부 기술된다. 교량은 안 된다.
+<b>상부공은 선형을 타고(곡선·편경사로 기울어짐) 하부공은 연직으로 선다.</b>
+두 좌표계가 다르므로 잇는 지점이 필요하고, 그 지점이 <b>교좌받침</b>이다.</p>
+
+<pre class="flow"><code>프로젝트 원점
+  └─ 선형 (측점 s · 오프셋 t · 표고)          ← 상부공은 전부 여기서 나온다
+       └─ 받침 (측점 + 오프셋 + 받침표고)      ← 두 좌표계를 잇는 유일한 접점
+            └─ 교각 로컬 (연직 · 사각)         ← 하부공은 전부 여기서 나온다
+                 └─ 기초 · 말뚝 배치 격자</code></pre>
+
+<p>도면이 이미 이렇게 기술한다 — 하부공 도면은 <b>받침 중심 좌표와 받침 표고</b>로 교각을
+잡고, 거기서 아래로 교각·확대기초·말뚝을 내린다. 그래서 <b>받침을 앵커로 삼는 것이
+도면을 그대로 옮기는 것</b>이 된다. 받침을 안 쓰고 절대좌표로 잡으면 사각(skew)·편경사가
+들어오는 순간 값이 전부 손계산이 된다.</p>
+
+<div class="callout">
+  <span class="t">일반화 — 앵커는 뷰에만 붙는 게 아니다</span>
+  3장의 앵커는 <b>뷰</b>를 3D에 정렬하는 장치였다. 교량에서는 같은 개념이
+  <b>부재군</b>에도 필요하다. 상부공군 · 교각군 · 기초군이 각자 로컬 프레임을 갖고,
+  받침이 그 사이의 변환을 준다. <b>이 개념은 현재 방법론에 없다.</b>
+</div>
+
+<h3>11.2 교량에 필요한 확장</h3>
+<table>
+  <tr><th>항목</th><th>왜</th><th>현재</th><th>실증</th></tr>
+  <tr><td><b>측점 기반 sweep</b></td><td>평면곡선 · 종단곡선 · 편경사. 직선축 <code>from/to</code>로는 표현 불가</td><td>없음. IFC4.3 <code>IfcSectionedSolidHorizontal</code>과 의미가 같다</td><td><span class="badge b-bad">미확인</span> — 곡선 선형을 준 도면이 없었다. 삽도는 전부 직선 구간 도해다</td></tr>
+  <tr><td><b>revolve</b></td><td>원형 교각 두부 · 정착부</td><td>없음</td><td><span class="badge b-warn">불필요했다</span> — 교각은 사각 + 벌어진 두부다. <b>세웠다</b>(11.0.4)</td></tr>
+  <tr><td><b>임의축 cylinder</b></td><td>경사 말뚝 · 사교 교각</td><td>Z축 한정</td><td><span class="badge b-warn">불필요했다</span> — 말뚝이 전부 <b>연직</b>이라 Z축 <code>cylinder</code> 가 그대로 맞았다. Ø518 ×10위치를 세웠다</td></tr>
+  <tr><td><b>부재군 로컬 프레임</b></td><td>상부(선형) ↔ 하부(연직) 좌표계 전환</td><td>없음 — 단일 좌표계 전제</td><td><span class="badge b-bad">미확인</span></td></tr>
+  <tr><td>ARC · SPLINE 파싱</td><td>곡선 거더 · 원형 단면</td><td>버린다</td><td><span class="badge b-ok">비중 측정됨</span> — 거더배치 17% · 교량시종점 11% · 교대배치 8% · 횡단경사 1%. <b>모델링한 도면(중앙분리대)은 0%</b></td></tr>
+  <tr><td>배열 파라미터</td><td>경간 N · 거더 M본 · 말뚝 배치</td><td><b>있다</b> — 6장 배열이 그대로 맞는다</td><td><span class="badge b-bad">미확인</span></td></tr>
+  <tr><td><b>뷰별 축척</b> <span class="kbd">신규</span></td><td>삽도는 도형마다 배율이 다르다</td><td><b>추가됨</b> — <code>viewBoxes[뷰].unitMm</code></td><td><span class="badge b-ok">검증</span> — 5.805배 사례</td></tr>
+  <tr><td><b>명시 뷰 영역</b> <span class="kbd">신규</span></td><td>제목이 없거나 중복인 도면</td><td><b>추가됨</b> — <code>cfg.viewBoxes</code></td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><b>레이어 아닌 필터</b> <span class="kbd">신규</span></td><td>구조선과 치수선이 같은 레이어</td><td><b>추가됨</b> — <code>cfg.entityFilter</code>(색·선종)</td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><b>복수 선택기</b> <span class="kbd">신규</span></td><td>같은 부재가 여러 벌인 것이 정상 (거더·받침·말뚝)</td><td><b>추가됨</b> — <code>loops(뷰, w, h, tol)</code></td><td><span class="badge b-ok">검증</span></td></tr>
+  <tr><td><b>중심선 선택기</b> <span class="kbd">신규</span></td><td>말뚝처럼 <b>해치 + 중심선</b>으로만 그려지는 부재</td><td><b>없다</b> — 스크립트로 재서 설정에 적었다</td><td><span class="badge b-bad">구멍</span></td></tr>
+</table>
+
+<div class="callout">
+  <span class="t">예측 성적 — 11.2가 <b>맞춘 것과 빗나간 것</b></span>
+  <b>맞음:</b> ARC·SPLINE 비중이 실제로 컸다(최대 17%). 배열 파라미터가 필요한 구조(거더 M본·말뚝 배치)가 실재했다.
+  <br><b>빗나감:</b> <b>revolve와 임의축 cylinder는 필요 없었다.</b> 원형 교각도 경사 말뚝도 7장 어디에도 없다.
+  「교량이면 revolve가 필요하다」는 <b>교량 일반론이지 이 도면군의 사실이 아니었다.</b>
+  <br><b>못 예측한 것:</b> 실제로 막은 것은 위 목록에 <b>하나도 없었다</b> —
+  단위(1mm vs 1m) · 뷰 제목 부재 · 뷰별 축척 · 레이어가 치수선을 안 가름 · 폐곡선 중복 변 버그.
+  전부 <b>연산이 아니라 입력 해석 층</b>의 문제다. 11.2는 「무슨 연산이 더 필요한가」만 물었는데,
+  실제 병목은 <b>「도면을 읽어들이는 가정」</b>이었다.
+</div>
+
+<h3>11.3 교량에서는 측면도의 지위가 다르다 <span class="badge b-warn">부분</span></h3>
+<p>3.2에서 입면도·측면도는 <b>검증(validator)</b> 역할로 못박았다. 교량에서도
+<b>솔리드를 만들면 안 되는 것은 같지만</b>, 교량 일반도의 측면도는
+<b>구간 배정표(assigner)</b>를 겸한다 — 경간 분할 · 교각 위치 · 형고 변화 · 받침 표고가
+전부 거기 있다. 전력구에서 종단면이 하던 일을 교량에서는 측면도가 한다.</p>
+
+<div class="callout warn">
+  <span class="t">확인된 것과 확인 못 한 것</span>
+  <b>확인:</b> 교량시종점 삽도의 측면도 6벌에 경간 분할(<code>지간</code>) · 신축유간 ·
+  접속슬래브 · 말뚝 배치가 전부 있었다. 측면도가 배정 정보를 든다는 주장은 <b>형태상 맞다</b>.
+  <br><b>확인 못 함:</b> 그 측면도에 <b>숫자 치수가 하나도 없다</b>(기호 라벨뿐).
+  배정표로 <b>쓸 수 있는지</b>는 표기 치수가 있는 실제 일반도가 있어야 판정된다.
+  <br><b>새로 드러난 것:</b> 삽도에서는 측면도가 <b>세 번째 역할</b>을 한다 —
+  유형 카탈로그(TYPE1 반일체식 · TYPE2 단부슬래브 · TYPE3 일체식 · TYPE4 골조식).
+  같은 제목이 6벌 반복되는 원인이 이것이고, 그래서 제목 기반 뷰 분리가 깨졌다(3.4).
+</div>
+
+<h3 id="s11-plate">11.4 삽도(유형 도해)는 별도의 구조물 유형이다 <span class="badge b-ok">검증</span></h3>
+<p>일반도와 삽도는 <b>같은 파이프라인으로 다룰 수 없다.</b> 표로 갈라둔다.</p>
+<table>
+  <tr><th></th><th>일반도 <span class="kbd">전력구 4매</span></th><th>유형 삽도 <span class="kbd">교량 7장</span></th></tr>
+  <tr><td>치수</td><td>숫자. 대조 가능</td><td><b>기호</b>(<code>L·β·θ·VAR</code>)가 섞인다. 도면마다 비율을 세어야 한다</td></tr>
+  <tr><td>뷰 제목</td><td>유일 (<code>단 면 B-B</code>)</td><td><b>없거나 N벌 중복</b></td></tr>
+  <tr><td>축척</td><td>모델스페이스 1:1</td><td><b>도형마다 다르다</b>. 표기 치수 2개로 역산</td></tr>
+  <tr><td>표고 기준</td><td>전 뷰 공통 계획고선</td><td><b>없다</b>. 뷰별 <code>v0</code></td></tr>
+  <tr><td>윤곽</td><td>닫힌 재료 영역</td><td>구성 도해는 <b>안 닫는다</b>(띠·열린 외곽선)</td></tr>
+  <tr><td>레이어</td><td>구조/치수/지반이 갈림</td><td>표준 레이어 하나에 <b>구조선과 치수선이 같이</b> 올라간다</td></tr>
+  <tr><td>솔리드 대상</td><td>전부</td><td><b>일부만</b> — 7장 중 1장</td></tr>
+</table>
+
+<h3 id="s11-pier">11.4 실증 결과 — <b>교각 P9 한 부재를 끝까지</b> <span class="badge b-ok">검증</span></h3>
+
+<div class="callout ok">
+  <span class="t">이번엔 진짜 일반도였다</span>
+  <code>산외교_파이형_교각일반도(울산P9).dwg</code> — 평면도 · 정면도 · 단면도 · 단면 A-A ·
+  기초 평면도 · 교량받침 상세 · 솔플레이트 상세 + 표 3개가 <b>좌표가 물린 채</b> 한 도곽에 있다.
+  11장이 「교량 일반도에는 11.1~11.3이 그대로 남아 있다」고 유보해둔 그 조건이다.
+  <b>부재 하나(교각)를 코핑→기둥→기초→말뚝→받침→문양 순으로 끝까지 밀었다.</b>
+</div>
+
+<pre><code>파트 77 · 660.4154 m³ · 모델러 실측 대비 <b>불일치 0건</b> · 열린 변 0
+  코핑 1(intersect) · 원형기둥 2 · 확대기초 2 · 버림 2 · 강관말뚝 44
+  받침콘크리트 6 · 모르타르 6 · 교좌받침 6 · 솔플레이트 6 · 미관문양 2
+
+구체 콘크리트 fck=27MPa   359.3411      미관 문양            3.3585
+기초 콘크리트 fck=27MPa   177.4500      받침콘크리트          1.8438
+강관말뚝 Φ508.0×9T       108.7954      탄성받침             0.3469
+버림 CON'C fck=15MPa       8.9780      무수축 모르타르        0.1555
+                                       솔플레이트            0.1299</code></pre>
+
+<h4>11.4.1 방법론 판정 — 「해봤다」가 아니라 참/거짓으로</h4>
+<table>
+  <tr><th>방법론 주장</th><th>교각에서</th><th>근거</th></tr>
+  <tr><td>2.2 표고 기준은 전 뷰 공통</td><td><b>거짓</b> → 그런데 <b>되찾을 수 있다</b></td>
+      <td>공통 기준선이 없어 <code>datum.mode:'none'</code> 으로 시작했다. 그런데 받침 6기의 표
+      <code>EL.'X' = 코핑상면 + h1 + h2</code> 가 <b>6기 모두 같은 절대표고 79.447</b>을 낸다.
+      기준선이 없어도 <b>표가 기준을 준다</b></td></tr>
+  <tr><td>3.4 제목으로 뷰를 가른다</td><td><b>참</b>이나 <b>안 썼다</b></td>
+      <td>제목이 있다(<code>CZ-TEX1</code> h=700). 그런데 뷰끼리 치수선으로 이어져 있어
+      제목 그룹핑이 안 갈린다. 도곽 안 좌표(<code>viewBoxes</code>)로 짚었다</td></tr>
+  <tr><td>5.2 연산 결정 트리</td><td><b>부족했다</b></td>
+      <td><code>intersect</code> 가 트리에 없었다. 코핑은 「평면 윤곽 ∩ 정면 윤곽」이라
+      어느 한 방향 압출로도 안 나온다. 추가함</td></tr>
+  <tr><td>11.1 기준 체인 (받침 → 교각 로컬)</td><td><b>참 · 처음 검증</b></td>
+      <td>받침배치도 「교량받침 좌표」의 절대 측량좌표 + 방위각으로 로컬 원점을 못 박았다.
+      역산 오차 <b>원점 2 mm · 끝단 37 mm</b>. IFC <code>IfcMapConversion</code> 으로 나간다</td></tr>
+  <tr><td>11.2 revolve 필요</td><td><b>불필요</b></td>
+      <td>기둥이 Ø2,200 <b>연직</b> 원기둥이라 <code>cylinder</code> 로 그대로 선다.
+      회색 보조선(<code>ci=8</code>) 8줄이 원기둥 모선이라 각기둥이 아님을 재확인해준다</td></tr>
+  <tr><td>11.2 임의축 cylinder</td><td><b>해당없음</b></td><td>경사말뚝이 없다. 44본 전부 연직</td></tr>
+  <tr><td>11.0.5 「형상이 없어도 정보는 있다」</td><td><b>참 · 메웠다</b></td>
+      <td>말뚝 44본이 <code>CSPILEH</code> <b>INSERT 블록</b>이다. 블록이 위치와 치수를 둘 다 준다 —
+      <b>scale 254 = 반지름</b>, 도면 주기 <code>Φ508.0X9T</code> 와 일치. <code>blocks()</code> 를 만들었다</td></tr>
+</table>
+
+<h4>11.4.2 도면이 정보를 주는 방식 — 표가 추가됐다</h4>
+<table>
+  <tr><th>부재</th><th>도면이 주는 형태</th><th>읽는 법</th><th>현재</th></tr>
+  <tr><td>코핑·기둥·기초</td><td>닫힌 윤곽</td><td>폐곡선</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>기둥 단면</td><td>CIRCLE</td><td>지름으로 집는다</td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td><b>말뚝</b></td><td><b>INSERT 블록</b></td><td>삽입점 = 위치, <b>배율 = 치수</b></td><td><span class="badge b-ok">있다</span> — <code>blocks()</code></td></tr>
+  <tr><td><b>받침 적층·표고</b></td><td><b>표</b></td><td>이름표로 표를 집고 <b>열 이름</b>으로 값을</td><td><span class="badge b-ok">있다</span> — <code>tables</code></td></tr>
+  <tr><td>미관 문양</td><td>다른 <b>색</b>의 윤곽</td><td>뷰별 <code>entityFilter</code></td><td><span class="badge b-ok">있다</span></td></tr>
+  <tr><td>기둥 <b>높이</b></td><td>치수 <b>텍스트</b> (형상은 파단)</td><td>—</td><td><span class="badge b-bad">없다</span> — 텍스트 셀렉터</td></tr>
+</table>
+
+<div class="callout ok">
+  <span class="t">표는 형상만큼 중요한 입력이다 <span class="badge b-ok">검증</span></span>
+  받침 6기의 <b>적층고(h1~h4) · 절대표고(EL.'X') · 교축 위치(S1/S2) · 솔플레이트(L·W·T·T1·T2)</b>
+  는 <b>전부 표에만 있다.</b> 정면도에 그려진 적층은 <b>대표 하나</b>고 기당 값이 다르다
+  (h1 = 168/195/197).
+  <br>그래서 <code>run.mjs</code> 가 도면을 읽을 때 <b>(이름표, 표) 쌍</b>으로 색인해
+  <code>out/&lt;도면&gt;.tables.json</code> 에 얼려두고, <code>fit()</code> 이 <code>pick.tables</code> 로
+  <b>열 이름</b>으로 꺼낸다. 없는 표·없는 열이면 던진다.
+</div>
+
+<h4>11.4.3 세 갈래가 서로를 검산한다</h4>
+<p>형상 · 표 · 다른 도면이 같은 값을 서로 다른 길로 낸다. <code>fit()</code> 이 매번 확인하고 어긋나면 던진다.</p>
+<table>
+  <tr><th>대조</th><th>결과</th></tr>
+  <tr><td>표 <code>S1/S2</code> → 교축 위치 ↔ 평면도 폐곡선 중심</td><td>6/6 ≤3 mm</td></tr>
+  <tr><td>표 <code>h4</code> ↔ 솔플레이트 표 <code>T</code></td><td>6/6 완전일치</td></tr>
+  <tr><td><code>h1+h2+h3+h4</code> ↔ 표 <code>E</code></td><td>6/6</td></tr>
+  <tr><td><code>S1+S2</code> ↔ 코핑 교축폭 3,200</td><td>6/6</td></tr>
+  <tr><td>솔플 <code>T</code> ↔ <code>(T1+T2)/2</code></td><td>6/6</td></tr>
+  <tr><td>솔플 경사쪽 판정: <code>T2−T1=16</code> ↔ 전/후열 총고차 29 ÷ 1,600 × L 840 = 15.2</td><td>가정 없이 <b>유도</b>됐다</td></tr>
+  <tr><td>파단 생략량: 표고 텍스트 · 치수 8.816/10.916 · 기둥 도형길이 6,100</td><td>세 갈래 모두 <b>27,700</b></td></tr>
+  <tr><td>단위: 도곽 A1×100 · 블록 scale 254 ↔ Φ508 · 격자 1,300 ↔ <code>4@1.300</code> · 받침배치도 A1×300</td><td>넷 다 <b>1단위 = 1 mm</b></td></tr>
+</table>
+
+<h4>11.4.4 <b>파단선</b> — 이 도면 유형의 최대 함정 <span class="badge b-ok">검증</span></h4>
+<div class="callout bad">
+  <span class="t">그려진 길이가 실제가 아니다. 그리고 <b>숫자로는 안 걸린다</b></span>
+  정면도의 기둥은 <b>6,100</b> 으로 그려져 있는데 실제는 <b>33,800</b> 이다.
+  폐곡선도 멀쩡히 나오고 부피도 그럴듯하게 나온다 — 24 m 를 잃은 채로.
+  <br><b>신호는 <code>CS-CUTL</code> 레이어</b>다. 가로 파단선(정면도·단면도 같은 y)과
+  말뚝마다의 파단 원호(R=655.6 ×45)가 거기 있다.
+  <br><b>대응</b> — 생략량을 손으로 적지 않는다.
+  <code>파단_생략량 = 기둥_높이 − 기둥_도형길이</code> 로 <b>derived</b> 가 된다.
+  (기둥_높이는 치수 텍스트라 아직 <code>design</code> 이다)
+</div>
+
+<h4>11.4.5 코어에 새로 들어간 것</h4>
+<table>
+  <tr><th>무엇</th><th>왜 필요했나</th><th>일반성</th></tr>
+  <tr><td><code>intersect</code> 연산</td><td>코핑 = 평면 윤곽 ∩ 정면 윤곽. 한 방향 압출로는 안 나온다</td><td>「두 방향이 동시에 맞아야 하는 형상」 전부</td></tr>
+  <tr><td><code>extrude.drift</code> (빗각 기둥)</td><td>단면이 <b>평행이동만</b> 하는 전이부. <code>Loft</code> 를 못 쓰기 때문</td><td>테이퍼 코핑·확폭부</td></tr>
+  <tr><td><code>blocks()</code> 셀렉터</td><td>말뚝이 INSERT 블록. 배율이 곧 치수다</td><td>블록으로만 그린 부재 전부</td></tr>
+  <tr><td><b>표 추출</b> (<code>core/table.mjs</code>)</td><td>받침 적층·표고가 표에만 있다</td><td>모든 DWG. 격자·이름표·병합셀 자동</td></tr>
+  <tr><td>뷰별 <code>entityFilter</code></td><td>미관 문양이 본체와 <b>다른 색</b>이다</td><td>「뷰마다 무엇이 구조선인가가 다르다」</td></tr>
+  <tr><td><code>dropCollinear</code> 중복점 제거</td><td>매달린 변 왕복이 <b>길이 0 변</b>을 남긴다</td><td>전 도면</td></tr>
+  <tr><td>교집합 <b>해석 부피</b></td><td>격자로는 <code>measure --ir</code> 합격선 0.05 m³ 를 못 넘긴다</td><td>압출∩압출 · 종단∩평면(높이 가변)</td></tr>
+  <tr><td><code>emit/ifc.mjs</code></td><td>IFC 출력이 없었다</td><td>IFC4 · 해석 솔리드 우선</td></tr>
+</table>
+
+<h4>11.4.6 <b>Loft 는 boolean 에 못 쓴다</b> — 가장 비싼 발견 <span class="badge b-ok">검증</span></h4>
+<div class="callout bad">
+  <span class="t">부피는 맞는데 <b>껍질이 안 붙는다</b></span>
+  EGModeler 의 <code>Loft</code> 는 가이드상 <b>서피스만</b> 만든다. <code>C=True</code> 는 조용히
+  무시되고 <code>Cap</code> 을 덧대도 안 닫힌다 — <b>4각형 단면조차 열린 변 12개</b>다.
+  <br>발산 정리로 재는 부피는 정확히 맞으므로 <b>부피 검사만으로는 절대 안 걸린다.</b>
+  그런데 boolean 인자로 넣으면 샌다 — 코핑이 102.38 → <b>98.65</b> 가 됐다.
+  <br><b>대안</b> — <code>Extrude C=True D F {기준점} {방향점}</code> 는 자유방향을 받고
+  결과가 <b>닫힌 솔리드</b>다(정점 8·면 12·열린 변 0 확인). 단면이 평행이동만 하면
+  loft 대신 이것을 쓴다.
+  <br><b>기존 모델 재검증 필요</b> — <code>manhole1</code> 이 loft 결과를 union·difference 인자로 쓴다.
+</div>
+
+<h4>11.4.7 새로 밟은 함정</h4>
+<table>
+  <tr><th>증상</th><th>원인</th><th>대응</th></tr>
+  <tr><td>한 파일에 도형이 <b>17벌</b> 쌓여 있다</td><td>도면집 스택. 제목·치수가 없는 잔재</td><td><b>도곽 블록에서 상자를 계산</b>한다 — <code>CXBLKA1</code> INSERT 위치 × scale × A1(841×594)</td></tr>
+  <tr><td>「단면도」 안쪽 선을 다른 부재로 읽었다</td><td><b>절단면이 아니라 투영</b>이다. 먼 쪽 모서리가 겹쳐 보인다</td><td>그 선의 치수가 <code>외곽 − 2×R</code> 로 떨어지면 투영이다 (3,200−2×500=2,200)</td></tr>
+  <tr><td>평면 모서리가 45° 모따기로 나온다</td><td>파서가 LWPOLYLINE 의 <code>bulges</code> 를 버린다. 90° 호(bulge 0.41421)가 <b>현 하나</b>로 눌린다</td><td>호 끝점은 정확하므로 R 은 되찾을 수 있다. 링 면적을 바로 쓰면 코너당 71,350 mm² 부푼다</td></tr>
+  <tr><td>평면 윤곽이 <b>두 줄</b>인데 하나만 썼다</td><td>바깥 윤곽(Y±7,000)과 상면 단차선(Y±6,700)이 <b>둘 다</b> R=500 필렛</td><td>두 호의 중심 X 가 같으면 그 사이는 <b>평면 띠</b>다 → loft/빗각기둥</td></tr>
+  <tr><td>적분값이 0.2 m³ 샜다</td><td>구간 <b>끝점</b>이 링 꼭짓점이라 스캔라인 교차 수가 어긋난다</td><td>내부 노드 구적(가우스)을 쓴다. 심프슨은 끝점을 밟는다</td></tr>
+  <tr><td>구조 형상이 <b>표</b>로 잡힌다</td><td>평면도 격자가 73행×83열짜리 「표」가 된다</td><td>표 색인에 레이어 필터(<code>CS-TABL-*</code>)를 준다</td></tr>
+  <tr><td><code>DIMENSION.actualMeasurement</code> 로 단위를 정하면 틀린다</td><td>주요 치수는 m 표기(8.816), 상세는 mm 표기(950). <b>표시값</b>이 온다</td><td>도곽 블록 배율·블록 scale·격자 간격으로 교차검증한다</td></tr>
+</table>
+
+<h4>11.4.8 IFC 출력</h4>
+<pre><code>node src/emit/ifc.mjs out/pier-p9.ir.json   →  out/pier-p9.ifc  (IFC4, 170 KB)
+
+IFCBEAM 1(코핑) · IFCCOLUMN 2 · IFCFOOTING 4 · IFCPILE 44
+IFCPLATE 6(솔플레이트) · IFCDISCRETEACCESSORY 6(받침) · IFCBUILDINGELEMENTPROXY 14</code></pre>
+<p><b>해석 솔리드를 우선한다.</b> 원기둥은 <code>IfcCircleProfileDef</code> 로 나가 <b>진짜 원</b>이다 —
+메시로 내면 검증하는 쪽이 「왜 Ø508 이 아니냐」를 다시 겪는다. boolean 결과(코핑·문양 2)만
+이미 검증된 <code>IfcFacetedBrep</code> 이다.</p>
+<p><b>절대 위치는 <code>IfcMapConversion</code></b> 으로 준다. 모델은 로컬 원점에 두고 좌표를
+3억 mm 로 부풀리지 않는다 — 뷰어가 정밀도를 잃는다.</p>
+<div class="callout ok">
+  <span class="t">IFC 파일을 <b>다시 읽어</b> 검증했다</span>
+  내보낸 파일의 자체 형상(압출 74 + Brep 3)으로 부피를 다시 재서
+  <b>660.4154 m³ = IR 총부피</b>. 왕복이 닫힌다.
+</div>
+
+<h2 id="s11"><span class="num">12</span>미검증 영역 — 다음 도면에서 확인할 것</h2>
+
+<p>실증하며 채울 목록. 각 항목에 <b>확인 방법</b>과 <b>예상 대응</b>을 미리 적어뒀다.</p>
+
+<table>
+  <tr><th>항목</th><th>확인 방법</th><th>예상 대응</th></tr>
+  <tr>
+    <td><b>입면도 · 좌/우측면도</b> <span class="badge b-bad">가설</span></td>
+    <td>해치 유무로 단면/투영을 가른다. 폐곡선을 뽑아 <b>재료 영역이 아닌 것</b>이 확인되는지 본다</td>
+    <td>role=validator로 고정. 3D 정투영 렌더와 윤곽 대조하는 경로를 만든다</td>
+  </tr>
+  <tr>
+    <td><b>flip 판정</b> <span class="badge b-bad">가설</span></td>
+    <td>비대칭 특징 하나로 3.3 절차 적용</td>
+    <td>투상법을 설정값으로 두지 말고 <b>도면에서 판정</b>. 판정 결과를 앵커에 기록</td>
+  </tr>
+  <tr>
+    <td><b>DXF 입력</b> <span class="badge b-bad">가설</span></td>
+    <td>같은 도면을 DXF로 받아 엔티티 목록이 동등한지 대조</td>
+    <td>변환 후 투입이 먼저. 상시 필요하면 DXF 리더를 <code>parse.mjs</code> 뒤에 붙인다 — 하류는 그대로</td>
+  </tr>
+  <tr>
+    <td><b>공통 datum이 없는 도면</b> <span class="badge b-ok">검증</span></td>
+    <td>뷰별 검출 기준선 y가 서로 다른가</td>
+    <td><b>실재했다 — 교량 삽도 7장 전부.</b> <code>datum:{mode:'none'}</code> + 뷰별 <code>anchors.v0</code>로 해결.
+        예상 대응 ①이 그대로 맞았다. 다만 <b>G2의 교차검증이 같이 사라져</b> 검증이 G3로 밀린다(2.2).
+        <br><b>예상 못 한 것:</b> 「기준선이 없다」가 <b>예외로 드러나지 않는다.</b> 계획고 라벨이 있는 도면
+        (횡단경사)에서 검출기가 <b>그럴듯한 틀린 y</b>를 돌려줬다 — 서로 다른 두 표고 라벨이 같은 답을 냈다.
+        라벨 무리 검사를 넣어 던지게 고쳤다</td>
+  </tr>
+  <tr>
+    <td><b>다중 시트</b> <span class="badge b-bad">가설</span> · <b>축척 혼재</b> <span class="badge b-ok">검증</span></td>
+    <td>좌표 분포가 여러 덩어리인가. 같은 부재의 치수가 뷰마다 배수 관계인가</td>
+    <td>다중 시트는 여전히 미확인(빈 시트 테두리만 봤다).
+        <b>축척 혼재는 실재.</b> 교량폭원 1:1 · 중앙분리대 방호벽 5.805배.
+        <code>viewBoxes[뷰].unitMm</code>으로 해결 — 예상대로 「뷰별 축척 계수를 앵커에」가 맞았다.
+        <b>추가로 드러난 것:</b> DWG <b>모델단위</b> 자체가 도면군마다 다르다(1m vs 1mm).
+        이건 예상 목록에 없었고 <code>core</code>에 상수로 박혀 있었다</td>
+  </tr>
+  <tr>
+    <td><b>원호·곡면 구조</b> <span class="badge b-warn">부분</span></td>
+    <td>ARC/ELLIPSE 엔티티 비중을 센다</td>
+    <td><b>비중 측정됨:</b> 거더배치 17% · 교량시종점 11% · 교대배치 8% · 횡단경사 1% · 나머지 0%.
+        <b>세는 것만으로는 부족했다</b> — 비중이 큰 도면들은 ARC 이전에 치수(기호)에서 먼저 막혔다.
+        선분 근사는 아직 안 했다</td>
+  </tr>
+  <tr>
+    <td><b>곡선 선형 · 구배</b> <span class="badge b-bad">가설</span></td>
+    <td>종단이 직선 <code>from/to</code>로 표현되는가</td>
+    <td>IR이 <b>측점(station)</b>을 다뤄야 한다. sweep 연산 추가</td>
+  </tr>
+  <tr>
+    <td><b>제목 없는 뷰</b> <span class="badge b-ok">검증</span></td>
+    <td>표제 귀속에 실패하는 조각이 남는가</td>
+    <td><b>실재했다.</b> 교량폭원은 제목이 아예 없고(조각 1개 → 뷰 0개 · orphan 1,810선),
+        나머지는 제목이 N벌 중복이다(중복률 47~84%).
+        <b>「절단 기호 좌표로 역귀속」은 못 썼다</b> — 절단 기호 자체가 없는 도면이었다.
+        <code>cfg.viewBoxes</code>(위치 기반 수동 매핑)가 실제 해법이었다.
+        예상 대응 중 fallback 쪽만 맞았다</td>
+  </tr>
+  <tr>
+    <td><b>교량 도면</b> <span class="badge b-warn">부분</span></td>
+    <td>상부공이 직선 <code>from/to</code>로 표현되는가. 하부공 도면이 받침 좌표·표고로 기술돼 있는가</td>
+    <td><b>7장 중 1장(중앙분리대)만 끝까지 통과</b> — 4.8058 m³, 모델러·해석 일치. 상세는 11.0.
+        상부공·하부공 질문은 <b>답을 못 얻었다</b>(표기 치수가 있는 일반도가 없었다).
+        실제로 막은 것은 <b>연산이 아니라 입력 해석</b>이었다 — 단위 · 제목 · 축척 · 레이어 · 폐곡선 버그.
+        11.2의 예측(sweep·revolve·경사 말뚝)은 <b>하나도 병목이 아니었다</b></td>
+  </tr>
+  <tr>
+    <td><b>유형 삽도(도해)</b> <span class="badge b-ok">검증</span> <span class="kbd">신규</span></td>
+    <td>치수가 숫자인가 기호인가를 <b>세어본다</b>. 구조 윤곽이 닫히는가</td>
+    <td>일반도와 다른 유형으로 갈라 다룬다(11.4). 기호 치수뿐이거나 윤곽이 안 닫히면
+        <b>솔리드 대상이 아니다</b> — 게이트로 밀어넣기 전에 걸러낸다</td>
+  </tr>
+  <tr>
+    <td><b>DWG 모델단위 혼재</b> <span class="badge b-ok">검증</span> <span class="kbd">신규</span></td>
+    <td><code>DIMENSION.actualMeasurement</code>와 치수 <b>글자</b>를 비교한다</td>
+    <td><code>cfg.unitMm</code>. 상수로 두면 두 번째 도면군에서 <b>모든 값이 1000배</b>로
+        조용히 틀린다 — 폐곡선도 부피도 정상적으로 나오기 때문에 알아채기 어렵다</td>
+  </tr>
+  <tr>
+    <td><b>건축 도면</b> <span class="badge b-bad">가설</span></td>
+    <td>datum이 FL, 앵커가 그리드 통심선으로 바뀌는가</td>
+    <td>규칙 층을 부재 종류별로 분리(벽·슬래브·보). 그리드는 datum의 X·Y 확장</td>
+  </tr>
+  <tr>
+    <td><b>IFC 출력</b> <span class="badge b-bad">가설</span></td>
+    <td><code>part</code>에 <code>ifcClass</code> 추가 후 왕복</td>
+    <td>civil 계열 엔티티명은 스키마 직접 확인. 열린 변(T 정점) 처리 방침 결정</td>
+  </tr>
+  <tr>
+    <td><b>수평 단면 기반 층 스택</b> <span class="badge b-warn">부분</span></td>
+    <td>층별 XY 프로파일을 Z로 쌓았을 때 union 손실이 사라지는가</td>
+    <td>조각이 Z로 <b>진짜 겹치게</b> 만든다. 평면 헌치가 자동으로 따라온다</td>
+  </tr>
+</table>
+
+<h3>12.1 실증할 때 기록할 것</h3>
+<ul class="chk">
+  <li>어느 게이트에서 몇 번 막혔는가 — 방법론의 약한 고리다</li>
+  <li>설정으로 해결됐는가, 코드 수정이 필요했는가 — 후자면 코어에 도면 고유값이 샌 것</li>
+  <li>등급 분포(exact/tolerant/opaque) — 생성기가 얼마나 부족한지의 척도</li>
+  <li>새로 나온 함정 — 증상·원인·대응 3열로 8장에 추가</li>
+  <li>이 문서에서 <b>틀린 것</b> — 표본 하나로 일반화한 자리가 어디였는지</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s12"><span class="num">13</span>용어·필드 사전</h2>
+
+<h3>13.1 뷰 스펙</h3>
+<table>
+  <tr><th>필드</th><th>뜻</th></tr>
+  <tr><td><code>plane</code></td><td>이 뷰가 그리는 평면. <code>XY</code> · <code>XZ</code> · <code>YZ</code></td></tr>
+  <tr><td><code>u0</code></td><td>가로축 원점. <code>프로젝트 = u − u0</code></td></tr>
+  <tr><td><code>v0</code></td><td>세로축 원점. 수직 단면은 생략(표고가 이미 기준)</td></tr>
+  <tr><td><code>flip</code> / <code>flipV</code></td><td>축 방향이 반대. 뒤집기 홀수면 링 감김을 되돌린다</td></tr>
+  <tr><td><code>swapUV</code></td><td>도면 가로축이 프로젝트 Y, 세로축이 X (수평 단면)</td></tr>
+  <tr><td><code>role</code></td><td>generator · assigner · locator · validator (3.2)</td></tr>
+</table>
+
+<h3>13.2 도면 조회 도우미 — <code>fit()</code>만 쓴다</h3>
+<table>
+  <tr><th>도우미</th><th>용도</th><th>실패 시</th></tr>
+  <tr><td><code>loop(뷰, 폭, 높이)</code></td><td>그 치수의 폐곡선</td><td>0개·2개 이상이면 예외. <b>자기교차면 예외</b></td></tr>
+  <tr><td><code>circles(뷰, 지름, 레이어)</code></td><td>원(관통·기둥). u→v 정렬</td><td>없으면 예외 + 있는 목록 제시</td></tr>
+  <tr><td><code>opening(뷰, 폭, 높이)</code></td><td>개구 기호에서 되찾은 개구부</td><td>0개·2개 이상이면 예외</td></tr>
+  <tr><td><code>rect(u0,v0,u1,v1)</code></td><td>직사각 프로파일</td><td>—  값은 <b>반드시 다른 뷰의 실측치</b></td></tr>
+  <tr><td><code>expect(뷰, 폭, 높이, 이유)</code></td><td>실재 확인만. <code>rect</code> 교차검증용</td><td>없으면 예외</td></tr>
+</table>
+
+<h3>13.3 등급·출처</h3>
+<table>
+  <tr><th>값</th><th>뜻</th></tr>
+  <tr><td><code>src: measured / design / derived</code></td><td>도면에서 뽑음 / 사람이 정함 / 식으로 나옴</td></tr>
+  <tr><td><code>grade: exact / tolerant / opaque</code></td><td>파라미터로 완전 재현 / ±ε / 재현 불가 → 좌표째 동결</td></tr>
+  <tr><td><code>kind: topology / design</code></td><td>규칙 종류 — 막는다 / 경고한다</td></tr>
+  <tr><td><code>keep: false</code></td><td>boolean에 소모될 중간 파트. 최종 산출물에만 이름·색을 준다</td></tr>
+</table>
+
+<div class="foot">
+  <p><b>이 문서의 위치</b> — <code>docs/methodology.html</code>.
+  절차는 <code>docs/2d-3d-process.md</code>, 사례별 교훈은 <code>docs/2d-3d-conversion.md</code>,
+  파라메트릭 설계 노트는 <code>docs/parametric.md</code>, 남은 일은 <code>docs/roadmap.md</code>.</p>
+  <p><b>개정 방침</b> — 새 도면을 실증할 때마다 12장의 항목을 검증 등급으로 승격시키고,
+  새로 밟은 함정을 8장에 3열로 추가한다. <b>표본 하나로 일반화한 자리를 표시해두는 것</b>이
+  이 문서의 정직함이다.</p>
+</div>
+
+</main>
+</div>
+</body>
+</html>
