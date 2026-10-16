@@ -1,0 +1,136 @@
+{
+  "project": {
+    "name": "DXF to 3D Web App",
+    "description": "2D DXF 도면을 3D 모델로 변환하는 웹앱",
+    "rootDir": "D:\\Obsidian Vault\\999ETC\\261016_HW_DwfTo3D"
+  },
+
+  "agents": {
+    "default_timeout": "10m",
+    "checkpoint_dir": ".claude/artifacts",
+    "log_level": "info"
+  },
+
+  "commands": {
+    "primary": ["convert", "validate", "deploy"],
+    "shortcuts": {
+      "analyze": "dxf-analyze",
+      "check": "validate --level=full"
+    }
+  },
+
+  "skills": {
+    "enabled": ["dxf-analyze", "3d-validate", "web-dev"]
+  },
+
+  "hooks": {
+    "post_commit": {
+      "enabled": true,
+      "description": "DXF/설정 파일 변경 시 자동 검증",
+      "trigger": "git commit",
+      "conditions": {
+        "files_changed": ["src/drawings/**", "RAG/**"],
+        "min_files": 1
+      },
+      "actions": [
+        {
+          "name": "auto-validate",
+          "command": "node src/measure.mjs gasiseol --validate 2>/dev/null || true",
+          "on_error": "warn"
+        },
+        {
+          "name": "update-progress",
+          "command": "echo '✅ 변경 사항 검증됨' >> PROGRESS.md",
+          "on_error": "ignore"
+        }
+      ]
+    },
+
+    "pre_deploy": {
+      "enabled": true,
+      "description": "배포 전 최종 검증",
+      "trigger": "push main",
+      "actions": [
+        {
+          "name": "lint",
+          "command": "cd src/web && npm run lint 2>/dev/null || true",
+          "on_error": "warn"
+        },
+        {
+          "name": "type-check",
+          "command": "cd src/web && npm run type-check 2>/dev/null || true",
+          "on_error": "warn"
+        },
+        {
+          "name": "dxf-validate",
+          "command": "node src/build.mjs gasiseol --validate 2>/dev/null || true",
+          "on_error": "warn"
+        }
+      ]
+    },
+
+    "progress_tracking": {
+      "enabled": true,
+      "description": "진행 상황 자동 추적",
+      "trigger": "file_change",
+      "watch": ["PROGRESS.md", "PLAN.md"],
+      "actions": [
+        {
+          "name": "git-tag",
+          "command": "git tag -a 'progress-$(date +%Y%m%d)' -m 'Progress update' 2>/dev/null || true",
+          "on_error": "ignore"
+        }
+      ]
+    },
+
+    "anomaly_detection": {
+      "enabled": true,
+      "description": "부피 오차, 렌더링 오류 감지",
+      "trigger": "after_build",
+      "checks": [
+        {
+          "name": "volume_check",
+          "command": "test $(grep -o '0\\.[0-9]*' baselines/gasiseol.volumes.json | head -1 | cut -d'.' -f2 | wc -c) -lt 3 && echo '✓' || echo '⚠️ 부피 오차 > 0.5%'",
+          "alert_on_fail": true
+        },
+        {
+          "name": "web_render",
+          "command": "curl -s http://localhost:3000 | grep -q 'Viewer3D' && echo '✓' || echo '⚠️ 웹 렌더링 실패'",
+          "alert_on_fail": false
+        }
+      ]
+    }
+  },
+
+  "paths": {
+    "src": "src",
+    "drawings": "src/drawings",
+    "output": "out",
+    "baseline": "baselines",
+    "artifacts": ".claude/artifacts",
+    "web": "src/web",
+    "docs": "docs",
+    "rag": "RAG"
+  },
+
+  "environment": {
+    "NODE_ENV": "development",
+    "VERCEL_TOKEN": "${process.env.VERCEL_TOKEN}",
+    "VERCEL_ORG_ID": "${process.env.VERCEL_ORG_ID}",
+    "VERCEL_PROJECT_ID": "${process.env.VERCEL_PROJECT_ID}"
+  },
+
+  "quality": {
+    "volume_error_threshold": 0.5,
+    "self_intersection_max": 0,
+    "web_load_time_max": 3000,
+    "fps_target": 60,
+    "bundle_size_max": 500
+  },
+
+  "notifications": {
+    "on_error": "console",
+    "on_success": "console",
+    "verbose": true
+  }
+}

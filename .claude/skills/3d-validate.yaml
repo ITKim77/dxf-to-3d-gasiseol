@@ -1,0 +1,24 @@
+name: 3d-validate
+description: 3D 모델 검증 (기하학, 부피, 성능)
+
+# 사용법: /3d-validate out/gasiseol.obj
+
+trigger:
+  pattern: "3d-validate"
+  input: "OBJ 또는 IFC 파일"
+
+output:
+  format: "테이블 + 상세 리포트"
+  items:
+    - "기하학 검증 (manifold, 법선, 자기교차)"
+    - "부피 검증 (기준값 대비)"
+    - "정점/면 분석"
+    - "성능 평가"
+
+features:
+  - "폐면 여부 (manifold) 검사"
+  - "부피 오차 계산"
+  - "복잡도 평가"
+  - "렌더링 시간 추정"
+  - "최적화 제안"
+

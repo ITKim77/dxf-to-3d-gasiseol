@@ -1,0 +1,33 @@
+name: web-dev
+description: 웹앱 개발 서버 실행 (로컬 개발용)
+
+# 사용법: /web-dev
+# 또는: /web-dev --port=8080
+
+trigger:
+  pattern: "web-dev"
+  parameters:
+    port:
+      type: integer
+      default: 3000
+      description: "로컬 포트"
+
+output:
+  format: "개발 서버 실행 + 브라우저 자동 열기"
+  info:
+    - "Local: http://localhost:3000"
+    - "번들 정보"
+    - "HMR 활성화"
+
+features:
+  - "Vite 핫 모듈 교체 (HMR)"
+  - "실시간 수정 반영"
+  - "브라우저 자동 새로고침"
+  - "DevTools 지원"
+  - "번들 크기 분석"
+
+commands:
+  start: "cd src/web && npm run dev -- --port={{ port }}"
+  analyze: "cd src/web && npm run build -- --analyze"
+  stop: "Ctrl+C"
+
