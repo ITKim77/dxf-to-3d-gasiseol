@@ -1,0 +1,73 @@
+name: deploy
+description: 웹앱을 Vercel에 배포
+
+# 사용법: /deploy
+# 또는: /deploy --dry-run
+# 또는: /deploy --preview
+
+parameters:
+  options:
+    type: object
+    properties:
+      dry-run:
+        type: boolean
+        description: "실행하지 않고 확인만 (테스트)"
+        default: false
+
+      preview:
+        type: boolean
+        description: "프리뷰 URL 생성 (CI/CD)"
+        default: false
+
+      prod:
+        type: boolean
+        description: "프로덕션 배포 (main 브랜치)"
+        default: false
+
+stages:
+  - name: "🧪 사전 검증"
+    commands:
+      - "/validate --level=full"
+      - "npm run lint --prefix src/web 2>/dev/null || true"
+      - "npm run type-check --prefix src/web 2>/dev/null || true"
+    timeout: "5m"
+    on_error: "abort"
+
+  - name: "🔨 빌드"
+    commands:
+      - "cd src/web && npm run build"
+    check: "dist/ 폴더 생성"
+    timeout: "3m"
+    on_error: "abort"
+
+  - name: "📤 배포"
+    commands:
+      - "if [ '{{ options.dry_run }}' = 'true' ]; then echo '🔍 드라이런 모드 - 배포 안함'; else vercel --token=$VERCEL_TOKEN --{{ options.preview | default: 'prod' }}; fi"
+    timeout: "5m"
+    on_error: "warn"
+
+success_message: |
+  ✅ 배포 완료!
+
+  {{ if options.preview }}
+  🌐 프리뷰 URL: https://dxf-to-3d-preview-xxxxx.vercel.app
+  리뷰 후 프로덕션 배포: /deploy --prod
+  {{ else }}
+  🌐 프로덕션 URL: https://dxf-to-3d.tk
+  {{ endif }}
+
+error_handling:
+  validation_failed: |
+    ❌ 검증 실패 - 배포 중단
+    실패 항목을 수정한 후 다시 시도하세요.
+
+  build_failed: |
+    ❌ 빌드 실패
+    오류를 확인하고 src/web/ 코드를 수정하세요.
+
+  deploy_failed: |
+    ❌ Vercel 배포 실패
+    - 환경 변수 확인 (VERCEL_TOKEN)
+    - 인터넷 연결 확인
+    - Vercel 계정 상태 확인
+

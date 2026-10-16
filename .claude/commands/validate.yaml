@@ -1,0 +1,99 @@
+name: validate
+description: 도면 & 3D 모델 자동 검증 (4단계)
+
+# 사용법: /validate [drawing]
+# 또는: /validate gasiseol --full
+# 또는: /validate --all (모든 도면)
+
+parameters:
+  drawing:
+    type: string
+    description: 도면명 (생략하면 최근 도면)
+    required: false
+
+  options:
+    type: object
+    properties:
+      level:
+        type: string
+        enum: ["1", "2", "3", "4", "full"]
+        description: "검증 수준 (1=기본, 4=완전, full=모든 단계)"
+        default: "full"
+
+      all:
+        type: boolean
+        description: 모든 도면 검증
+        default: false
+
+stages:
+  - name: "Level 1️⃣: 기본 파싱"
+    commands:
+      - "node src/run.mjs {{ drawing }}"
+    checks:
+      - "✓ DXF 로드 성공"
+      - "✓ 엔티티 수 > 0"
+      - "✓ 기준점 감지"
+    timeout: "1m"
+    skip_if: "level < 1"
+
+  - name: "Level 2️⃣: 기하학"
+    commands:
+      - "node src/gaps.mjs {{ drawing }}"
+      - "node src/build.mjs {{ drawing }} --loops"
+    checks:
+      - "✓ 뷰 폭/높이 ±2% 이내"
+      - "✓ 폐곡선 수 일치"
+      - "✓ 자기교차 0개"
+    timeout: "2m"
+    skip_if: "level < 2"
+
+  - name: "Level 3️⃣: 3D 모델"
+    commands:
+      - "node src/build.mjs {{ drawing }}"
+      - "node src/measure.mjs {{ drawing }} --ir"
+      - "node src/measure.mjs {{ drawing }}"
+    checks:
+      - "✓ 부피 오차 < 0.5%"
+      - "✓ manifold 체크"
+      - "✓ 면 무결성"
+    timeout: "5m"
+    skip_if: "level < 3"
+
+  - name: "Level 4️⃣: 시각화"
+    commands:
+      - "npm run build --prefix src/web 2>/dev/null || true"
+    checks:
+      - "✓ 웹 렌더링 성공"
+      - "✓ 부재 정보 표시"
+      - "✓ 조작 가능"
+    timeout: "3m"
+    skip_if: "level < 4"
+
+output_format:
+  type: "table"
+  columns:
+    - "검증 항목"
+    - "상태"
+    - "결과"
+    - "참고"
+
+success_message: |
+  ✅ 모든 검증 통과!
+
+  상태: PASS
+  - Level 1 (파싱): ✓
+  - Level 2 (기하학): ✓
+  - Level 3 (3D): ✓
+  - Level 4 (시각화): ✓
+
+failure_message: |
+  ⚠️ 검증 실패
+
+  실패 항목:
+  {{ failed_checks }}
+
+  권장 조치:
+  1. 기하학 실패 → /step-5 (Research)
+  2. 3D 실패 → /step-6 (Pipeline)
+  3. 시각화 실패 → /step-7 (WebUI)
+

@@ -1,0 +1,112 @@
+name: convert
+description: DXF → 3D 전체 파이프라인 (병렬 처리)
+
+# 사용법: /convert gasiseol
+# 또는: /convert gasiseol --dry-run
+
+parameters:
+  drawing:
+    type: string
+    description: 도면명 (예: gasiseol)
+    required: true
+
+  options:
+    type: object
+    properties:
+      dry-run:
+        type: boolean
+        description: 실행하지 않고 계획만 표시
+        default: false
+
+      parallel:
+        type: boolean
+        description: 병렬 처리 (Research + WebUI 동시)
+        default: true
+
+      skip-web:
+        type: boolean
+        description: WebUI 스킵 (3D만 생성)
+        default: false
+
+stages:
+  # Stage 1: DXF 분석 (필수)
+  - name: "1️⃣ Research"
+    agent: dxf-research
+    description: "DXF 분석 & 설정 파일 생성"
+    input: "RAG/{{ drawing }}*.dxf"
+    output: "src/drawings/{{ drawing }}.mjs"
+    timeout: "5m"
+    on_error: "abort"  # 실패하면 전체 중단
+
+  # Stage 2: 3D 생성 (필수, Stage 1 후)
+  - name: "2️⃣ Pipeline"
+    agent: pipeline-build
+    description: "3D 생성 & 검증"
+    depends_on: ["Research"]
+    input: "src/drawings/{{ drawing }}.mjs"
+    output: "out/{{ drawing }}.obj"
+    timeout: "10m"
+    on_error: "abort"
+
+  # Stage 3: 웹앱 (선택, 병렬)
+  - name: "3️⃣ WebUI"
+    agent: web-ui-dev
+    description: "React 웹앱 개발"
+    parallel_with: ["Research"]  # Research와 동시 진행
+    input: "out/{{ drawing }}.obj"
+    output: "src/web/"
+    timeout: "10m"
+    skip_if: "options.skip_web"
+    on_error: "warn"  # 실패해도 계속
+
+  # Stage 4: 병합 (모든 완료 대기)
+  - name: "4️⃣ Summary"
+    type: "orchestrator"
+    description: "결과 병합 & 최종 검증"
+    depends_on: ["Pipeline"]
+    action: |
+      - 모든 에이전트 완료 대기
+      - 최종 검증 실행 (/validate)
+      - 결과 리포트 생성 (/report)
+      - 배포 준비 (WebUI 있으면)
+    timeout: "2m"
+
+output:
+  primary: "out/{{ drawing }}.obj"
+  secondary:
+    - "out/{{ drawing }}.ifc"
+    - "baselines/{{ drawing }}.volumes.json"
+    - "src/web/" (if WebUI executed)
+
+success_message: |
+  ✅ DXF to 3D 변환 완료!
+
+  📊 결과:
+  - 3D 모델: out/{{ drawing }}.obj
+  - BIM 파일: out/{{ drawing }}.ifc
+  - 부피 검증: baselines/{{ drawing }}.volumes.json
+  - 웹앱: src/web/ ({{ "준비 완료" if not options.skip_web else "스킵됨" }})
+
+  다음: /deploy (웹사이트 배포)
+
+error_handling:
+  Research_failed: |
+    ❌ DXF 분석 실패
+
+    확인 사항:
+    1. RAG/{{ drawing }}*.dxf 파일 존재?
+    2. 파일 포맷 (DWG vs DXF)?
+    3. 인코딩 문제?
+
+    다시 시도: /step-5 (Research만 재실행)
+
+  Pipeline_failed: |
+    ❌ 3D 생성 실패
+
+    확인 사항:
+    1. DXF 설정 파일 유효?
+    2. 폐곡선 폐쇄?
+    3. 자기교차 링?
+
+    디버그: node src/build.mjs {{ drawing }} --loops
+
