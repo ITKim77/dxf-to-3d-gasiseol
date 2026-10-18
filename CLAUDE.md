@@ -282,6 +282,129 @@ git push
 
 ---
 
+---
+
+## 🏗️ 하네스 설계 아키텍처 (단계 7)
+
+### 핵심 원칙
+
+Anthropic의 "harness-design-long-running-apps" 설계를 적용:
+
+#### 1. Tractable Chunks (관리 가능한 단위)
+```
+복잡한 작업 분해 → 각 에이전트가 한 가지만 담당
+
+/convert gasiseol
+├─ Stage 1: Research (도면 분석)
+├─ Stage 2: Pipeline (3D 생성)
+├─ Stage 3: WebUI (앱 개발, 병렬)
+└─ Stage 4: Summary (병합 & 검증)
+```
+
+#### 2. Structured Artifacts (파일 기반 핸드오프)
+```
+에이전트 간 통신 = JSON/JS 파일 (스키마 명시)
+
+Research 생성   →  src/drawings/gasiseol.mjs
+Pipeline 생성   →  out/gasiseol.obj
+Validation      →  baselines/gasiseol.volumes.json
+
+각 파일 = 명확한 계약 → 에이전트가 신뢰할 수 있음
+```
+
+#### 3. 체크포인트 기반 복구
+```
+각 에이전트 완료 후: .claude/artifacts/ 에 스냅샷 저장
+실패 시: 마지막 성공 지점에서 재개
+
+예: Pipeline 실패 → Research 결과는 유지 → Pipeline만 재실행
+```
+
+#### 4. 3-에이전트 검증
+```
+Generator (생성)    ← Research, Pipeline, WebUI
+Evaluator (검증)    ← /validate 커맨드
+Reporter (보고)     ← PROGRESS.md, /report
+```
+
+### 에이전트 의존성
+
+```
+    DXF 파일
+        ↓
+    [Research]  ← 기준점 검출, 설정 파일 생성
+        ↓
+   gasiseol.mjs
+        ↓
+    [Pipeline]  ← 3D 생성, 부피 검증
+        ↓       
+    gasiseol.obj
+        ↓
+   [WebUI] (병렬 가능)  ← 웹앱 개발
+    [Deploy]           ← CI/CD 배포
+```
+
+**병렬**: Research ↔ WebUI (독립적)
+**순차**: Research → Pipeline → Deploy
+
+### 상태 관리
+
+```
+PROGRESS.md
+  ├─ 현재 단계
+  ├─ 완료된 작업
+  ├─ 진행 중인 작업
+  └─ 다음 예정
+
+.claude/artifacts/
+  ├─ gasiseol-checkpoint-1.json (Research 완료)
+  ├─ gasiseol-checkpoint-2.json (Pipeline 완료)
+  └─ debug-*.log (오류 시)
+
+baselines/
+  └─ gasiseol.volumes.json (기준값, 회귀 테스트)
+```
+
+### 오류 복구 절차
+
+```
+1️⃣ 오류 감지
+   /validate 실패 → 어느 에이전트 문제?
+
+2️⃣ 원인 파악
+   - 기하학 오류 → Research 재실행
+   - Boolean 오류 → Pipeline 재실행
+   - 렌더링 오류 → WebUI 재실행
+
+3️⃣ 해당 에이전트만 재개
+   마지막 체크포인트에서 시작
+   이전 단계의 파일은 유지
+
+4️⃣ 재검증
+   /validate --level=full
+
+5️⃣ 진행 상황 업데이트
+   PROGRESS.md 수정
+```
+
+### 품질 계층 (다층 방어)
+
+```
+Layer 1: 파일 존재 확인
+         └─ 각 에이전트 출력 파일 존재?
+
+Layer 2: 스키마 검증
+         └─ JSON/JS 구조 올바름?
+
+Layer 3: 기능 검증
+         └─ 기하학? 부피? 렌더링?
+
+Layer 4: 회귀 검증
+         └─ 기준값과 비교 (오차 < 0.5%)
+```
+
+---
+
 ## 라이선스
 
 이 프로젝트는 [`docs/dwg2model-CLAUDE.md`](docs/dwg2model-CLAUDE.md)를 상속받는다.  
