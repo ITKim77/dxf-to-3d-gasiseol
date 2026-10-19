@@ -290,6 +290,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.min.js"></script>
     <script>
         const canvas = document.getElementById('canvas');
         const width = canvas.clientWidth;
@@ -334,6 +335,15 @@
         };
 
         const DISPLAY_SCALE = 0.01; // mm → cm (1:100)
+
+        // 먼저 샘플 부재 1개로 테스트
+        console.log('=== 샘플 부재 테스트 ===');
+        const testGeometry = new THREE.BoxGeometry(4, 4, 80); // 400×400×8000mm → 4×4×80 (축소)
+        const testMaterial = new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7 });
+        const testMesh = new THREE.Mesh(testGeometry, testMaterial);
+        testMesh.position.set(470, -2830, 100); // 첫 번째 h-pile2 좌표
+        scene.add(testMesh);
+        console.log('✓ 샘플 부재 추가됨 @ (470, -2830)');
 
         // stats.json 로드 및 부재 생성
         fetch('gasiseol-correct-v2-stats.json')
@@ -424,58 +434,30 @@
             });
 
         // 그리드 & 축
-        const gridHelper = new THREE.GridHelper(300000, 20, 0x444444, 0x222222);
-        gridHelper.position.y = -1000;
+        const gridHelper = new THREE.GridHelper(3000, 20, 0x444444, 0x222222);
+        gridHelper.position.y = -2300;
         scene.add(gridHelper);
 
-        const axisHelper = new THREE.AxesHelper(50000);
+        const axisHelper = new THREE.AxesHelper(500);
         scene.add(axisHelper);
 
-        // 마우스 조작
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-
-            const deltaX = e.clientX - previousMousePosition.x;
-            const deltaY = e.clientY - previousMousePosition.y;
-
-            const targetPoint = new THREE.Vector3(0, 0, 0);
-            const direction = camera.position.clone().sub(targetPoint);
-
-            const rotationMatrix = new THREE.Matrix4()
-                .makeRotationAxis(new THREE.Vector3(0, 1, 0), deltaX * 0.005);
-
-            const rightVector = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-            rotationMatrix.multiply(new THREE.Matrix4().makeRotationAxis(rightVector, deltaY * 0.005));
-
-            direction.applyMatrix4(rotationMatrix);
-            camera.position.copy(targetPoint).add(direction);
-            camera.lookAt(targetPoint);
-
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
-        canvas.addEventListener('mouseup', () => { isDragging = false; });
-
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const targetPoint = new THREE.Vector3(0, 0, 0);
-            const direction = camera.position.clone().sub(targetPoint).normalize();
-            const distance = camera.position.distanceTo(targetPoint);
-            const newDistance = distance + e.deltaY * 20;
-            camera.position.copy(targetPoint).addScaledVector(direction, newDistance);
-        });
+        // OrbitControls로 카메라 제어
+        const controls = new THREE.OrbitControls(camera, canvas);
+        controls.target.set(-216, -2554, 0); // 부재 중심을 타겟으로
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = 2;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.0;
+        controls.enablePan = true;
+        controls.panSpeed = 0.5;
+        controls.update();
 
         // 렌더링
         function animate() {
             requestAnimationFrame(animate);
+            controls.update();
             renderer.render(scene, camera);
         }
         animate();
