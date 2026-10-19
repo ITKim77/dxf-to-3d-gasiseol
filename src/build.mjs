@@ -87,7 +87,9 @@ async function buildIR(drawingName) {
         layerCount: Object.keys(dxf.layers).length,
         entityCount: dxf.entities.lines.length +
                      dxf.entities.polylines.length +
-                     dxf.entities.circles.length
+                     dxf.entities.circles.length,
+        layerInfo: dxf.layerInfo,
+        analysis: dxf.analysis
       },
       views,
       dimensions,

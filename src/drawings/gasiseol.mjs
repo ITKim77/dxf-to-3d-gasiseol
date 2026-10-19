@@ -114,43 +114,76 @@ export const gasiseol = {
 
       // 부재 조립 함수 (핵심 로직)
       assemble(ir) {
-        // ir = Intermediate Representation (중간 표현)
-        // → dxf → parse → views → loops → profiles → assemble → IR → egm
-
-        // 예: 가시설 구조
-        // 1. 주 구조물 (주각, 보, 연결부)
-        // 2. 안전장치 (난간, 발판)
-        // 3. 기초/지지부
+        // 실제 도면 분석 결과:
+        // A-GUJO01 레이어: 구조 부재 (H빔, 기둥 등)
+        // A-BASE 레이어: 기초 (원형, 사각형 기초)
+        // A-TEXT03: 규격 정보 (H-300X300X10X15 등)
 
         try {
-          // 평면도에서 폐곡선 추출
-          const planLoops = ir.getLoops('평면도');
+          const parts = [];
 
-          // 주요 부재 (가시설은 보통 단순 기하학)
-          // 예: 사각형 기둥, 보 등
+          // 1. A-GUJO01 레이어 = 구조 부재
+          if (ir.dxf?.layerInfo?.['A-GUJO01']) {
+            const structLines = ir.dxf.layerInfo['A-GUJO01'];
+            // H빔 특성:
+            // - 깊이: 300mm
+            // - 너비: 300mm
+            // - 웹 두께: 10mm
+            // - 플랜지 두께: 15mm
+            parts.push({
+              name: 'H-Beam',
+              type: 'structural',
+              material: 'Steel',
+              spec: 'H-300X300X10X15',
+              quantity: structLines?.length || 0,
+              position: 'main',
+              note: '주 구조 보'
+            });
+          }
 
-          // 종단면으로 높이 정보 추출
-          const elevLoops = ir.getLoops('종단면');
+          // 2. A-BASE 레이어 = 기초
+          if (ir.dxf?.layerInfo?.['A-BASE']) {
+            const baseLines = ir.dxf.layerInfo['A-BASE'];
+            const circles = baseLines?.filter(e => e.type === 'CIRCLE') || [];
 
-          // 횡단면으로 폭 정보 추출
-          const xsectLoops = ir.getLoops('횡단면 A-A');
+            if (circles.length > 0) {
+              parts.push({
+                name: 'Pile',
+                type: 'foundation',
+                material: 'Concrete',
+                diameter: circles[0]?.radius * 2 || 1000,
+                quantity: circles.length,
+                position: 'underground',
+                note: '중앙 기둥 (TYP.)'
+              });
+            }
+          }
 
-          // 3D 조립
-          // 평면도 + 높이 → extrude
-          // 단면 변화 → loft
-          // 연결부 → boolean (union/difference)
+          // 3. 규격 추출 (텍스트에서)
+          const dimensions = ir.dimensions || {};
+          let heightInfo = null;
+
+          for (const [layer, dim] of Object.entries(dimensions)) {
+            if (dim.text?.includes('H-')) {
+              heightInfo = dim;
+              break;
+            }
+          }
 
           return {
             status: 'success',
-            parts: planLoops?.length || 0,
-            message: '가시설 3D 모델 조립 완료'
+            parts: parts.length,
+            details: parts,
+            heightInfo,
+            message: `${parts.length}개 부재 식별됨 (A-GUJO01: 구조, A-BASE: 기초)`,
+            note: '올바른 3D 변환을 위해 각 부재의 규격과 길이를 확인하세요'
           };
 
         } catch (error) {
           return {
             status: 'error',
             message: `조립 오류: ${error.message}`,
-            hint: '도면의 폐곡선을 확인하세요'
+            hint: '레이어 구조를 확인하세요: A-GUJO01(구조), A-BASE(기초)'
           };
         }
       }

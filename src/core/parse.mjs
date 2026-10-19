@@ -80,12 +80,25 @@ export async function parseDXF(filePath) {
     console.log(`[parse]   X: ${bounds.minX.toFixed(0)} ~ ${bounds.maxX.toFixed(0)}`);
     console.log(`[parse]   Y: ${bounds.minY.toFixed(0)} ~ ${bounds.maxY.toFixed(0)}`);
 
+    // 레이어 정보 분석
+    const layerInfo = {};
+    for (const [layer, ents] of Object.entries(entities.layers)) {
+      layerInfo[layer] = ents;
+    }
+
     return {
       header: dxf.header,
       entities,
       bounds,
       blockRecords: dxf.blockRecords || [],
-      layers: dxf.layers || []
+      layers: dxf.layers || [],
+      layerInfo,
+      analysis: {
+        totalLayers: Object.keys(entities.layers).length,
+        majorLayers: Object.keys(entities.layers)
+          .sort((a, b) => (entities.layers[b]?.length || 0) - (entities.layers[a]?.length || 0))
+          .slice(0, 5)
+      }
     };
 
   } catch (error) {
