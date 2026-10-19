@@ -1,0 +1,1738 @@
+{
+  "timestamp": "2026-10-19T04:06:14.595Z",
+  "drawing": "gasiseol",
+  "method": "DXF-Clustering-Based",
+  "totalVolume": "511944.00",
+  "partCount": 287,
+  "parts": [
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "1150×210×572mm",
+      "volume": 52
+    },
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "1150×210×572mm",
+      "volume": 52
+    },
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "1360×0×2040mm",
+      "volume": 184
+    },
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "454×264×252mm",
+      "volume": 23
+    },
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "411×80×739mm",
+      "volume": 66
+    },
+    {
+      "type": "Structural-Beam",
+      "spec": "H-300×300",
+      "dimensions": "454×264×252mm",
+      "volume": 23
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1000×8000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 6283
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "342×342×300",
+      "dimensions": "342×342×300mm",
+      "volume": 35
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "264×264×300",
+      "dimensions": "264×264×300mm",
+      "volume": 21
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "264×264×300",
+      "dimensions": "264×264×300mm",
+      "volume": 21
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×600×300",
+      "dimensions": "60×600×300mm",
+      "volume": 11
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "577×580×300",
+      "dimensions": "577×580×300mm",
+      "volume": 100
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "592×592×300",
+      "dimensions": "592×592×300mm",
+      "volume": 105
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "535×535×300",
+      "dimensions": "535×535×300mm",
+      "volume": 86
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "85×85×300",
+      "dimensions": "85×85×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "342×342×300",
+      "dimensions": "342×342×300mm",
+      "volume": 35
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "577×580×300",
+      "dimensions": "577×580×300mm",
+      "volume": 100
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "535×535×300",
+      "dimensions": "535×535×300mm",
+      "volume": 86
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×600×300",
+      "dimensions": "60×600×300mm",
+      "volume": 11
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "1800×60×300",
+      "dimensions": "1800×60×300mm",
+      "volume": 32
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "592×592×300",
+      "dimensions": "592×592×300mm",
+      "volume": 105
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "2259×60×300",
+      "dimensions": "2259×60×300mm",
+      "volume": 41
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "2259×60×300",
+      "dimensions": "2259×60×300mm",
+      "volume": 41
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "342×342×300",
+      "dimensions": "342×342×300mm",
+      "volume": 35
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "577×580×300",
+      "dimensions": "577×580×300mm",
+      "volume": 100
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "535×535×300",
+      "dimensions": "535×535×300mm",
+      "volume": 86
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "19×19×300",
+      "dimensions": "19×19×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "264×264×300",
+      "dimensions": "264×264×300mm",
+      "volume": 21
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "264×264×300",
+      "dimensions": "264×264×300mm",
+      "volume": 21
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "13×13×300",
+      "dimensions": "13×13×300mm",
+      "volume": 0
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "100×146×300",
+      "dimensions": "100×146×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "46×46×300",
+      "dimensions": "46×46×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "577×580×300",
+      "dimensions": "577×580×300mm",
+      "volume": 100
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "535×535×300",
+      "dimensions": "535×535×300mm",
+      "volume": 86
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "342×342×300",
+      "dimensions": "342×342×300mm",
+      "volume": 35
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "85×85×300",
+      "dimensions": "85×85×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "1800×60×300",
+      "dimensions": "1800×60×300mm",
+      "volume": 32
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "44×44×300",
+      "dimensions": "44×44×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "146×100×300",
+      "dimensions": "146×100×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×2600×300",
+      "dimensions": "60×2600×300mm",
+      "volume": 47
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×2600×300",
+      "dimensions": "60×2600×300mm",
+      "volume": 47
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "592×592×300",
+      "dimensions": "592×592×300mm",
+      "volume": 105
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "592×592×300",
+      "dimensions": "592×592×300mm",
+      "volume": 105
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×130×300",
+      "dimensions": "60×130×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "113×110×300",
+      "dimensions": "113×110×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "98×20×300",
+      "dimensions": "98×20×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "98×28×300",
+      "dimensions": "98×28×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×130×300",
+      "dimensions": "60×130×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "113×110×300",
+      "dimensions": "113×110×300mm",
+      "volume": 4
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "60×60×300",
+      "dimensions": "60×60×300mm",
+      "volume": 1
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "85×85×300",
+      "dimensions": "85×85×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Retaining-Wall-Panel",
+      "spec": "85×85×300",
+      "dimensions": "85×85×300mm",
+      "volume": 2
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×900mm",
+      "volume": 36
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×900mm",
+      "volume": 36
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×900mm",
+      "volume": 36
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×603mm",
+      "volume": 24
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×818mm",
+      "volume": 33
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×2440mm",
+      "volume": 98
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×818mm",
+      "volume": 33
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×5944mm",
+      "volume": 238
+    },
+    {
+      "type": "Center-Pile",
+      "spec": "H-200×200",
+      "dimensions": "200×200×5944mm",
+      "volume": 238
+    }
+  ],
+  "typeCount": {
+    "Structural-Beam": 6,
+    "Foundation-Pile": 81,
+    "Retaining-Wall-Panel": 191,
+    "Center-Pile": 9
+  },
+  "status": "CLUSTERING_BASED"
+}

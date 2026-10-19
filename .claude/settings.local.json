@@ -18,7 +18,8 @@
       "Bash(npm --version)",
       "Bash(egm --version)",
       "Bash(npm install *)",
-      "Bash(node src/build/generate-3d.mjs gasiseol)"
+      "Bash(node src/build/generate-3d.mjs gasiseol)",
+      "Bash(node -e ' *)"
     ]
   }
 }
