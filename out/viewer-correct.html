@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>올바른 3D 모델 - 계획도 + 상세도 통합</title>
+    <title>가시설 3D 모델 뷰어</title>
     <style>
         html, body {
             margin: 0;
@@ -72,19 +72,6 @@
             background: #718096;
         }
 
-        .panel > * {
-            flex-shrink: 0;
-            width: 100%;
-        }
-
-        .panel > :not(:last-child) {
-            margin-bottom: 8px;
-        }
-
-        .panel > :nth-last-child(1) {
-            margin-top: auto;
-        }
-
         .panel h2 {
             color: #10b981;
             font-size: 13px;
@@ -131,15 +118,6 @@
             border-left: 3px solid #10b981;
         }
 
-        .section h3 {
-            color: #10b981;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
         .stat-row {
             display: flex;
             justify-content: space-between;
@@ -157,72 +135,35 @@
             color: #10b981;
         }
 
-        .info-box {
-            padding: 12px;
-            background: #1a3a1a;
-            border-left: 3px solid #10b981;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #7fd87f;
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
-
-        .part-type {
-            padding: 10px;
-            margin: 8px 0;
-            background: #1a1f2e;
-            border-radius: 6px;
-            border-left: 4px solid;
-            font-size: 12px;
-        }
-
-        .part-type.h-beam { border-left-color: #ff6b6b; }
-        .part-type.pile { border-left-color: #7ed321; }
-        .part-type.panel { border-left-color: #4a90e2; }
-        .part-type.strut { border-left-color: #f5a623; }
-
-        .part-name {
-            font-weight: 600;
-            color: #e2e8f0;
-            margin-bottom: 4px;
-        }
-
-        .part-info {
-            color: #718096;
-            font-size: 11px;
-        }
-
-        .controls {
-            padding: 12px;
-            background: #252d3d;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 11px;
-            color: #cbd5e0;
-            line-height: 1.6;
-        }
-
         .legend {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 15px;
+            margin-top: 8px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .legend-color {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 2px;
         }
 
+        .controls {
+            padding: 8px;
+            background: #252d3d;
+            border-radius: 6px;
+            margin-top: auto;
+            font-size: 10px;
+            color: #cbd5e0;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -230,15 +171,13 @@
         <canvas id="canvas"></canvas>
         <div class="panel">
             <h2>📊 모델 정보</h2>
-
             <span class="badge">가시설 계획도 3D</span>
 
             <div id="loadingMsg" class="loading">
                 ⏳ 모델 로드 중...
             </div>
 
-            <!-- 통계 섹션 -->
-            <div class="section" style="margin-top: 10px;">
+            <div class="section">
                 <h3>📈 부재 수량</h3>
                 <div class="stat-row">
                     <span class="stat-label">총 부재:</span>
@@ -250,37 +189,20 @@
                 </div>
             </div>
 
-            <!-- 부재 구성 섹션 -->
             <div class="section">
                 <h3>🏗️ 부재 구성</h3>
-                <div style="font-size: 11px; line-height: 1.6; color: #cbd5e0;">
-                    <div style="margin-bottom: 8px;">
-                        <strong style="color: #ff6b6b;">가시설4</strong> (H-빔)<br>
-                        <span style="color: #a0aec0;">52개</span>
-                    </div>
-                    <div style="margin-bottom: 8px;">
-                        <strong style="color: #7ed321;">h-pile2</strong> (기초파일)<br>
-                        <span style="color: #a0aec0;">244개, H-400×400×8000mm</span>
-                    </div>
-                    <div style="margin-bottom: 8px;">
-                        <strong style="color: #4a90e2;">토류판</strong> (흙막이판)<br>
-                        <span style="color: #a0aec0;">240개, PL-700×360×14mm</span>
-                    </div>
-                    <div style="margin-bottom: 8px;">
-                        <strong style="color: #7ed321;">H-PILE</strong> (파일)<br>
-                        <span style="color: #a0aec0;">26개</span>
-                    </div>
-                    <div>
-                        <strong style="color: #f5a623;">스터럿</strong> (버팀목)<br>
-                        <span style="color: #a0aec0;">26개</span>
-                    </div>
+                <div style="font-size: 10px; line-height: 1.5; color: #cbd5e0;">
+                    <div style="margin-bottom: 4px;"><strong style="color: #ff6b6b;">가시설4</strong> 52개</div>
+                    <div style="margin-bottom: 4px;"><strong style="color: #7ed321;">h-pile2</strong> 244개</div>
+                    <div style="margin-bottom: 4px;"><strong style="color: #4a90e2;">토류판</strong> 240개</div>
+                    <div style="margin-bottom: 4px;"><strong style="color: #7ed321;">H-PILE</strong> 26개</div>
+                    <div><strong style="color: #f5a623;">스터럿</strong> 26개</div>
                 </div>
             </div>
 
-            <!-- 범례 섹션 -->
             <div class="section">
                 <h3>🎨 범례</h3>
-                <div class="legend" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color" style="background: #ff6b6b;"></div>
                         <span>H-빔</span>
@@ -300,19 +222,11 @@
                 </div>
             </div>
 
-            <!-- 조작 가이드 -->
             <div class="controls">
                 <h3>⌨️ 조작</h3>
-                <div style="font-size: 11px; color: #cbd5e0; line-height: 1.8;">
-                    <strong>마우스:</strong><br>
-                    • 좌클릭 드래그 = 회전<br>
-                    • 휠 스크롤 = 확대/축소<br>
-                    <br>
-                    <strong>화면:</strong><br>
-                    • 3D 배치 확인<br>
-                    • 부재 형상 검증<br>
-                    • 구조 파악
-                </div>
+                좌클릭 드래그: 회전<br>
+                우클릭 드래그: 이동<br>
+                휠: 확대/축소
             </div>
         </div>
     </div>
@@ -328,8 +242,6 @@
         scene.background = new THREE.Color(0x1a3a52);
 
         const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500000);
-        // 부재 중심을 향하도록 설정 (정확한 좌표 범위)
-        // 중심: (-216, -2554), 폭: 1373, 높이: 552
         camera.position.set(-216, -2554, 3000);
         camera.lookAt(-216, -2554, 0);
 
@@ -350,6 +262,26 @@
         const hemis = new THREE.HemisphereLight(0x87ceeb, 0x333333, 0.4);
         scene.add(hemis);
 
+        // 추가 조명
+        const pointLight = new THREE.PointLight(0xffffff, 0.8, 10000);
+        pointLight.position.set(500, 500, 500);
+        scene.add(pointLight);
+
+        // OrbitControls (먼저 초기화!)
+        const controls = new THREE.OrbitControls(camera, canvas);
+        controls.target.set(-216, -2554, 0);
+        controls.autoRotate = false;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.0;
+        controls.enablePan = true;
+        controls.panSpeed = 0.5;
+        controls.update();
+
+        console.log('=== 3D 뷰어 초기화 ===');
+        console.log('✓ OrbitControls 준비 완료');
+
         // 재질
         const getMaterial = (type) => {
             const colors = {
@@ -362,133 +294,15 @@
             return new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.2 });
         };
 
-        const DISPLAY_SCALE = 0.01; // mm → cm (1:100)
+        const DISPLAY_SCALE = 0.01;
 
-        // 디버깅 정보 추가
-        console.log('=== 3D 뷰어 초기화 ===');
-        console.log('카메라 위치:', camera.position);
-        console.log('카메라 타겟:', controls.target);
-
-        // 배경 밝게 변경해서 테스트
-        scene.background = new THREE.Color(0x1a3a52);
-        console.log('배경색 설정 완료');
-
-        // 샘플 부재 추가 (테스트용)
-        console.log('샘플 부재 생성 중...');
-        const testGeometry = new THREE.BoxGeometry(4, 4, 80); // 400×400×8000mm → 4×4×80
-        const testMaterial = new THREE.MeshStandardMaterial({
-            color: 0x7ed321,
-            roughness: 0.7,
-            emissive: 0x2d5a2d
-        });
-        const testMesh = new THREE.Mesh(testGeometry, testMaterial);
-        testMesh.position.set(0, -2554, 100); // 부재 중심 좌표
+        // 샘플 부재 (테스트용)
+        const testGeo = new THREE.BoxGeometry(4, 4, 80);
+        const testMat = new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7, emissive: 0x2d5a2d });
+        const testMesh = new THREE.Mesh(testGeo, testMat);
+        testMesh.position.set(0, -2554, 100);
         scene.add(testMesh);
-        console.log('✓ 샘플 부재 @ (0, -2554, 100) - 녹색');
-
-        // 추가 조명
-        const testLight = new THREE.PointLight(0xffffff, 1.0, 10000);
-        testLight.position.set(500, 500, 500);
-        scene.add(testLight);
-        console.log('✓ 테스트 조명 추가됨');
-
-        // stats.json 로드 및 부재 생성
-        console.log('stats.json 로드 시작...');
-        fetch('gasiseol-correct-v2-stats.json')
-            .then(r => {
-                console.log('응답 상태:', r.status);
-                return r.json();
-            })
-            .then(data => {
-                console.log('📊 JSON 파싱 완료');
-                console.log('총 부재:', data.totalParts);
-                console.log('배치 부재:', data.parts.length);
-
-                let addedCount = 0;
-                // 각 부재를 3D 메시로 생성
-                data.parts.forEach((part, idx) => {
-                    let geometry;
-                    const { blockType, type, spec, position, volume } = part;
-
-                    // 부재 타입별 3D 형상 생성
-                    if (type === 'Pile') {
-                        // H-PILE 형상 (H-beam 박스)
-                        geometry = new THREE.BoxGeometry(
-                            400 * DISPLAY_SCALE,
-                            400 * DISPLAY_SCALE,
-                            8000 * DISPLAY_SCALE
-                        );
-                    } else if (type === 'Panel') {
-                        // 판재 - 규격에서 가로×세로×두께 추출
-                        let w = 700, h = 360, d = 14;
-                        if (spec && spec.includes('×')) {
-                            const match = spec.match(/PL\.-(\d+)×(\d+)×(\d+)/);
-                            if (match) {
-                                w = parseInt(match[1]);
-                                h = parseInt(match[2]);
-                                d = parseInt(match[3]);
-                            }
-                        }
-                        geometry = new THREE.BoxGeometry(
-                            w * DISPLAY_SCALE,
-                            h * DISPLAY_SCALE,
-                            d * DISPLAY_SCALE
-                        );
-                    } else if (type === 'H-Beam') {
-                        // H-빔 - H-400×400×13×21
-                        let w = 400, h = 400, d = 6000;
-                        if (spec && spec.includes('H-')) {
-                            const match = spec.match(/H-(\d+)×(\d+)/);
-                            if (match) {
-                                w = parseInt(match[1]);
-                                h = parseInt(match[2]);
-                            }
-                        }
-                        geometry = new THREE.BoxGeometry(
-                            w * DISPLAY_SCALE,
-                            h * DISPLAY_SCALE,
-                            d * DISPLAY_SCALE
-                        );
-                    } else if (type === 'Strut') {
-                        // 버팀목 - 200×200×4000
-                        geometry = new THREE.BoxGeometry(
-                            200 * DISPLAY_SCALE,
-                            200 * DISPLAY_SCALE,
-                            4000 * DISPLAY_SCALE
-                        );
-                    } else {
-                        geometry = new THREE.BoxGeometry(
-                            300 * DISPLAY_SCALE,
-                            300 * DISPLAY_SCALE,
-                            3000 * DISPLAY_SCALE
-                        );
-                    }
-
-                    const mesh = new THREE.Mesh(geometry, getMaterial(type));
-                    mesh.position.set(position.x, position.y, position.z);
-                    mesh.userData = { blockType, type, spec, volume };
-
-                    scene.add(mesh);
-                    addedCount++;
-
-                    if (addedCount <= 3 || addedCount % 100 === 0) {
-                        console.log(`[${addedCount}] ${blockType} @ (${position.x.toFixed(0)}, ${position.y.toFixed(0)}, ${position.z})`);
-                    }
-                });
-
-                console.log('✅ ' + addedCount + '개 부재 씬에 추가됨');
-
-                // UI 업데이트
-                document.getElementById('totalParts').textContent = data.totalParts + '개';
-                document.getElementById('totalVolume').textContent = Math.round(data.totalVolume).toLocaleString() + ' m³';
-                document.getElementById('loadingMsg').style.display = 'none';
-
-                console.log('✅ 3D 모델 생성 완료');
-            })
-            .catch(err => {
-                console.error('❌ 로드 오류:', err);
-                document.getElementById('loadingMsg').innerHTML = '❌ 부재 데이터 로드 실패<br>' + err.message;
-            });
+        console.log('✓ 샘플 부재 추가됨');
 
         // 그리드 & 축
         const gridHelper = new THREE.GridHelper(3000, 20, 0x444444, 0x222222);
@@ -498,18 +312,56 @@
         const axisHelper = new THREE.AxesHelper(500);
         scene.add(axisHelper);
 
-        // OrbitControls로 카메라 제어
-        const controls = new THREE.OrbitControls(camera, canvas);
-        controls.target.set(-216, -2554, 0); // 부재 중심을 타겟으로
-        controls.autoRotate = false;
-        controls.autoRotateSpeed = 2;
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 1.0;
-        controls.enablePan = true;
-        controls.panSpeed = 0.5;
-        controls.update();
+        // stats.json 로드
+        console.log('stats.json 로드 시작...');
+        fetch('gasiseol-correct-v2-stats.json')
+            .then(r => {
+                console.log('응답:', r.status);
+                return r.json();
+            })
+            .then(data => {
+                console.log('✓ JSON 파싱 완료');
+                console.log('총 부재:', data.totalParts);
+
+                let count = 0;
+                data.parts.forEach(part => {
+                    let geometry;
+                    const { blockType, type, spec, position, volume } = part;
+
+                    if (type === 'Pile') {
+                        geometry = new THREE.BoxGeometry(4, 4, 80);
+                    } else if (type === 'Panel') {
+                        geometry = new THREE.BoxGeometry(7, 3.6, 0.14);
+                    } else if (type === 'H-Beam') {
+                        geometry = new THREE.BoxGeometry(4, 4, 60);
+                    } else if (type === 'Strut') {
+                        geometry = new THREE.BoxGeometry(2, 2, 40);
+                    } else {
+                        geometry = new THREE.BoxGeometry(3, 3, 30);
+                    }
+
+                    const mesh = new THREE.Mesh(geometry, getMaterial(type));
+                    mesh.position.set(position.x, position.y, position.z);
+                    scene.add(mesh);
+                    count++;
+
+                    if (count <= 3 || count % 100 === 0) {
+                        console.log(`[${count}] ${blockType} @ (${position.x.toFixed(0)}, ${position.y.toFixed(0)})`);
+                    }
+                });
+
+                console.log('✓ ' + count + '개 부재 추가됨');
+
+                document.getElementById('totalParts').textContent = data.totalParts + '개';
+                document.getElementById('totalVolume').textContent = Math.round(data.totalVolume).toLocaleString() + ' m³';
+                document.getElementById('loadingMsg').style.display = 'none';
+
+                console.log('✅ 완료!');
+            })
+            .catch(err => {
+                console.error('❌ 오류:', err);
+                document.getElementById('loadingMsg').innerHTML = '❌ 로드 실패<br>' + err.message;
+            });
 
         // 렌더링
         function animate() {
@@ -519,7 +371,7 @@
         }
         animate();
 
-        // 윈도우 리사이징
+        // 리사이징
         window.addEventListener('resize', () => {
             const newWidth = canvas.clientWidth;
             const newHeight = canvas.clientHeight;
