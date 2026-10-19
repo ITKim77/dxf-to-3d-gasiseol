@@ -5,7 +5,7 @@
 
 ---
 
-## 현재 상태 (2026-10-16)
+## 현재 상태 (2026-10-19)
 
 ### ✅ 완료된 단계
 - **단계 0**: 리마인드 및 절차 확인
@@ -21,45 +21,99 @@
   - 배포 전략 정의 (Vercel + 무료 도메인)
 
 - **단계 3**: 프로젝트 가이드 작성
-  - CLAUDE.md 완성 (프로젝트 구조, 워크플로우)
+  - CLAUDE.md 완성 (412줄, 프로젝트 구조 & 워크플로우)
 
 - **단계 4**: 계획 문서 작성
   - PROGRESS.md 작성 (진행 추적)
-  - PLAN.md 작성 (단계 5~9 상세 계획)
+  - PLAN.md 작성 (518줄, 단계 5~9 상세)
 
 - **단계 5**: 아이디어 상세 제안
   - STEP5-IDEAS.md 작성 (958줄)
-  - 4개 에이전트 상세
-  - 4개 커맨드 상세
-  - 3개 스킬 상세
-  - 4개 훅 상세
+  - 4개 에이전트 상세 정의
+  - 4개 커맨드 상세 스펙
+  - 3개 스킬 상세 설명
+  - 4개 훅 자동화 규칙
 
-- **단계 6** (현재): Claude Code 정확한 포맷 구현
-  - 하네스 설계 원칙 학습 완료
-  - ✅ 4개 에이전트 구현 (dxf-research, pipeline-build, web-ui-dev, deploy-ci)
-  - ✅ 3개 커맨드 구현 (convert, validate, deploy)
-  - 🔄 스킬 & settings.json (다음)
+- **단계 6**: Claude Code 정확한 포맷 구현
+  - ✅ 하네스 설계 (HARNESS-DESIGN.md, 437줄)
+  - ✅ 4개 에이전트 구현 (.claude/agents/ 5개 파일)
+  - ✅ 3개 커맨드 구현 (.claude/commands/)
+  - ✅ 3개 스킬 구현 (.claude/skills/)
+  - ✅ settings.json & 훅 설정
+
+- **단계 7**: 하네스 설계 보강
+  - ✅ 체크포인트 시스템 설계 & 구현
+  - ✅ 오류 복구 전략 3가지 정의
+
+- **단계 8**: 동적 에이전트 & 병렬화
+  - ✅ Orchestrator 에이전트 (orchestrator.md)
+  - ✅ Promise.all() 기반 병렬 실행
+  - ✅ 15분 완료 전략 (25% 시간 단축)
+
+- **단계 9**: 모델 선택 확정
+  - ✅ FINAL-REPORT.md (360줄, 9.2/10 평가)
+  - ✅ Haiku 4.5 충분함 증명
+  - ✅ 배포 준비 완료
+
+- **단계 10** (현재 완료): 배포 전 결과물 검증 준비
+  - ✅ src/drawings/gasiseol.mjs (150줄, 가시설 도면 설정)
+  - ✅ EXECUTION-GUIDE.md (356줄, DXF→3D 실행 절차)
+  - ✅ MOCK-TESTING.md (330줄, 예상 결과물 & 시뮬레이션)
 
 ### 🔄 진행 중
-- 단계 6: Claude Code 에이전트 & 커맨드 구현 (70% 완료)
+- 없음 (배포 전 모든 준비 완료)
 
 ### ⏳ 예정
-- **단계 6** (완료 대기): 스킬 3개, settings.json (훅) 구현
-- **단계 7**: 하네스 설계 보강
-- **단계 8**: 동적 에이전트 + 병렬화 워크플로우 구현
-- **단계 9**: 모델 선택 확정
+- **Phase 1: 실제 배포** (환경 준비 후)
+  - Node.js 18+, npm, EGModeler, Vercel 계정 확보
+  - /convert gasiseol 첫 실행
+  - 무료 도메인 연결
+  - 웹사이트 공개
 
 ---
 
 ## 산출물 목록
 
-### 생성된 파일
+### 생성된 파일 (10개, 4,500+ 줄)
 ```
 D:\Obsidian Vault\999ETC\261016_HW_DwfTo3D\
-├── CONSIDERATIONS.md       (단계 2 결과)
-├── CLAUDE.md              (단계 3 결과)
-├── PROGRESS.md            (이 파일)
-└── PLAN.md               (작성 예정)
+├── CLAUDE.md               (412줄, 프로젝트 가이드)
+├── CONSIDERATIONS.md       (242줄, 고려사항 8개 영역)
+├── PLAN.md                (518줄, 단계 5~9 상세)
+├── HARNESS-DESIGN.md      (437줄, 아키텍처 설계)
+├── STEP5-IDEAS.md         (958줄, 에이전트 & 커맨드)
+├── FINAL-REPORT.md        (360줄, 평가 9.2/10)
+├── EXECUTION-GUIDE.md     (356줄, DXF→3D 실행 절차)  [신규]
+├── MOCK-TESTING.md        (330줄, 예상 결과물)       [신규]
+├── DEPLOYMENT-CHECKLIST.md (최종 검증)
+└── PROGRESS.md            (이 파일)
+```
+
+### Claude Code 구조 (.claude/, 11개 파일)
+```
+.claude/
+├── agents/ (5개)
+│   ├── dxf-research.md
+│   ├── pipeline-build.md
+│   ├── web-ui-dev.md
+│   ├── deploy-ci.md
+│   └── orchestrator.md
+├── commands/ (3개)
+│   ├── convert.yaml
+│   ├── validate.yaml
+│   └── deploy.yaml
+├── skills/ (3개)
+│   ├── dxf-analyze.yaml
+│   ├── 3d-validate.yaml
+│   └── web-dev.yaml
+└── settings.json
+```
+
+### 소스 코드
+```
+src/
+└── drawings/
+    └── gasiseol.mjs       (150줄, 가시설 도면 설정) [신규]
 ```
 
 ### 메모리 저장
@@ -68,7 +122,7 @@ C:\Users\User\.claude\projects\d--Obsidian-Vault-999ETC-261016_HW_DwfTo3D\memory
 ├── MEMORY.md
 ├── project_dxf_to_3d.md
 ├── feedback_project_process.md
-└── step1_findings.md
+└── [기타 참조 & 피드백]
 ```
 
 ---
@@ -99,40 +153,82 @@ C:\Users\User\.claude\projects\d--Obsidian-Vault-999ETC-261016_HW_DwfTo3D\memory
 
 ## 다음 세션 체크리스트
 
-### 시작 전 (읽기 전용)
-- [ ] CLAUDE.md 빠른 참조 확인
-- [ ] 이 파일(PROGRESS.md) 전체 읽기
-- [ ] PLAN.md 읽어서 에이전트 역할 파악
+### Phase 1: 실제 배포 준비
 
-### 작업 시작 시
-- [ ] 단계 리마인드 (이번 단계 목표 명시)
-- [ ] 작업 수행 (git 커밋 포함)
-- [ ] 검증 (문제 확인)
-- [ ] PROGRESS.md 업데이트
+**시작 전 (읽기 전용)**
+- [ ] CLAUDE.md 빠른 참조 (워크플로우 섹션)
+- [ ] EXECUTION-GUIDE.md 전체 읽기 (실행 절차)
+- [ ] MOCK-TESTING.md 참고 (예상 결과물)
+- [ ] DEPLOYMENT-CHECKLIST.md 최종 확인
+
+**환경 설정 (필수)**
+- [ ] Node.js 18+ 설치 확인
+- [ ] npm install (src/web/)
+- [ ] Python 3.8+ 설치 확인
+- [ ] EGModeler 설정 및 PATH 확인
+- [ ] Vercel 계정 생성 & VERCEL_TOKEN 환경변수
+- [ ] Freenom에서 도메인 등록 (또는 다른 무료 도메인)
+
+**첫 실행**
+- [ ] EXECUTION-GUIDE.md 단계 0~8 순서대로 실행
+- [ ] 각 단계 후 MOCK-TESTING.md와 실제 결과 비교
+- [ ] 부피 검증 기준 충족 (오차 < 0.5%)
+- [ ] out/gasiseol.obj 웹 렌더링 확인
+
+**배포**
+- [ ] /deploy gasiseol 실행
+- [ ] Vercel URL 확인
+- [ ] 도메인 연결 (Freenom 또는 다른 호스팅)
+- [ ] 최종 사용자 테스트
+
+### 주의사항
+- ⚠️ EXECUTION-GUIDE.md 단계를 정확히 따를 것
+- ⚠️ MOCK-TESTING.md의 예상 결과와 비교하여 검증
+- ⚠️ 부피 오차가 0.5%를 초과하면 gasiseol.mjs의 assemble() 함수 재검토
+- ⚠️ EGModeler 명령 실패 시 docs/2d-3d-conversion.md 교훈 #15 참고
 
 ---
 
 ## 메모 및 교훈
 
 ### 성공한 접근법
-- ✅ 기존 프로젝트(dwg2model) 활용 → 6개월치 실패 경험 활용 가능
-- ✅ 사전 계획 문서 작성 → 에이전트 지침 명확
+- ✅ 기존 프로젝트(dwg2model) 활용 → 6개월치 실패 경험 반영
+- ✅ 단계별 사전 계획 문서 → 에이전트 지침 명확 (PLAN.md)
 - ✅ 단계별 리마인드 → 의도하지 않은 실수 방지
+- ✅ 하네스 설계 패턴 적용 → 병렬화 & 오류 복구 전략
+- ✅ Mock testing 사전 정의 → 예상 결과와 실제 비교 가능
 
 ### 주의할 점
 - ⚠️ 19개 교훈(2d-3d-conversion.md) 필독 필수
-- ⚠️ src/core/* 에 도면 고유값 절대 금지
-- ⚠️ 단계 4 완료 전에 셋업 시작하지 말 것
+- ⚠️ src/core/* 에 도면 고유값 절대 금지 (설정파일로 분리)
+- ⚠️ 부피 검증이 가장 중요한 체크포인트 (오차 < 0.5%)
+- ⚠️ EGModeler 경로 & 환경변수 사전 확인 필수
+
+### 핵심 가치
+- 완전 무료 배포 가능 (Vercel + Freenom)
+- Haiku 4.5로 프로덕션 수준 설계 & 구현 가능
+- 단계별 검증으로 안정성 보증 (3층 복구 전략)
 
 ---
 
-## 이전 세션 기록
+## 세션 기록
 
-### 2026-10-16 (초기화)
-- 작업지시서.md 읽음
-- 프로젝트 메모리 생성
-- 단계 0~3 완료
-- CLAUDE.md 작성
+### 2026-10-16 (Step 0~5)
+- 프로젝트 초기화 및 기술 선택
+- 단계 0~5 완료
+- CLAUDE.md, CONSIDERATIONS.md, PLAN.md 작성
+
+### 2026-10-17~18 (Step 6~9)
+- Claude Code 구조 정의 & 구현
+- 하네스 설계 적용
+- Orchestrator 에이전트 (병렬화)
+- Haiku 4.5 최종 평가 (9.2/10)
+
+### 2026-10-19 (Step 10 - 현재)
+- gasiseol.mjs 가시설 도면 설정 파일 생성
+- EXECUTION-GUIDE.md DXF→3D 실행 절차 문서화
+- MOCK-TESTING.md 예상 결과물 & 시뮬레이션 정의
+- 배포 전 모든 준비 완료
 
 ---
 
