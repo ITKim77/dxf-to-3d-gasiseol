@@ -4,7 +4,21 @@
       "Bash(git init *)",
       "Bash(git config *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'step3-4: 프로젝트 기본 구조 & 상세 계획 수립 *)"
+      "Bash(git commit -m 'step3-4: 프로젝트 기본 구조 & 상세 계획 수립 *)",
+      "Bash(git commit -m 'step5: 에이전트/커맨드/스킬/훅 아이디어 상세 제안 *)",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(git commit -m 'step6: Claude Code 에이전트 & 커맨드 정확한 포맷 구현 \\(1단계\\) *)",
+      "Bash(git commit *)",
+      "Bash(git commit -m 'step6: Claude Code 구조 완성 \\(에이전트, 커맨드, 스킬, 훅\\) *)",
+      "Bash(git commit -m 'step7: 하네스 설계 아키텍처 보강 *)",
+      "Bash(git commit -m 'step8: 워크플로우 구현 \\(Orchestrator 에이전트\\) *)",
+      "Bash(git commit -m 'step9: 최종 평가 및 프로젝트 완료 *)",
+      "Bash(git commit -m '배포 전 검증: 모든 파일 완성 확인 *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm --version)",
+      "Bash(egm --version)",
+      "Bash(npm install *)",
+      "Bash(node src/build/generate-3d.mjs gasiseol)"
     ]
   }
 }

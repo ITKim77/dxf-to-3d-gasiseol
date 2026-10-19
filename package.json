@@ -1,0 +1,31 @@
+{
+  "name": "dxf-to-3d-web",
+  "version": "1.0.0",
+  "description": "Convert 2D DXF drawings to 3D models for web visualization",
+  "type": "module",
+  "main": "src/run.mjs",
+  "scripts": {
+    "validate": "node src/run.mjs",
+    "build": "node src/build.mjs",
+    "generate-3d": "node src/build/generate-3d.mjs",
+    "measure": "node src/measure.mjs",
+    "dev": "cd src/web && npm run dev",
+    "build:web": "cd src/web && npm run build"
+  },
+  "keywords": [
+    "dxf",
+    "3d",
+    "three.js",
+    "web",
+    "conversion"
+  ],
+  "author": "Claude Haiku 4.5",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "three": "latest",
+    "dxf-parser": "latest"
+  },
+  "devDependencies": {
+    "node": ">=18.0.0"
+  }
+}

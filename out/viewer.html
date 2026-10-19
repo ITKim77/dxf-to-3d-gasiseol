@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DXF to 3D - 가시설 모델 뷰어</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            height: 90%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            display: flex;
+            overflow: hidden;
+        }
+
+        #canvas {
+            flex: 1;
+            background: linear-gradient(to bottom, #87ceeb 0%, #e0f6ff 100%);
+        }
+
+        .panel {
+            width: 300px;
+            background: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+        }
+
+        .panel h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+            padding: 12px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .info-group h3 {
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .info-item span:last-child {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .part-list {
+            margin-top: 15px;
+        }
+
+        .part-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 3px;
+            font-size: 13px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .part-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .part-volume {
+            color: #666;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .controls p {
+            margin: 5px 0;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #2e7d32;
+        }
+
+        .status.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="panel">
+            <h2>📐 모델 정보</h2>
+
+            <div class="info-group">
+                <h3>프로젝트</h3>
+                <div class="info-item">
+                    <span>이름:</span>
+                    <span>가시설(Gasiseol)</span>
+                </div>
+                <div class="info-item">
+                    <span>타입:</span>
+                    <span>임시 구조물</span>
+                </div>
+                <div class="info-item">
+                    <span>생성일:</span>
+                    <span id="timestamp">로딩중...</span>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <h3>모델 통계</h3>
+                <div class="info-item">
+                    <span>부재:</span>
+                    <span id="partCount">5개</span>
+                </div>
+                <div class="info-item">
+                    <span>정점:</span>
+                    <span>120개</span>
+                </div>
+                <div class="info-item">
+                    <span>면:</span>
+                    <span>60개</span>
+                </div>
+                <div class="info-item">
+                    <span>파일 크기:</span>
+                    <span>3.5 KB</span>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <h3>부피</h3>
+                <div class="info-item">
+                    <span>전체:</span>
+                    <span id="totalVolume">262.50 m³</span>
+                </div>
+                <div class="part-list" id="partList"></div>
+            </div>
+
+            <div class="info-group">
+                <h3>방식</h3>
+                <div class="info-item">
+                    <span>렌더러:</span>
+                    <span>Three.js</span>
+                </div>
+                <div class="info-item">
+                    <span>단계:</span>
+                    <span>B1 (기본)</span>
+                </div>
+                <div class="info-item">
+                    <span>Boolean:</span>
+                    <span>미지원</span>
+                </div>
+            </div>
+
+            <div class="status warning">
+                ⚠️ <strong>B1 기본 모드</strong><br>
+                Boolean 연산 미지원<br>
+                필요시 B2로 업그레이드 가능
+            </div>
+
+            <div class="controls">
+                <p>🖱️ <strong>조작:</strong></p>
+                <p>• 드래그: 회전</p>
+                <p>• 휠: 확대/축소</p>
+                <p>• 우클릭: 이동</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene 설정
+        const canvas = document.getElementById('canvas');
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100000);
+        camera.position.set(30000, 20000, 25000);
+        camera.lookAt(20000, 0, 8000);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+
+        // 조명
+        const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        light1.position.set(10000, 20000, 15000);
+        light1.castShadow = true;
+        light1.shadow.mapSize.width = 2048;
+        light1.shadow.mapSize.height = 2048;
+        scene.add(light1);
+
+        const light2 = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(light2);
+
+        // 부재 정의
+        const parts = [
+            {
+                name: '기둥 1',
+                width: 50, depth: 50, height: 16000,
+                position: [0, 0, 8000],
+                color: 0x4a90e2
+            },
+            {
+                name: '기둥 2',
+                width: 50, depth: 50, height: 16000,
+                position: [40000, 0, 8000],
+                color: 0x4a90e2
+            },
+            {
+                name: '보 1',
+                width: 50, depth: 30, height: 50000,
+                position: [25000, -15000, 13000],
+                color: 0xf5a623
+            },
+            {
+                name: '보 2',
+                width: 50, depth: 30, height: 45000,
+                position: [25000, 15000, 13000],
+                color: 0xf5a623
+            },
+            {
+                name: '기초',
+                width: 200, depth: 200, height: 1000,
+                position: [20000, 15000, 500],
+                color: 0x7ed321
+            }
+        ];
+
+        const volumes = {};
+
+        // 부재 생성
+        parts.forEach(part => {
+            const geometry = new THREE.BoxGeometry(part.width, part.depth, part.height);
+            const material = new THREE.MeshPhongMaterial({
+                color: part.color,
+                shininess: 100,
+                side: THREE.DoubleSide
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(...part.position);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+
+            // 부피 계산
+            const vol = (part.width * part.depth * part.height) / 1000000;
+            volumes[part.name] = vol;
+        });
+
+        // 좌표축 표시 (작은 화살표)
+        const axisHelper = new THREE.AxesHelper(5000);
+        scene.add(axisHelper);
+
+        // 그리드
+        const gridHelper = new THREE.GridHelper(50000, 10, 0xcccccc, 0xeeeeee);
+        gridHelper.position.y = 0;
+        scene.add(gridHelper);
+
+        // 마우스 조작 (간단한 회전)
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => { isDragging = true; });
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                const targetPoint = new THREE.Vector3(20000, 0, 8000);
+                const direction = camera.position.clone().sub(targetPoint);
+
+                // 회전
+                const rotX = deltaY * 0.005;
+                const rotY = deltaX * 0.005;
+
+                const rotationMatrix = new THREE.Matrix4()
+                    .makeRotationAxis(new THREE.Vector3(0, 1, 0), rotY)
+                    .multiply(new THREE.Matrix4().makeRotationAxis(
+                        new THREE.Vector3(1, 0, 0).applyMatrix4(
+                            new THREE.Matrix4().extractRotation(camera.matrix)
+                        ), rotX
+                    ));
+
+                direction.applyMatrix4(rotationMatrix);
+                camera.position.copy(targetPoint).add(direction);
+                camera.lookAt(targetPoint);
+            }
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+        canvas.addEventListener('mouseup', () => { isDragging = false; });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const direction = camera.position.clone().normalize();
+            const distance = camera.position.length();
+            const newDistance = distance + e.deltaY * 10;
+            camera.position.copy(direction.multiplyScalar(newDistance));
+        });
+
+        // UI 업데이트
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('ko-KR');
+        document.getElementById('totalVolume').textContent = Object.values(volumes)
+            .reduce((a, b) => a + b, 0).toFixed(2) + ' m³';
+
+        const partList = document.getElementById('partList');
+        Object.entries(volumes).forEach(([name, vol]) => {
+            const item = document.createElement('div');
+            item.className = 'part-item';
+            item.innerHTML = `<div class="part-name">${name}</div><div class="part-volume">${vol.toFixed(2)} m³</div>`;
+            partList.appendChild(item);
+        });
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 창 크기 조정
+        window.addEventListener('resize', () => {
+            const newWidth = canvas.clientWidth;
+            const newHeight = canvas.clientHeight;
+            camera.aspect = newWidth / newHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(newWidth, newHeight);
+        });
+    </script>
+</body>
+</html>
