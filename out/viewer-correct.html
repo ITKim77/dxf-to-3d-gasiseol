@@ -232,7 +232,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.min.js"></script>
     <script>
         const canvas = document.getElementById('canvas');
         const width = canvas.clientWidth;
@@ -267,20 +266,63 @@
         pointLight.position.set(500, 500, 500);
         scene.add(pointLight);
 
-        // OrbitControls (먼저 초기화!)
-        const controls = new THREE.OrbitControls(camera, canvas);
-        controls.target.set(-216, -2554, 0);
-        controls.autoRotate = false;
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 1.0;
-        controls.enablePan = true;
-        controls.panSpeed = 0.5;
-        controls.update();
-
         console.log('=== 3D 뷰어 초기화 ===');
-        console.log('✓ OrbitControls 준비 완료');
+
+        // 간단한 마우스 제어
+        let isDragging = false;
+        let mouseX = 0, mouseY = 0;
+        let cameraRotX = 0, cameraRotY = 0;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
+
+            cameraRotY += deltaX * 0.005;
+            cameraRotX += deltaY * 0.005;
+
+            const distance = 3000;
+            camera.position.x = -216 + Math.sin(cameraRotY) * Math.cos(cameraRotX) * distance;
+            camera.position.y = -2554 + Math.sin(cameraRotX) * distance;
+            camera.position.z = Math.cos(cameraRotY) * Math.cos(cameraRotX) * distance;
+            camera.lookAt(-216, -2554, 0);
+
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const distance = Math.sqrt(
+                Math.pow(camera.position.x + 216, 2) +
+                Math.pow(camera.position.y + 2554, 2) +
+                Math.pow(camera.position.z, 2)
+            );
+            const newDistance = Math.max(500, distance + e.deltaY * 5);
+            const direction = new THREE.Vector3(
+                camera.position.x + 216,
+                camera.position.y + 2554,
+                camera.position.z
+            ).normalize();
+
+            camera.position.set(
+                -216 + direction.x * newDistance,
+                -2554 + direction.y * newDistance,
+                direction.z * newDistance
+            );
+            camera.lookAt(-216, -2554, 0);
+        });
 
         // 재질
         const getMaterial = (type) => {
@@ -366,7 +408,6 @@
         // 렌더링
         function animate() {
             requestAnimationFrame(animate);
-            controls.update();
             renderer.render(scene, camera);
         }
         animate();
