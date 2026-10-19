@@ -144,7 +144,9 @@
       "Bash(node src/build/generate-3d-final.mjs gasiseol)",
       "Bash(git commit -m '최종 완성: 클러스터링 기반 정확한 3D 모델 생성 *)",
       "Bash(node src/build/generate-3d-lh.mjs)",
-      "Bash(node src/build/generate-3d-lh-full.mjs)"
+      "Bash(node src/build/generate-3d-lh-full.mjs)",
+      "Bash(git commit -m 'LH 정리된 도면 기반 3D 모델 생성 완료 *)",
+      "Bash(node src/build/generate-3d-lod300.mjs)"
     ]
   }
 }

@@ -1,0 +1,117 @@
+{
+  "timestamp": "2026-10-19T04:26:47.559Z",
+  "drawing": "가시설계획_LH",
+  "method": "Line-Based-LOD300",
+  "lod": 300,
+  "totalVolume": 2655,
+  "partCount": 13,
+  "scale": "1:120",
+  "parts": [
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 16,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 284,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 12,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 34,
+      "lod": 300
+    },
+    {
+      "type": "H-Beam",
+      "spec": "326×204×6400",
+      "dimensions": "326×204×6426mm",
+      "volume": 427,
+      "lineCount": 4,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 214,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 116,
+      "lod": 300
+    },
+    {
+      "type": "Unknown",
+      "spec": "300×300×3000",
+      "dimensions": "300×300×3000mm",
+      "volume": 270,
+      "lineCount": 16,
+      "lod": 300
+    },
+    {
+      "type": "H-Beam",
+      "spec": "326×204×5100",
+      "dimensions": "326×204×5076mm",
+      "volume": 338,
+      "lineCount": 4,
+      "lod": 300
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1×3342",
+      "dimensions": "φ1×3342mm",
+      "volume": 0,
+      "lod": 300
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ2×2839",
+      "dimensions": "φ2×2839mm",
+      "volume": 0,
+      "lod": 300
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ1×2448",
+      "dimensions": "φ1×2448mm",
+      "volume": 0,
+      "lod": 300
+    },
+    {
+      "type": "Foundation-Pile",
+      "spec": "φ2×3679",
+      "dimensions": "φ2×3679mm",
+      "volume": 0,
+      "lod": 300
+    }
+  ],
+  "typeCount": {
+    "Unknown": 7,
+    "H-Beam": 2,
+    "Foundation-Pile": 4
+  },
+  "status": "LOD300_COMPLETE"
+}
