@@ -59,6 +59,15 @@
             margin-bottom: 15px;
         }
 
+        .loading {
+            padding: 15px;
+            background: #252d3d;
+            border-radius: 8px;
+            color: #fbbf24;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
         .section {
             margin-bottom: 20px;
             padding: 15px;
@@ -181,75 +190,28 @@
     <div class="container">
         <canvas id="canvas"></canvas>
         <div class="panel">
-            <h2>✅ 올바른 3D 모델</h2>
-            <span class="badge">✓ 계획도 배치 + 상세도 규격 통합</span>
+            <h2>🏗️ 가시설 3D</h2>
 
-            <div class="section">
-                <h3>프로젝트</h3>
-                <div class="stat-row">
-                    <span class="stat-label">도면:</span>
-                    <span class="stat-value">가시설 (LH)</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">방식:</span>
-                    <span class="stat-value">블록 인스턴스</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">축척:</span>
-                    <span class="stat-value">1:120</span>
-                </div>
-            </div>
-
-            <div class="info-box">
-                <strong>✓ 올바른 접근:</strong><br>
-                • 계획도 (가시설계획_LH.dxf)<br>
-                  → INSERT 블록 = 부재 배치<br>
-                • 상세도 (가시설상세_LH.dxf)<br>
-                  → TEXT 규격 = 부재 형상<br>
-                • 통합 결과<br>
-                  → 각 위치에 정확한 규격
+            <div id="loadingMsg" class="loading">
+                ⏳ 로드 중...
             </div>
 
             <div class="section">
-                <h3>부재 통계</h3>
+                <h3>통계</h3>
                 <div class="stat-row">
-                    <span class="stat-label">총 부재:</span>
+                    <span class="stat-label">부재:</span>
                     <span class="stat-value" id="totalParts">562개</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">총 부피:</span>
+                    <span class="stat-label">부피:</span>
                     <span class="stat-value" id="totalVolume">214,872 m³</span>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3>부재별 구성</h3>
-                <div class="part-type h-beam">
-                    <div class="part-name">가시설4 (H-빔)</div>
-                    <div class="part-info">52개 · 960m³</div>
-                </div>
-                <div class="part-type pile">
-                    <div class="part-name">h-pile2 (기초파일)</div>
-                    <div class="part-info">244개 · φ1000×8000</div>
-                </div>
-                <div class="part-type panel">
-                    <div class="part-name">토류판 (흙막이판)</div>
-                    <div class="part-info">240개 · PL.-700×360×14</div>
-                </div>
-                <div class="part-type pile">
-                    <div class="part-name">H-PILE (파일)</div>
-                    <div class="part-info">26개 · φ1000×8000</div>
-                </div>
-                <div class="part-type strut">
-                    <div class="part-name">스터럿 (버팀목)</div>
-                    <div class="part-info">26개 · 200×200×4000</div>
                 </div>
             </div>
 
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color" style="background: #ff6b6b;"></div>
-                    <span>구조 부재</span>
+                    <span>H-빔</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background: #7ed321;"></div>
@@ -266,10 +228,9 @@
             </div>
 
             <div class="controls">
-                <strong>🖱️ 조작</strong><br>
-                • 드래그: 회전<br>
-                • 휠: 확대/축소<br>
-                • 우클릭: 이동
+                <strong>조작</strong><br>
+                드래그: 회전<br>
+                휠: 확대/축소
             </div>
         </div>
     </div>
@@ -284,8 +245,10 @@
         scene.background = new THREE.Color(0x1a3a52);
 
         const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500000);
-        camera.position.set(100000, 50000, 120000);
-        camera.lookAt(0, 0, 0);
+        // 부재 중심을 향하도록 설정 (정확한 좌표 범위)
+        // 중심: (-216, -2554), 폭: 1373, 높이: 552
+        camera.position.set(-216, -2554, 3000);
+        camera.lookAt(-216, -2554, 0);
 
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setSize(width, height);
@@ -305,34 +268,75 @@
         scene.add(hemis);
 
         // 재질
-        const materials = {
-            'H-Beam': new THREE.MeshStandardMaterial({ color: 0xff6b6b, roughness: 0.7 }),
-            'Pile': new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7 }),
-            'Panel': new THREE.MeshStandardMaterial({ color: 0x4a90e2, roughness: 0.7 }),
-            'Strut': new THREE.MeshStandardMaterial({ color: 0xf5a623, roughness: 0.7 })
+        const getMaterial = (type) => {
+            const colors = {
+                'H-Beam': 0xff6b6b,
+                'Pile': 0x7ed321,
+                'Panel': 0x4a90e2,
+                'Strut': 0xf5a623
+            };
+            const color = colors[type] || 0x999999;
+            return new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.2 });
         };
 
-        // 샘플 부재 생성 (통계용)
-        const sampleData = [
-            { type: 'H-Beam', count: 52, pos: [0, 0, 3000], dims: [400, 400, 6000] },
-            { type: 'Pile', count: 244, pos: [50000, 50000, 4000], dims: [1000, 1000, 8000] },
-            { type: 'Panel', count: 240, pos: [100000, 100000, 200], dims: [700, 360, 14] },
-            { type: 'Pile', count: 26, pos: [150000, -50000, 4000], dims: [1000, 1000, 8000] },
-            { type: 'Strut', count: 26, pos: [-50000, 150000, 2000], dims: [200, 200, 4000] }
-        ];
+        // stats.json 로드 및 부재 생성
+        fetch('gasiseol-correct-v2-stats.json')
+            .then(r => r.json())
+            .then(data => {
+                console.log('📊 로드됨:', data.totalParts, '개 부재');
 
-        sampleData.forEach(data => {
-            let geometry;
-            if (data.type === 'Pile') {
-                geometry = new THREE.CylinderGeometry(data.dims[0]/2, data.dims[0]/2, data.dims[2], 24);
-            } else {
-                geometry = new THREE.BoxGeometry(data.dims[0], data.dims[1], data.dims[2]);
-            }
+                // 각 부재를 3D 메시로 생성
+                data.parts.forEach(part => {
+                    let geometry;
+                    const { blockType, type, spec, position, volume } = part;
 
-            const mesh = new THREE.Mesh(geometry, materials[data.type]);
-            mesh.position.set(data.pos[0], data.pos[1], data.pos[2]);
-            scene.add(mesh);
-        });
+                    // 부재 타입별 3D 형상 생성
+                    if (type === 'Pile') {
+                        // 원형 파일 - 규격에서 지름 추출
+                        let diameter = 1000; // 기본값
+                        if (spec && spec.includes('φ')) {
+                            const match = spec.match(/φ(\d+)/);
+                            if (match) diameter = parseInt(match[1]);
+                        }
+                        geometry = new THREE.CylinderGeometry(diameter/2, diameter/2, 8000, 16);
+                    } else if (type === 'Panel') {
+                        // 판재 - 규격에서 가로×세로×두께 추출
+                        let w = 700, h = 360, d = 14;
+                        if (spec && spec.includes('×')) {
+                            const match = spec.match(/(\d+)×(\d+)×(\d+)/);
+                            if (match) {
+                                w = parseInt(match[1]);
+                                h = parseInt(match[2]);
+                                d = parseInt(match[3]);
+                            }
+                        }
+                        geometry = new THREE.BoxGeometry(w, h, d);
+                    } else if (type === 'H-Beam') {
+                        // H-빔 - 정사각형 단면
+                        geometry = new THREE.BoxGeometry(400, 400, 6000);
+                    } else {
+                        // 기본 상자
+                        geometry = new THREE.BoxGeometry(300, 300, 3000);
+                    }
+
+                    const mesh = new THREE.Mesh(geometry, getMaterial(type));
+                    mesh.position.set(position.x, position.y, position.z);
+                    mesh.userData = { blockType, type, spec, volume };
+
+                    scene.add(mesh);
+                });
+
+                // UI 업데이트
+                document.getElementById('totalParts').textContent = data.totalParts + '개';
+                document.getElementById('totalVolume').textContent = Math.round(data.totalVolume).toLocaleString() + ' m³';
+                document.getElementById('loadingMsg').style.display = 'none';
+
+                console.log('✅ 3D 모델 생성 완료');
+            })
+            .catch(err => {
+                console.error('❌ 로드 오류:', err);
+                document.getElementById('loadingMsg').innerHTML = '❌ 부재 데이터 로드 실패<br>' + err.message;
+            });
 
         // 그리드 & 축
         const gridHelper = new THREE.GridHelper(300000, 20, 0x444444, 0x222222);
