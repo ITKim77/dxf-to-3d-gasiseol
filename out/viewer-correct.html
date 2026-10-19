@@ -191,13 +191,39 @@
 
             <div class="section">
                 <h3>🏗️ 부재 구성</h3>
-                <div style="font-size: 10px; line-height: 1.5; color: #cbd5e0;">
-                    <div style="margin-bottom: 4px;"><strong style="color: #ff6b6b;">가시설4</strong> 52개</div>
-                    <div style="margin-bottom: 4px;"><strong style="color: #7ed321;">h-pile2</strong> 244개</div>
-                    <div style="margin-bottom: 4px;"><strong style="color: #4a90e2;">토류판</strong> 240개</div>
-                    <div style="margin-bottom: 4px;"><strong style="color: #7ed321;">H-PILE</strong> 26개</div>
-                    <div><strong style="color: #f5a623;">스터럿</strong> 26개</div>
+                <div style="font-size: 9px; line-height: 1.8; color: #cbd5e0;">
+                    <label style="display: flex; align-items: center; margin-bottom: 4px; cursor: pointer;">
+                        <input type="checkbox" id="cb-gasiseol4" checked style="margin-right: 6px; cursor: pointer;">
+                        <span style="color: #ff6b6b;">■</span>
+                        <span style="margin-left: 4px;"><strong>가시설4</strong> (H-400×400)</span>
+                        <span style="margin-left: auto; color: #10b981;">52개</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 4px; cursor: pointer;">
+                        <input type="checkbox" id="cb-hpile2" checked style="margin-right: 6px; cursor: pointer;">
+                        <span style="color: #7ed321;">■</span>
+                        <span style="margin-left: 4px;"><strong>h-pile2</strong> (φ1000×8000)</span>
+                        <span style="margin-left: auto; color: #10b981;">244개</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 4px; cursor: pointer;">
+                        <input type="checkbox" id="cb-tolyupan" checked style="margin-right: 6px; cursor: pointer;">
+                        <span style="color: #4a90e2;">■</span>
+                        <span style="margin-left: 4px;"><strong>토류판</strong> (PL-700×360×14)</span>
+                        <span style="margin-left: auto; color: #10b981;">240개</span>
+                    </label>
+                    <label style="display: flex; align-items: center; margin-bottom: 4px; cursor: pointer;">
+                        <input type="checkbox" id="cb-hpile" checked style="margin-right: 6px; cursor: pointer;">
+                        <span style="color: #7ed321;">■</span>
+                        <span style="margin-left: 4px;"><strong>H-PILE</strong> (H-400×400)</span>
+                        <span style="margin-left: auto; color: #10b981;">26개</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="cb-strut" checked style="margin-right: 6px; cursor: pointer;">
+                        <span style="color: #f5a623;">■</span>
+                        <span style="margin-left: 4px;"><strong>스터럿</strong> (200×200×4000)</span>
+                        <span style="margin-left: auto; color: #10b981;">26개</span>
+                    </label>
                 </div>
+                <button id="btnZoomFit" style="width: 100%; margin-top: 8px; padding: 6px; background: #10b981; color: #1a1f2e; border: none; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer;">🎯 줌핏</button>
             </div>
 
             <div class="section">
@@ -338,12 +364,23 @@
 
         const DISPLAY_SCALE = 0.01;
 
+        // 부재 그룹 추적 (온오프 제어용)
+        const memberGroups = {
+            '가시설4': [],
+            'h-pile2': [],
+            '토류판': [],
+            'H-PILE': [],
+            '스터럿': []
+        };
+
         // 샘플 부재 (테스트용)
         const testGeo = new THREE.BoxGeometry(4, 4, 80);
         const testMat = new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7, emissive: 0x2d5a2d });
         const testMesh = new THREE.Mesh(testGeo, testMat);
         testMesh.position.set(0, -2554, 100);
+        testMesh.userData.groupName = 'h-pile2';
         scene.add(testMesh);
+        memberGroups['h-pile2'].push(testMesh);
         console.log('✓ 샘플 부재 추가됨');
 
         // 그리드 & 축
@@ -426,7 +463,14 @@
 
                     const mesh = new THREE.Mesh(geometry, getMaterial(type));
                     mesh.position.set(position.x, position.y, position.z + 10);
+                    mesh.userData = { blockType, type, spec, volume, groupName: blockType };
                     scene.add(mesh);
+
+                    // 부재 그룹에 추가
+                    if (memberGroups[blockType]) {
+                        memberGroups[blockType].push(mesh);
+                    }
+
                     count++;
 
                     if (count <= 3 || count % 100 === 0) {
@@ -446,6 +490,80 @@
                 console.error('❌ 오류:', err);
                 document.getElementById('loadingMsg').innerHTML = '❌ 로드 실패<br>' + err.message;
             });
+
+        // 부재 토글 기능
+        const checkboxes = {
+            '가시설4': document.getElementById('cb-gasiseol4'),
+            'h-pile2': document.getElementById('cb-hpile2'),
+            '토류판': document.getElementById('cb-tolyupan'),
+            'H-PILE': document.getElementById('cb-hpile'),
+            '스터럿': document.getElementById('cb-strut')
+        };
+
+        Object.entries(checkboxes).forEach(([name, checkbox]) => {
+            checkbox.addEventListener('change', (e) => {
+                const isVisible = e.target.checked;
+                memberGroups[name].forEach(mesh => {
+                    mesh.visible = isVisible;
+                });
+                console.log(`${name}: ${isVisible ? '표시' : '숨김'}`);
+            });
+        });
+
+        // 줌핏 기능
+        document.getElementById('btnZoomFit').addEventListener('click', () => {
+            // 활성화된 부재들의 경계 계산
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            let minZ = Infinity, maxZ = -Infinity;
+            let hasVisible = false;
+
+            Object.entries(memberGroups).forEach(([name, meshes]) => {
+                if (checkboxes[name].checked) {
+                    meshes.forEach(mesh => {
+                        if (mesh.geometry.boundingBox === null) {
+                            mesh.geometry.computeBoundingBox();
+                        }
+                        const box = mesh.geometry.boundingBox;
+                        const pos = mesh.position;
+
+                        minX = Math.min(minX, pos.x + box.min.x);
+                        maxX = Math.max(maxX, pos.x + box.max.x);
+                        minY = Math.min(minY, pos.y + box.min.y);
+                        maxY = Math.max(maxY, pos.y + box.max.y);
+                        minZ = Math.min(minZ, pos.z + box.min.z);
+                        maxZ = Math.max(maxZ, pos.z + box.max.z);
+                        hasVisible = true;
+                    });
+                }
+            });
+
+            if (!hasVisible) {
+                console.log('표시된 부재가 없습니다');
+                return;
+            }
+
+            // 경계의 중심과 크기 계산
+            const center = new THREE.Vector3(
+                (minX + maxX) / 2,
+                (minY + maxY) / 2,
+                (minZ + maxZ) / 2
+            );
+
+            const size = new THREE.Vector3(
+                maxX - minX,
+                maxY - minY,
+                maxZ - minZ
+            );
+
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+
+            camera.position.set(center.x, center.y, center.z + cameraZ * 1.5);
+            camera.lookAt(center);
+            console.log('✓ 줌핏 완료');
+        });
 
         // 렌더링
         function animate() {
