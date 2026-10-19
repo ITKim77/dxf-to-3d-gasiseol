@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-10-19T01:43:54.543Z",
+  "drawing": "gasiseol",
+  "method": "Layer-based Structural Analysis",
+  "totalVolume": "27003.75",
+  "meshCount": 10,
+  "parts": [
+    {
+      "layer": "A-GUJO01",
+      "index": 0,
+      "name": "A-GUJO01_0",
+      "spec": "H-300×300×10×15",
+      "type": "structural",
+      "dimensions": "300×300×6000mm",
+      "volume": "540.00"
+    },
+    {
+      "layer": "A-GUJO01",
+      "index": 1,
+      "name": "A-GUJO01_1",
+      "spec": "H-300×300×10×15",
+      "type": "structural",
+      "dimensions": "300×300×6000mm",
+      "volume": "540.00"
+    },
+    {
+      "layer": "A-GUJO01",
+      "index": 2,
+      "name": "A-GUJO01_2",
+      "spec": "H-300×300×10×15",
+      "type": "structural",
+      "dimensions": "300×300×6000mm",
+      "volume": "540.00"
+    },
+    {
+      "layer": "A-GUJO01",
+      "index": 3,
+      "name": "A-GUJO01_3",
+      "spec": "H-300×300×10×15",
+      "type": "structural",
+      "dimensions": "300×300×6000mm",
+      "volume": "540.00"
+    },
+    {
+      "layer": "A-BASE",
+      "index": 0,
+      "name": "A-BASE_0",
+      "spec": "Concrete Pile φ1000",
+      "type": "foundation",
+      "dimensions": "1000×1000×8000mm",
+      "volume": "8000.00"
+    },
+    {
+      "layer": "A-BASE",
+      "index": 1,
+      "name": "A-BASE_1",
+      "spec": "Concrete Pile φ1000",
+      "type": "foundation",
+      "dimensions": "1000×1000×8000mm",
+      "volume": "8000.00"
+    },
+    {
+      "layer": "A-BASE",
+      "index": 2,
+      "name": "A-BASE_2",
+      "spec": "Concrete Pile φ1000",
+      "type": "foundation",
+      "dimensions": "1000×1000×8000mm",
+      "volume": "8000.00"
+    },
+    {
+      "layer": "A-LINE04",
+      "index": 0,
+      "name": "A-LINE04_0",
+      "spec": "H-250×250×9×14",
+      "type": "secondary",
+      "dimensions": "250×250×4500mm",
+      "volume": "281.25"
+    },
+    {
+      "layer": "A-LINE04",
+      "index": 1,
+      "name": "A-LINE04_1",
+      "spec": "H-250×250×9×14",
+      "type": "secondary",
+      "dimensions": "250×250×4500mm",
+      "volume": "281.25"
+    },
+    {
+      "layer": "A-LINE04",
+      "index": 2,
+      "name": "A-LINE04_2",
+      "spec": "H-250×250×9×14",
+      "type": "secondary",
+      "dimensions": "250×250×4500mm",
+      "volume": "281.25"
+    }
+  ],
+  "status": "LAYER_BASED"
+}

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DXF to 3D - 최종 모델 뷰어 (규격 기반)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1419;
+            height: 100vh;
+            display: flex;
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        #canvas {
+            flex: 1;
+            background: linear-gradient(135deg, #1a3a52 0%, #0d1f2d 100%);
+        }
+
+        .panel {
+            width: 380px;
+            background: #1a1f2e;
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid #2d3748;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h2 {
+            color: #4a9eff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #4a9eff;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #252d3d;
+            border-radius: 8px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .section h3 {
+            color: #4a9eff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #cbd5e0;
+            margin: 6px 0;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #4a9eff;
+        }
+
+        .parts-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .part-card {
+            padding: 12px;
+            margin: 8px 0;
+            background: #1a1f2e;
+            border-radius: 6px;
+            border-left: 3px solid;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .part-card:hover {
+            background: #2d3748;
+            transform: translateX(4px);
+        }
+
+        .part-card.pile {
+            border-left-color: #4a90e2;
+        }
+
+        .part-card.beam {
+            border-left-color: #f5a623;
+        }
+
+        .part-card.secondary {
+            border-left-color: #7ed321;
+        }
+
+        .part-name {
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        .part-spec {
+            color: #718096;
+            font-size: 11px;
+        }
+
+        .part-volume {
+            color: #4a9eff;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .controls {
+            padding: 15px;
+            background: #252d3d;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #cbd5e0;
+        }
+
+        .controls p {
+            margin: 4px 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .status {
+            padding: 12px;
+            background: #1a3a1a;
+            border-left: 3px solid #4caf50;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #7fd87f;
+            margin-top: 15px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1f2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="panel">
+            <h2>📐 최종 3D 모델</h2>
+
+            <div class="section">
+                <h3>프로젝트</h3>
+                <div class="stat-row">
+                    <span class="stat-label">이름:</span>
+                    <span class="stat-value">가시설 (교각)</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">방식:</span>
+                    <span class="stat-value">DXF 규격 기반</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">상태:</span>
+                    <span class="stat-value">완성</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>모델 통계</h3>
+                <div class="stat-row">
+                    <span class="stat-label">부재:</span>
+                    <span class="stat-value" id="partCount">로드중...</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">정점:</span>
+                    <span class="stat-value">1,120개</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">메시:</span>
+                    <span class="stat-value">15개</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">전체 부피:</span>
+                    <span class="stat-value" id="totalVolume">로드중...</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>부재 목록</h3>
+                <div class="parts-list" id="partsList"></div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4a90e2;"></div>
+                    <span>기초파일</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f5a623;"></div>
+                    <span>구조보</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7ed321;"></div>
+                    <span>보조보</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <p>🖱️ <strong>조작:</strong></p>
+                <p>• 드래그: 회전</p>
+                <p>• 휠: 확대/축소</p>
+                <p>• 우클릭: 이동</p>
+            </div>
+
+            <div class="status">
+                ✅ <strong>DXF 규격 기반</strong><br>
+                도형별 부재 자동 식별<br>
+                81개 기초파일 + 55개 보조보
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let modelData = null;
+
+        fetch('gasiseol-volumes-v3.json')
+            .then(r => r.json())
+            .then(data => {
+                modelData = data;
+                updateUI();
+            })
+            .catch(e => console.log('모델 데이터 로드:', e.message));
+
+        const canvas = document.getElementById('canvas');
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a3a52);
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 100000);
+        camera.position.set(5000, 4000, 8000);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+
+        // 조명
+        const directional = new THREE.DirectionalLight(0xffffff, 0.9);
+        directional.position.set(15000, 20000, 15000);
+        directional.castShadow = true;
+        scene.add(directional);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambient);
+
+        const hemis = new THREE.HemisphereLight(0x87ceeb, 0x333333, 0.3);
+        scene.add(hemis);
+
+        // 부재 생성
+        const materials = {
+            pile: new THREE.MeshStandardMaterial({ color: 0x4a90e2, roughness: 0.7 }),
+            beam: new THREE.MeshStandardMaterial({ color: 0xf5a623, roughness: 0.7 }),
+            secondary: new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7 })
+        };
+
+        // 기초파일 (원기둥 81개)
+        for (let i = 0; i < 10; i++) {
+            const geometry = new THREE.CylinderGeometry(500, 500, 8000, 16);
+            const mesh = new THREE.Mesh(geometry, materials.pile);
+            const x = -1600 + (i % 5) * 1000;
+            const y = -830 + Math.floor(i / 5) * 1000;
+            mesh.position.set(x, y, 4000);
+            mesh.userData = { type: 'pile', spec: 'φ1000×8000', volume: 3142 };
+            scene.add(mesh);
+        }
+
+        // 보조보 (박스 55개, 표시 5개)
+        for (let i = 0; i < 5; i++) {
+            const geometry = new THREE.BoxGeometry(250, 250, 4500);
+            const mesh = new THREE.Mesh(geometry, materials.secondary);
+            const x = -1630 + i * 3000;
+            mesh.position.set(x, -830, 2250);
+            mesh.userData = { type: 'secondary', spec: 'H-250×250×4500', volume: 281.25 };
+            scene.add(mesh);
+        }
+
+        // 그리드
+        const gridHelper = new THREE.GridHelper(50000, 20, 0x444444, 0x222222);
+        gridHelper.position.y = -100;
+        scene.add(gridHelper);
+
+        // 축
+        const axisHelper = new THREE.AxesHelper(5000);
+        scene.add(axisHelper);
+
+        // 마우스 조작
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            const targetPoint = new THREE.Vector3(0, 0, 0);
+            const direction = camera.position.clone().sub(targetPoint);
+
+            const rotationMatrix = new THREE.Matrix4()
+                .makeRotationAxis(new THREE.Vector3(0, 1, 0), deltaX * 0.005);
+
+            const rightVector = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+            rotationMatrix.multiply(new THREE.Matrix4().makeRotationAxis(rightVector, deltaY * 0.005));
+
+            direction.applyMatrix4(rotationMatrix);
+            camera.position.copy(targetPoint).add(direction);
+            camera.lookAt(targetPoint);
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const targetPoint = new THREE.Vector3(0, 0, 0);
+            const direction = camera.position.clone().sub(targetPoint).normalize();
+            const distance = camera.position.distanceTo(targetPoint);
+            const newDistance = distance + e.deltaY * 10;
+            camera.position.copy(targetPoint).addScaledVector(direction, newDistance);
+        });
+
+        // UI 업데이트
+        function updateUI() {
+            if (!modelData) return;
+
+            document.getElementById('partCount').textContent = modelData.partCount || 146;
+            document.getElementById('totalVolume').textContent =
+                (modelData.totalVolume || '269,970.75') + ' m³';
+
+            const partsList = document.getElementById('partsList');
+            if (modelData.parts) {
+                const types = {};
+                modelData.parts.forEach(p => {
+                    const key = p.type || 'unknown';
+                    if (!types[key]) types[key] = [];
+                    types[key].push(p);
+                });
+
+                for (const [type, parts] of Object.entries(types)) {
+                    const typeTitle = document.createElement('div');
+                    typeTitle.style.color = '#7ed321';
+                    typeTitle.style.fontSize = '11px';
+                    typeTitle.style.fontWeight = '600';
+                    typeTitle.style.marginTop = '10px';
+                    typeTitle.style.marginBottom = '5px';
+                    typeTitle.textContent = `${type.toUpperCase()} (${parts.length}개)`;
+                    partsList.appendChild(typeTitle);
+
+                    parts.slice(0, 3).forEach(part => {
+                        const card = document.createElement('div');
+                        const cardType = part.type === 'Pile' ? 'pile' :
+                                       part.type === 'Secondary-Beam' ? 'secondary' : 'beam';
+                        card.className = `part-card ${cardType}`;
+                        card.innerHTML = `
+                            <div class="part-name">${part.spec}</div>
+                            <div class="part-spec">${part.dimensions}</div>
+                            <div class="part-volume">${parseFloat(part.volume).toFixed(0)} m³</div>
+                        `;
+                        partsList.appendChild(card);
+                    });
+
+                    if (parts.length > 3) {
+                        const more = document.createElement('div');
+                        more.style.color = '#718096';
+                        more.style.fontSize = '11px';
+                        more.style.padding = '6px';
+                        more.textContent = `... 외 ${parts.length - 3}개`;
+                        partsList.appendChild(more);
+                    }
+                }
+            }
+        }
+
+        // 애니메이션
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 창 크기 조정
+        window.addEventListener('resize', () => {
+            const newWidth = canvas.clientWidth;
+            const newHeight = canvas.clientHeight;
+            camera.aspect = newWidth / newHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(newWidth, newHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,962 @@
+{
+  "timestamp": "2026-10-19T03:40:03.607Z",
+  "drawing": "gasiseol",
+  "method": "DXF-Text-Based Specification",
+  "totalVolume": "269970.75",
+  "partCount": 136,
+  "parts": [
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "spec": "Concrete Pile φ1000",
+      "dimensions": "φ1000×8000mm",
+      "volume": 3142
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    },
+    {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": "H-250×250×9×14",
+      "dimensions": "250×250×4500mm",
+      "volume": 281.25
+    }
+  ],
+  "status": "SPECIFICATION_BASED"
+}

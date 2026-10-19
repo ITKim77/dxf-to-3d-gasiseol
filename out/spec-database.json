@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-10-19T03:39:29.677Z",
+  "specifications": {
+    "beams": [],
+    "piles": [],
+    "connections": [],
+    "materials": [],
+    "dimensions": [],
+    "notes": []
+  },
+  "members": {
+    "structural_beams": {
+      "layer": "A-GUJO01",
+      "type": "H-Beam",
+      "estimatedCount": 9,
+      "entityCount": 45,
+      "note": "LINE 45개 → 추정 9개 부재"
+    },
+    "foundation_piles": {
+      "layer": "A-BASE",
+      "type": "Pile",
+      "count": 81,
+      "diameter": 1000,
+      "note": "CIRCLE 81개 = 81개 파일"
+    },
+    "secondary_beams": {
+      "layer": "A-LINE04",
+      "type": "Secondary-Beam",
+      "spec": {
+        "type": "H-Beam",
+        "width": 250,
+        "height": 250
+      },
+      "estimatedCount": 55,
+      "entityCount": 219,
+      "note": "LINE 219개 → 추정 55개 부재"
+    },
+    "slope_elements": {
+      "layer": "A-SLOPE",
+      "type": "Slope",
+      "elementCount": 88,
+      "note": "선 88개 (사면 강화)"
+    },
+    "connections": []
+  },
+  "summary": {
+    "totalBeamTypes": 0,
+    "totalPileTypes": 0,
+    "estimatedStructuralBeams": 9,
+    "foundationPiles": 81,
+    "secondaryBeams": 55
+  }
+}
