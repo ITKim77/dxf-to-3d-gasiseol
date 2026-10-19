@@ -146,7 +146,8 @@
       "Bash(node src/build/generate-3d-lh.mjs)",
       "Bash(node src/build/generate-3d-lh-full.mjs)",
       "Bash(git commit -m 'LH 정리된 도면 기반 3D 모델 생성 완료 *)",
-      "Bash(node src/build/generate-3d-lod300.mjs)"
+      "Bash(node src/build/generate-3d-lod300.mjs)",
+      "Bash(git commit -m 'LOD 300 구현: 부재 형상 정확한 검증 완료 *)"
     ]
   }
 }

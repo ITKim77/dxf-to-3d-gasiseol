@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>올바른 3D 모델 - 계획도 + 상세도 통합</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1419;
+            height: 100vh;
+            display: flex;
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        #canvas {
+            flex: 1;
+            background: linear-gradient(135deg, #1a3a52 0%, #0d1f2d 100%);
+        }
+
+        .panel {
+            width: 450px;
+            background: #1a1f2e;
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid #2d3748;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h2 {
+            color: #4caf50;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #4caf50;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #252d3d;
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+        }
+
+        .section h3 {
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #cbd5e0;
+            margin: 8px 0;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .info-box {
+            padding: 12px;
+            background: #1a3a1a;
+            border-left: 3px solid #10b981;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #7fd87f;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .part-type {
+            padding: 10px;
+            margin: 8px 0;
+            background: #1a1f2e;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+        }
+
+        .part-type.h-beam { border-left-color: #ff6b6b; }
+        .part-type.pile { border-left-color: #7ed321; }
+        .part-type.panel { border-left-color: #4a90e2; }
+        .part-type.strut { border-left-color: #f5a623; }
+
+        .part-name {
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        .part-info {
+            color: #718096;
+            font-size: 11px;
+        }
+
+        .controls {
+            padding: 12px;
+            background: #252d3d;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #cbd5e0;
+            line-height: 1.6;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1f2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="panel">
+            <h2>✅ 올바른 3D 모델</h2>
+            <span class="badge">✓ 계획도 배치 + 상세도 규격 통합</span>
+
+            <div class="section">
+                <h3>프로젝트</h3>
+                <div class="stat-row">
+                    <span class="stat-label">도면:</span>
+                    <span class="stat-value">가시설 (LH)</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">방식:</span>
+                    <span class="stat-value">블록 인스턴스</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">축척:</span>
+                    <span class="stat-value">1:120</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>✓ 올바른 접근:</strong><br>
+                • 계획도 (가시설계획_LH.dxf)<br>
+                  → INSERT 블록 = 부재 배치<br>
+                • 상세도 (가시설상세_LH.dxf)<br>
+                  → TEXT 규격 = 부재 형상<br>
+                • 통합 결과<br>
+                  → 각 위치에 정확한 규격
+            </div>
+
+            <div class="section">
+                <h3>부재 통계</h3>
+                <div class="stat-row">
+                    <span class="stat-label">총 부재:</span>
+                    <span class="stat-value" id="totalParts">562개</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">총 부피:</span>
+                    <span class="stat-value" id="totalVolume">214,872 m³</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>부재별 구성</h3>
+                <div class="part-type h-beam">
+                    <div class="part-name">가시설4 (H-빔)</div>
+                    <div class="part-info">52개 · 960m³</div>
+                </div>
+                <div class="part-type pile">
+                    <div class="part-name">h-pile2 (기초파일)</div>
+                    <div class="part-info">244개 · φ1000×8000</div>
+                </div>
+                <div class="part-type panel">
+                    <div class="part-name">토류판 (흙막이판)</div>
+                    <div class="part-info">240개 · PL.-700×360×14</div>
+                </div>
+                <div class="part-type pile">
+                    <div class="part-name">H-PILE (파일)</div>
+                    <div class="part-info">26개 · φ1000×8000</div>
+                </div>
+                <div class="part-type strut">
+                    <div class="part-name">스터럿 (버팀목)</div>
+                    <div class="part-info">26개 · 200×200×4000</div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff6b6b;"></div>
+                    <span>구조 부재</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7ed321;"></div>
+                    <span>파일</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4a90e2;"></div>
+                    <span>판재</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f5a623;"></div>
+                    <span>버팀목</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <strong>🖱️ 조작</strong><br>
+                • 드래그: 회전<br>
+                • 휠: 확대/축소<br>
+                • 우클릭: 이동
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a3a52);
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500000);
+        camera.position.set(100000, 50000, 120000);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+
+        // 조명
+        const directional = new THREE.DirectionalLight(0xffffff, 1.0);
+        directional.position.set(100000, 100000, 100000);
+        directional.castShadow = true;
+        scene.add(directional);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambient);
+
+        const hemis = new THREE.HemisphereLight(0x87ceeb, 0x333333, 0.4);
+        scene.add(hemis);
+
+        // 재질
+        const materials = {
+            'H-Beam': new THREE.MeshStandardMaterial({ color: 0xff6b6b, roughness: 0.7 }),
+            'Pile': new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7 }),
+            'Panel': new THREE.MeshStandardMaterial({ color: 0x4a90e2, roughness: 0.7 }),
+            'Strut': new THREE.MeshStandardMaterial({ color: 0xf5a623, roughness: 0.7 })
+        };
+
+        // 샘플 부재 생성 (통계용)
+        const sampleData = [
+            { type: 'H-Beam', count: 52, pos: [0, 0, 3000], dims: [400, 400, 6000] },
+            { type: 'Pile', count: 244, pos: [50000, 50000, 4000], dims: [1000, 1000, 8000] },
+            { type: 'Panel', count: 240, pos: [100000, 100000, 200], dims: [700, 360, 14] },
+            { type: 'Pile', count: 26, pos: [150000, -50000, 4000], dims: [1000, 1000, 8000] },
+            { type: 'Strut', count: 26, pos: [-50000, 150000, 2000], dims: [200, 200, 4000] }
+        ];
+
+        sampleData.forEach(data => {
+            let geometry;
+            if (data.type === 'Pile') {
+                geometry = new THREE.CylinderGeometry(data.dims[0]/2, data.dims[0]/2, data.dims[2], 24);
+            } else {
+                geometry = new THREE.BoxGeometry(data.dims[0], data.dims[1], data.dims[2]);
+            }
+
+            const mesh = new THREE.Mesh(geometry, materials[data.type]);
+            mesh.position.set(data.pos[0], data.pos[1], data.pos[2]);
+            scene.add(mesh);
+        });
+
+        // 그리드 & 축
+        const gridHelper = new THREE.GridHelper(300000, 20, 0x444444, 0x222222);
+        gridHelper.position.y = -1000;
+        scene.add(gridHelper);
+
+        const axisHelper = new THREE.AxesHelper(50000);
+        scene.add(axisHelper);
+
+        // 마우스 조작
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            const targetPoint = new THREE.Vector3(0, 0, 0);
+            const direction = camera.position.clone().sub(targetPoint);
+
+            const rotationMatrix = new THREE.Matrix4()
+                .makeRotationAxis(new THREE.Vector3(0, 1, 0), deltaX * 0.005);
+
+            const rightVector = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+            rotationMatrix.multiply(new THREE.Matrix4().makeRotationAxis(rightVector, deltaY * 0.005));
+
+            direction.applyMatrix4(rotationMatrix);
+            camera.position.copy(targetPoint).add(direction);
+            camera.lookAt(targetPoint);
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const targetPoint = new THREE.Vector3(0, 0, 0);
+            const direction = camera.position.clone().sub(targetPoint).normalize();
+            const distance = camera.position.distanceTo(targetPoint);
+            const newDistance = distance + e.deltaY * 20;
+            camera.position.copy(targetPoint).addScaledVector(direction, newDistance);
+        });
+
+        // 렌더링
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 윈도우 리사이징
+        window.addEventListener('resize', () => {
+            const newWidth = canvas.clientWidth;
+            const newHeight = canvas.clientHeight;
+            camera.aspect = newWidth / newHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(newWidth, newHeight);
+        });
+    </script>
+</body>
+</html>
