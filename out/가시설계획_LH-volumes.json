@@ -1,0 +1,317 @@
+{
+  "timestamp": "2026-10-19T04:21:49.769Z",
+  "drawing": "가시설계획_LH",
+  "method": "Layer-Based-LH",
+  "totalVolume": 2326,
+  "partCount": 51,
+  "scale": "1:0.008333333333333333",
+  "parts": [
+    {
+      "type": "Structural-Member",
+      "spec": "300×300 (추정)",
+      "dimensions": "300×300×3072mm",
+      "volume": 276,
+      "lineCount": 700
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Soil-Layer",
+      "diameter": 400,
+      "depth": 500,
+      "volume": 63
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    },
+    {
+      "type": "Detail-Block",
+      "blockName": "가시설4",
+      "dimensions": "200×200×200mm",
+      "volume": 8
+    }
+  ],
+  "typeCount": {
+    "Structural-Member": 1,
+    "Soil-Layer": 30,
+    "Detail-Block": 20
+  },
+  "status": "READY_FOR_WEB"
+}
