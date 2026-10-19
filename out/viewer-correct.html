@@ -366,29 +366,71 @@
                 console.log('총 부재:', data.totalParts);
 
                 let count = 0;
+                const SCALE = 0.01; // mm → cm
+
                 data.parts.forEach(part => {
                     let geometry;
                     const { blockType, type, spec, position, volume } = part;
 
+                    // 규격에 맞는 정확한 형상 생성
                     if (type === 'Pile') {
-                        geometry = new THREE.BoxGeometry(4, 4, 80);
+                        // H-PILE: H-400×400×8000
+                        const w = 400 * SCALE;
+                        const h = 400 * SCALE;
+                        const d = 8000 * SCALE;
+                        geometry = new THREE.BoxGeometry(w, h, d);
+
                     } else if (type === 'Panel') {
-                        geometry = new THREE.BoxGeometry(7, 3.6, 0.14);
+                        // 판재: PL-700×360×14
+                        let w = 700, h = 360, th = 14;
+                        if (spec && spec.includes('×')) {
+                            const m = spec.match(/PL\.-(\d+)×(\d+)×(\d+)/);
+                            if (m) {
+                                w = parseInt(m[1]);
+                                h = parseInt(m[2]);
+                                th = parseInt(m[3]);
+                            }
+                        }
+                        geometry = new THREE.BoxGeometry(
+                            w * SCALE,
+                            h * SCALE,
+                            th * SCALE
+                        );
+
                     } else if (type === 'H-Beam') {
-                        geometry = new THREE.BoxGeometry(4, 4, 60);
+                        // H-빔: H-400×400×13×21 (깊이는 6000 추정)
+                        let w = 400, h = 400, d = 6000;
+                        if (spec && spec.includes('H-')) {
+                            const m = spec.match(/H-(\d+)×(\d+)/);
+                            if (m) {
+                                w = parseInt(m[1]);
+                                h = parseInt(m[2]);
+                            }
+                        }
+                        geometry = new THREE.BoxGeometry(
+                            w * SCALE,
+                            h * SCALE,
+                            d * SCALE
+                        );
+
                     } else if (type === 'Strut') {
-                        geometry = new THREE.BoxGeometry(2, 2, 40);
+                        // 버팀목: 200×200×4000
+                        geometry = new THREE.BoxGeometry(
+                            200 * SCALE,
+                            200 * SCALE,
+                            4000 * SCALE
+                        );
                     } else {
-                        geometry = new THREE.BoxGeometry(3, 3, 30);
+                        geometry = new THREE.BoxGeometry(300 * SCALE, 300 * SCALE, 3000 * SCALE);
                     }
 
                     const mesh = new THREE.Mesh(geometry, getMaterial(type));
-                    mesh.position.set(position.x, position.y, position.z);
+                    mesh.position.set(position.x, position.y, position.z + 10);
                     scene.add(mesh);
                     count++;
 
                     if (count <= 3 || count % 100 === 0) {
-                        console.log(`[${count}] ${blockType} @ (${position.x.toFixed(0)}, ${position.y.toFixed(0)})`);
+                        console.log(`[${count}] ${blockType} (${spec}) @ (${position.x.toFixed(0)}, ${position.y.toFixed(0)})`);
                     }
                 });
 
