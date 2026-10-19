@@ -279,12 +279,15 @@
             return new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.2 });
         };
 
+        const DISPLAY_SCALE = 0.01; // mm → cm (1:100)
+
         // stats.json 로드 및 부재 생성
         fetch('gasiseol-correct-v2-stats.json')
             .then(r => r.json())
             .then(data => {
                 console.log('📊 로드됨:', data.totalParts, '개 부재');
 
+                let addedCount = 0;
                 // 각 부재를 3D 메시로 생성
                 data.parts.forEach(part => {
                     let geometry;
@@ -292,31 +295,56 @@
 
                     // 부재 타입별 3D 형상 생성
                     if (type === 'Pile') {
-                        // 원형 파일 - 규격에서 지름 추출
-                        let diameter = 1000; // 기본값
-                        if (spec && spec.includes('φ')) {
-                            const match = spec.match(/φ(\d+)/);
-                            if (match) diameter = parseInt(match[1]);
-                        }
-                        geometry = new THREE.CylinderGeometry(diameter/2, diameter/2, 8000, 16);
+                        // H-PILE 형상 (H-beam 박스)
+                        geometry = new THREE.BoxGeometry(
+                            400 * DISPLAY_SCALE,
+                            400 * DISPLAY_SCALE,
+                            8000 * DISPLAY_SCALE
+                        );
                     } else if (type === 'Panel') {
                         // 판재 - 규격에서 가로×세로×두께 추출
                         let w = 700, h = 360, d = 14;
                         if (spec && spec.includes('×')) {
-                            const match = spec.match(/(\d+)×(\d+)×(\d+)/);
+                            const match = spec.match(/PL\.-(\d+)×(\d+)×(\d+)/);
                             if (match) {
                                 w = parseInt(match[1]);
                                 h = parseInt(match[2]);
                                 d = parseInt(match[3]);
                             }
                         }
-                        geometry = new THREE.BoxGeometry(w, h, d);
+                        geometry = new THREE.BoxGeometry(
+                            w * DISPLAY_SCALE,
+                            h * DISPLAY_SCALE,
+                            d * DISPLAY_SCALE
+                        );
                     } else if (type === 'H-Beam') {
-                        // H-빔 - 정사각형 단면
-                        geometry = new THREE.BoxGeometry(400, 400, 6000);
+                        // H-빔 - H-400×400×13×21
+                        let w = 400, h = 400, d = 6000;
+                        if (spec && spec.includes('H-')) {
+                            const match = spec.match(/H-(\d+)×(\d+)/);
+                            if (match) {
+                                w = parseInt(match[1]);
+                                h = parseInt(match[2]);
+                            }
+                        }
+                        geometry = new THREE.BoxGeometry(
+                            w * DISPLAY_SCALE,
+                            h * DISPLAY_SCALE,
+                            d * DISPLAY_SCALE
+                        );
+                    } else if (type === 'Strut') {
+                        // 버팀목 - 200×200×4000
+                        geometry = new THREE.BoxGeometry(
+                            200 * DISPLAY_SCALE,
+                            200 * DISPLAY_SCALE,
+                            4000 * DISPLAY_SCALE
+                        );
                     } else {
-                        // 기본 상자
-                        geometry = new THREE.BoxGeometry(300, 300, 3000);
+                        geometry = new THREE.BoxGeometry(
+                            300 * DISPLAY_SCALE,
+                            300 * DISPLAY_SCALE,
+                            3000 * DISPLAY_SCALE
+                        );
                     }
 
                     const mesh = new THREE.Mesh(geometry, getMaterial(type));
@@ -324,7 +352,10 @@
                     mesh.userData = { blockType, type, spec, volume };
 
                     scene.add(mesh);
+                    addedCount++;
                 });
+
+                console.log('✅ ' + addedCount + '개 부재 추가됨');
 
                 // UI 업데이트
                 document.getElementById('totalParts').textContent = data.totalParts + '개';

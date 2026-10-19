@@ -255,6 +255,9 @@ function extractPlacements(dxf) {
 }
 
 // 부재 3D 생성
+// 단위: DXF 좌표 그대로 사용 (mm 스케일에서 표시용으로 축소)
+const DISPLAY_SCALE = 0.01; // mm → cm 축소 (1:100)
+
 function createMember3D(blockType, spec, placement) {
   const dims = spec.dimensions;
   let geometry, volume, userData;
@@ -264,25 +267,16 @@ function createMember3D(blockType, spec, placement) {
 
   // 규격에 따른 3D 형상 생성
   if (spec.type === 'Pile') {
-    // 원형 파일
-    let diameter = 1000; // 기본값 (1000mm)
-    if (spec.spec && spec.spec.includes('φ')) {
-      const match = spec.spec.match(/φ(\d+)/);
-      if (match) diameter = parseInt(match[1]);
-    }
-    let depth = 8000;
-    if (spec.spec && spec.spec.includes('×')) {
-      const match = spec.spec.match(/φ\d+×(\d+)/);
-      if (match) depth = parseInt(match[1]);
-    }
+    // H-PILE 형상 (선형 + 원형 조합) → H-beam으로 표현
+    // 실제 규격: φ1000×8000 또는 H-400×400×13×21
+    let width = 400, height = 400, depth = 8000;
 
-    geometry = new THREE.CylinderGeometry(
-      diameter / 2,
-      diameter / 2,
-      depth,
-      24
+    geometry = new THREE.BoxGeometry(
+      width * DISPLAY_SCALE,
+      height * DISPLAY_SCALE,
+      depth * DISPLAY_SCALE
     );
-    volume = Math.PI * Math.pow(diameter / 2, 2) * depth / 1e6;
+    volume = width * height * depth / 1e6;
 
   } else if (spec.type === 'Panel') {
     // 강판 (PL.-700×360×14)
@@ -296,7 +290,11 @@ function createMember3D(blockType, spec, placement) {
       }
     }
 
-    geometry = new THREE.BoxGeometry(width, height, thickness);
+    geometry = new THREE.BoxGeometry(
+      width * DISPLAY_SCALE,
+      height * DISPLAY_SCALE,
+      thickness * DISPLAY_SCALE
+    );
     volume = width * height * thickness / 1e6;
 
   } else if (spec.type === 'H-Beam') {
@@ -310,17 +308,29 @@ function createMember3D(blockType, spec, placement) {
       }
     }
 
-    geometry = new THREE.BoxGeometry(width, height, depth);
+    geometry = new THREE.BoxGeometry(
+      width * DISPLAY_SCALE,
+      height * DISPLAY_SCALE,
+      depth * DISPLAY_SCALE
+    );
     volume = width * height * depth / 1e6;
 
   } else if (spec.type === 'Strut') {
     // 버팀목 (200×200×4000)
     let width = 200, height = 200, depth = 4000;
-    geometry = new THREE.BoxGeometry(width, height, depth);
+    geometry = new THREE.BoxGeometry(
+      width * DISPLAY_SCALE,
+      height * DISPLAY_SCALE,
+      depth * DISPLAY_SCALE
+    );
     volume = width * height * depth / 1e6;
 
   } else {
-    geometry = new THREE.BoxGeometry(300, 300, 3000);
+    geometry = new THREE.BoxGeometry(
+      300 * DISPLAY_SCALE,
+      300 * DISPLAY_SCALE,
+      3000 * DISPLAY_SCALE
+    );
     volume = 300 * 300 * 3000 / 1e6;
   }
 
