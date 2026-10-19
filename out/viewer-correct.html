@@ -34,14 +34,14 @@
             width: fit-content;
             min-width: 300px;
             max-width: 650px;
+            height: 100vh;
             background: #1a1f2e;
-            padding: 20px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            padding: 12px;
+            overflow: hidden;
             border-left: 1px solid #2d3748;
             display: flex;
             flex-direction: column;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .panel > * {
@@ -49,49 +49,57 @@
             width: 100%;
         }
 
+        .panel > :not(:last-child) {
+            margin-bottom: 8px;
+        }
+
+        .panel > :nth-last-child(1) {
+            margin-top: auto;
+        }
+
         .panel h2 {
             color: #10b981;
-            font-size: 14px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            font-size: 13px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
             border-bottom: 2px solid #10b981;
             font-weight: 700;
         }
 
         .panel h3 {
             color: #cbd5e0;
-            font-size: 11px;
-            margin-bottom: 10px;
+            font-size: 10px;
+            margin-bottom: 4px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         .badge {
             display: inline-block;
             background: #10b981;
             color: #1a1f2e;
-            padding: 4px 10px;
-            border-radius: 16px;
-            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 14px;
+            font-size: 9px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
             width: fit-content;
         }
 
         .loading {
-            padding: 15px;
+            padding: 8px;
             background: #252d3d;
-            border-radius: 8px;
+            border-radius: 6px;
             color: #fbbf24;
-            font-size: 13px;
-            margin-bottom: 15px;
+            font-size: 11px;
+            margin-bottom: 6px;
         }
 
         .section {
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 8px;
+            padding: 8px;
             background: #252d3d;
-            border-radius: 8px;
+            border-radius: 6px;
             border-left: 3px solid #10b981;
         }
 
@@ -107,9 +115,9 @@
         .stat-row {
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
+            font-size: 11px;
             color: #cbd5e0;
-            margin: 8px 0;
+            margin: 3px 0;
         }
 
         .stat-label {
