@@ -364,24 +364,49 @@
 
         const DISPLAY_SCALE = 0.01; // mm → cm (1:100)
 
-        // 먼저 샘플 부재 1개로 테스트
-        console.log('=== 샘플 부재 테스트 ===');
-        const testGeometry = new THREE.BoxGeometry(4, 4, 80); // 400×400×8000mm → 4×4×80 (축소)
-        const testMaterial = new THREE.MeshStandardMaterial({ color: 0x7ed321, roughness: 0.7 });
+        // 디버깅 정보 추가
+        console.log('=== 3D 뷰어 초기화 ===');
+        console.log('카메라 위치:', camera.position);
+        console.log('카메라 타겟:', controls.target);
+
+        // 배경 밝게 변경해서 테스트
+        scene.background = new THREE.Color(0x1a3a52);
+        console.log('배경색 설정 완료');
+
+        // 샘플 부재 추가 (테스트용)
+        console.log('샘플 부재 생성 중...');
+        const testGeometry = new THREE.BoxGeometry(4, 4, 80); // 400×400×8000mm → 4×4×80
+        const testMaterial = new THREE.MeshStandardMaterial({
+            color: 0x7ed321,
+            roughness: 0.7,
+            emissive: 0x2d5a2d
+        });
         const testMesh = new THREE.Mesh(testGeometry, testMaterial);
-        testMesh.position.set(470, -2830, 100); // 첫 번째 h-pile2 좌표
+        testMesh.position.set(0, -2554, 100); // 부재 중심 좌표
         scene.add(testMesh);
-        console.log('✓ 샘플 부재 추가됨 @ (470, -2830)');
+        console.log('✓ 샘플 부재 @ (0, -2554, 100) - 녹색');
+
+        // 추가 조명
+        const testLight = new THREE.PointLight(0xffffff, 1.0, 10000);
+        testLight.position.set(500, 500, 500);
+        scene.add(testLight);
+        console.log('✓ 테스트 조명 추가됨');
 
         // stats.json 로드 및 부재 생성
+        console.log('stats.json 로드 시작...');
         fetch('gasiseol-correct-v2-stats.json')
-            .then(r => r.json())
+            .then(r => {
+                console.log('응답 상태:', r.status);
+                return r.json();
+            })
             .then(data => {
-                console.log('📊 로드됨:', data.totalParts, '개 부재');
+                console.log('📊 JSON 파싱 완료');
+                console.log('총 부재:', data.totalParts);
+                console.log('배치 부재:', data.parts.length);
 
                 let addedCount = 0;
                 // 각 부재를 3D 메시로 생성
-                data.parts.forEach(part => {
+                data.parts.forEach((part, idx) => {
                     let geometry;
                     const { blockType, type, spec, position, volume } = part;
 
@@ -445,9 +470,13 @@
 
                     scene.add(mesh);
                     addedCount++;
+
+                    if (addedCount <= 3 || addedCount % 100 === 0) {
+                        console.log(`[${addedCount}] ${blockType} @ (${position.x.toFixed(0)}, ${position.y.toFixed(0)}, ${position.z})`);
+                    }
                 });
 
-                console.log('✅ ' + addedCount + '개 부재 추가됨');
+                console.log('✅ ' + addedCount + '개 부재 씬에 추가됨');
 
                 // UI 업데이트
                 document.getElementById('totalParts').textContent = data.totalParts + '개';
