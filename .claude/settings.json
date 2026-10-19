@@ -147,7 +147,17 @@
       "Bash(node src/build/generate-3d-lh-full.mjs)",
       "Bash(git commit -m 'LH 정리된 도면 기반 3D 모델 생성 완료 *)",
       "Bash(node src/build/generate-3d-lod300.mjs)",
-      "Bash(git commit -m 'LOD 300 구현: 부재 형상 정확한 검증 완료 *)"
+      "Bash(git commit -m 'LOD 300 구현: 부재 형상 정확한 검증 완료 *)",
+      "Bash(awk ' *)",
+      "Bash(awk -F, ' *)",
+      "Bash(grep -n \"^  1$\" \"D:\\\\Obsidian Vault\\\\999ETC\\\\261016_HW_DwfTo3D/RAG/LH/가시설상세_LH.dxf\")",
+      "Bash(grep -B 5 \"^  1$\")",
+      "Bash(grep -A 1 \"^  1$\")",
+      "Bash(grep -v \"^  1$\")",
+      "Bash(grep -E \"\\([0-9]{3,4}[×x]|φ|H-\\)\" \"D:\\\\Obsidian Vault\\\\999ETC\\\\261016_HW_DwfTo3D/RAG/LH/가시설상세_LH.dxf\")",
+      "Bash(grep -E \"^ 10$|^ 20$\" -A 1)",
+      "Bash(grep -v \"^ 10$\")",
+      "Bash(grep -v \"^ 20$\")"
     ]
   }
 }

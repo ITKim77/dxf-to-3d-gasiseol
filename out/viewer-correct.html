@@ -266,9 +266,12 @@
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x1a3a52);
 
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500000);
-        camera.position.set(-216, -2554, 3000);
-        camera.lookAt(-216, -2554, 0);
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000000);
+        // 좌표: m → cm (표시용)
+        // 범위 중심: X = (-903.44 + 470.05)/2 = -216.7m = -21,670cm
+        //          Y = (-2830.53 + -2278.13)/2 = -2554.3m = -255,430cm
+        camera.position.set(-21670, -255430, 50000);
+        camera.lookAt(-21670, -255430, 0);
 
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setSize(width, height);
@@ -391,9 +394,9 @@
         const axisHelper = new THREE.AxesHelper(500);
         scene.add(axisHelper);
 
-        // stats.json 로드
+        // stats.json 로드 (v3: 분석 기반)
         console.log('stats.json 로드 시작...');
-        fetch('gasiseol-correct-v2-stats.json')
+        fetch('gasiseol-v3-stats.json')
             .then(r => {
                 console.log('응답:', r.status);
                 return r.json();
