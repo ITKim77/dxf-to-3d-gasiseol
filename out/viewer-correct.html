@@ -31,14 +31,22 @@
         }
 
         .panel {
-            width: 480px;
+            width: fit-content;
+            min-width: 300px;
+            max-width: 650px;
             background: #1a1f2e;
             padding: 20px;
             overflow-y: auto;
+            overflow-x: hidden;
             border-left: 1px solid #2d3748;
             display: flex;
             flex-direction: column;
             font-size: 13px;
+        }
+
+        .panel > * {
+            flex-shrink: 0;
+            width: 100%;
         }
 
         .panel h2 {
