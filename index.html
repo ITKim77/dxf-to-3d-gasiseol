@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가시설 통합모델 v4</title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0d1f2d; font-family: 'Segoe UI', sans-serif; }
+        canvas { display: block; width: 100%; height: 100%; }
+        #panel { position: fixed; top: 10px; left: 10px; color: #fff; background: rgba(13,31,45,0.9); padding: 10px 12px; border-radius: 6px; font-size: 13px; line-height: 1.6; min-width: 300px; }
+        #panel h4 { margin: 0 0 4px; font-size: 14px; }
+        #panel .row { display: flex; justify-content: space-between; gap: 10px; }
+        #panel .spec { color: #9fb3c8; font-size: 11px; }
+        #panel .vrow { display: flex; gap: 4px; margin-top: 6px; }
+        #panel button.vb { margin-top: 0; width: auto; flex: 1; padding: 5px 4px; background: #1e3a4f; color: #fff; border: 1px solid #10b981; font-size: 12px; font-weight: 600; }
+        #panel button.vb.on { background: #10b981; color: #0d1f2d; }
+        #measureLabel { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(13,31,45,0.92); color: #ffd166; padding: 8px 14px; border-radius: 6px; font-size: 14px; display: none; pointer-events: none; z-index: 5; }
+        #panel button { margin-top: 8px; width: 100%; padding: 6px; background: #10b981; color: #0d1f2d; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; }
+        #hint { position: fixed; bottom: 8px; left: 10px; color: #9fb3c8; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div id="panel">
+        <h4>부재 구성 (규격)</h4>
+        <div id="counts">로딩 중...</div>
+        <button id="btnFit">줌핏 (보이는 부재)</button>
+        <div class="vrow">
+            <button class="vb" data-view="front">정면</button>
+            <button class="vb" data-view="top">평면</button>
+            <button class="vb" data-view="side">측면</button>
+            <button class="vb" data-view="iso">등각</button>
+        </div>
+        <div class="vrow">
+            <button id="btnMeasure" class="vb">거리 측정: 끔</button>
+            <button id="btnClear" class="vb">측정 지우기</button>
+        </div>
+        <label style="display:block;margin-top:6px;cursor:pointer"><input type="checkbox" id="chkExc" checked> 굴착면 표시 (벽체 내측면)</label>
+    </div>
+    <div id="hint">드래그: 회전 · 휠: 줌(커서 방향) · 우클릭 드래그: 이동</div>
+    <canvas id="canvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const countsEl = document.getElementById('counts');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0d1f2d);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight, false);
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 100000);
+        camera.up.set(0, 0, 1);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+        sun.position.set(1, -1, 2);
+        scene.add(sun);
+
+        const COLORS = { '엄지말뚝': 0x7ed321, '토류판': 0x4a90e2, '중간말뚝': 0xff6b6b, '수직 H300 (미확정)': 0xffd166, '버팀보': 0xf5a623, '띠장': 0x2dd4bf, '수직 PIECE': 0xa78bfa, '채널': 0xf472b6 };
+
+        // H형강 단면 (폭 w, 춤 h, 플랜지 tf, 웨브 tw). 축 방향 길이 L 로 압출, 중심은 원점
+        function hSection(d) {
+            const hw = d.w / 2, hh = d.h / 2, hwb = d.tw / 2;
+            const s = new THREE.Shape();
+            s.moveTo(-hw, -hh); s.lineTo(hw, -hh); s.lineTo(hw, -hh + d.tf);
+            s.lineTo(hwb, -hh + d.tf); s.lineTo(hwb, hh - d.tf); s.lineTo(hw, hh - d.tf);
+            s.lineTo(hw, hh); s.lineTo(-hw, hh); s.lineTo(-hw, hh - d.tf);
+            s.lineTo(-hwb, hh - d.tf); s.lineTo(-hwb, -hh + d.tf); s.lineTo(-hw, -hh + d.tf);
+            s.closePath();
+            return s;
+        }
+
+        function buildGeometry(p) {
+            const d = p.dims;
+            if (p.shape === 'PANEL') {
+                return new THREE.BoxGeometry(d.w, d.t, d.length);
+            }
+            if (p.shape === 'CHANNEL') {
+                const B = d.w, H = d.h, t = d.tw, tf = d.tf;
+                const s = new THREE.Shape();
+                s.moveTo(-B / 2, -H / 2); s.lineTo(B / 2, -H / 2); s.lineTo(B / 2, -H / 2 + tf);
+                s.lineTo(-B / 2 + t, -H / 2 + tf); s.lineTo(-B / 2 + t, H / 2 - tf); s.lineTo(B / 2, H / 2 - tf);
+                s.lineTo(B / 2, H / 2); s.lineTo(-B / 2, H / 2); s.closePath();
+                const g = new THREE.ExtrudeGeometry(s, { depth: d.length, bevelEnabled: false, steps: 1 });
+                g.translate(0, 0, -d.length / 2);
+                g.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1));
+                return g;
+            }
+            const g = new THREE.ExtrudeGeometry(hSection(d), { depth: d.length, bevelEnabled: false, steps: 1 });
+            g.translate(0, 0, -d.length / 2);
+            return g;
+        }
+
+        const groups = {};
+        const excavationMeshes = [];
+        const allBox = new THREE.Box3();
+        const target = new THREE.Vector3();
+        let radius = 1000, theta = Math.PI / 4, phi = Math.PI / 3;
+
+        function updateCamera() {
+            const sp = Math.sin(phi);
+            camera.position.set(
+                target.x + radius * sp * Math.cos(theta),
+                target.y + radius * sp * Math.sin(theta),
+                target.z + radius * Math.cos(phi)
+            );
+            camera.lookAt(target);
+        }
+
+        function fitVisible() {
+            const box = new THREE.Box3();
+            Object.values(groups).forEach(list => list.forEach(m => { if (m.visible) box.expandByObject(m); }));
+            if (box.isEmpty()) return;
+            box.getCenter(target);
+            const size = box.getSize(new THREE.Vector3());
+            radius = Math.max(size.x, size.y, size.z) / 2 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.1;
+            updateCamera();
+        }
+
+        function buildJack() {
+            // 상세도 jack 블록(mm): 길이 599.5(Y축), 높이 309.3(Z축), 폭 0.3m(X축)을 m로 환산
+            const g = new THREE.Group();
+            const add = (geo, x, y, z) => {
+                const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.6 }));
+                m.position.set(x, y, z);
+                g.add(m);
+            };
+            add(new THREE.BoxGeometry(0.30, 0.0141, 0.3093), 0, -0.29268, 0);
+            add(new THREE.BoxGeometry(0.30, 0.0145, 0.3093), 0, 0.29253, 0);
+            add(new THREE.BoxGeometry(0.20, 0.5709, 0.1557), 0, 0, 0);
+            add(new THREE.CylinderGeometry(0.0467, 0.0467, 0.3218, 20), 0, 0, 0);
+            return g;
+        }
+
+        fetch('gasiseol-v4-stats.json')
+            .then(r => r.json())
+            .then(data => {
+                data.parts.forEach(p => {
+                    const mesh = p.shape === 'JACK' ? buildJack() : new THREE.Mesh(buildGeometry(p), new THREE.MeshStandardMaterial({ color: COLORS[p.memberType] || 0x999999, roughness: 0.7 }));
+                    const axisHoriz = p.axis === 'horizontal';
+                    // 수직 부재: 평면 단면(x-y), 길이는 z 방향 (지표 z=0 에서 아래로)
+                    // 수평 부재(버팀보): 길이를 x 방향으로 눕힘, 설치 깊이는 말뚝 길이의 절반
+                    if (p.axis === 'horizontal') mesh.rotation.y = Math.PI / 2;
+                    if (p.axis === 'horizontalY') mesh.rotation.x = Math.PI / 2;
+                    mesh.position.set(p.position.x, p.position.y, p.position.z);
+                    scene.add(mesh);
+                    allBox.expandByObject(mesh);
+                    (groups[p.memberType] = groups[p.memberType] || []).push(mesh);
+                });
+
+                const buildSurface = (y0, y1, profile, color) => {
+                    const pos = [];
+                    for (let i = 0; i + 1 < profile.length; i++) {
+                        const a = profile[i], b = profile[i + 1];
+                        const A = [a.x, y0, a.z], B = [a.x, y1, a.z], C = [b.x, y0, b.z], D = [b.x, y1, b.z];
+                        pos.push(...A, ...B, ...C, ...C, ...B, ...D);
+                    }
+                    const g = new THREE.BufferGeometry();
+                    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+                    g.computeVertexNormals();
+                    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }));
+                    scene.add(m);
+                    excavationMeshes.push(m);
+                    allBox.expandByObject(m);
+                };
+                buildSurface(data.excavation.yA, data.excavation.yB, data.excavation.profile, 0x8ecae6);
+                data.road.forEach(r => buildSurface(r.y0, r.y1, r.profile, 0xd6b98c));
+                document.getElementById('chkExc').addEventListener('change', e => {
+                    excavationMeshes.forEach(m => m.visible = e.target.checked);
+                });
+
+                const total = data.totalParts;
+                countsEl.innerHTML = Object.keys(groups).map(name => {
+                    const sample = data.parts.find(p => p.memberType === name);
+                    return `<label class="row" style="cursor:pointer"><span><input type="checkbox" data-type="${name}" checked> ${name}</span><span>${groups[name].length}</span></label><div class="spec">${sample.spec}</div><div class="row" style="align-items:center"><span class="spec">투명도</span><input type="range" min="0.1" max="1" step="0.05" value="1" data-op="${name}" style="flex:1;margin-left:8px"></div>`;
+                }).join('') + `<div class="row" style="border-top:1px solid #9fb3c8;margin-top:4px;padding-top:4px"><b>합계</b><b id="visibleTotal"></b></div>`;
+
+                const updateTotal = () => {
+                    let shown = 0;
+                    Object.values(groups).forEach(list => { if (list[0].visible) shown += list.length; });
+                    document.getElementById('visibleTotal').textContent = shown + ' / ' + total;
+                };
+                countsEl.querySelectorAll('input[type=checkbox]').forEach(box => {
+                    box.addEventListener('change', () => {
+                        groups[box.dataset.type].forEach(m => m.visible = box.checked);
+                        updateTotal();
+                    });
+                });
+                countsEl.querySelectorAll('input[type=range][data-op]').forEach(slider => {
+                    slider.addEventListener('input', () => {
+                        const o = parseFloat(slider.value);
+                        groups[slider.dataset.op].forEach(obj => obj.traverse(c => {
+                            if (!c.isMesh) return;
+                            c.material.transparent = o < 1;
+                            c.material.opacity = o;
+                            c.material.depthWrite = o >= 1;
+                            c.material.needsUpdate = true;
+                        }));
+                    });
+                });
+                updateTotal();
+                fitVisible();
+            })
+            .catch(err => { countsEl.textContent = '오류: ' + err.message; });
+
+        document.getElementById('btnFit').addEventListener('click', fitVisible);
+
+        const VIEWS = {
+            front: { theta: Math.PI / 2, phi: Math.PI / 2 },
+            top:   { theta: -Math.PI / 2, phi: 0.02 },
+            side:  { theta: 0, phi: Math.PI / 2 },
+            iso:   { theta: Math.PI / 4, phi: Math.PI / 3 }
+        };
+        document.querySelectorAll('button.vb[data-view]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const v = VIEWS[btn.dataset.view];
+                theta = v.theta; phi = v.phi;
+                fitVisible();
+                document.querySelectorAll('button.vb[data-view]').forEach(b => b.classList.toggle('on', b === btn));
+            });
+        });
+
+        const measureLabel = document.createElement('div');
+        measureLabel.id = 'measureLabel';
+        document.body.appendChild(measureLabel);
+        const measurePts = [];
+        const measureMarkers = [];
+        const measureLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xffd166, depthTest: false }));
+        measureLine.renderOrder = 999;
+        scene.add(measureLine);
+        let measuring = false;
+
+        function clearMeasure() {
+            measureMarkers.forEach(m => { scene.remove(m); m.geometry.dispose(); m.material.dispose(); });
+            measureMarkers.length = 0;
+            measurePts.length = 0;
+            measureLine.geometry.dispose();
+            measureLine.geometry = new THREE.BufferGeometry();
+            measureLabel.style.display = 'none';
+        }
+
+        function pickPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            const ndc = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+            camera.updateMatrixWorld();
+            raycaster.setFromCamera(ndc, camera);
+            const targets = [];
+            Object.values(groups).forEach(list => list.forEach(m => { if (m.visible) targets.push(m); }));
+            const hit = raycaster.intersectObjects(targets, true)[0];
+            if (!hit) return;
+            if (measurePts.length === 2) clearMeasure();
+            measurePts.push(hit.point.clone());
+            const marker = new THREE.Mesh(
+                new THREE.SphereGeometry(Math.max(0.05, radius * 0.005), 12, 12),
+                new THREE.MeshBasicMaterial({ color: 0xffd166, depthTest: false })
+            );
+            marker.position.copy(hit.point);
+            marker.renderOrder = 999;
+            scene.add(marker);
+            measureMarkers.push(marker);
+            if (measurePts.length === 1) {
+                measureLabel.textContent = '첫 점 선택됨 · 두 번째 점을 클릭';
+                measureLabel.style.display = 'block';
+                return;
+            }
+            const [a, b] = measurePts;
+            measureLine.geometry = new THREE.BufferGeometry().setFromPoints([a, b]);
+            measureLabel.textContent = `거리 ${a.distanceTo(b).toFixed(3)} m  (ΔX ${(b.x - a.x).toFixed(3)} · ΔY ${(b.y - a.y).toFixed(3)} · ΔZ ${(b.z - a.z).toFixed(3)})`;
+            measureLabel.style.display = 'block';
+        }
+
+        const btnMeasure = document.getElementById('btnMeasure');
+        btnMeasure.addEventListener('click', () => {
+            measuring = !measuring;
+            btnMeasure.textContent = '거리 측정: ' + (measuring ? '켜짐' : '끔');
+            btnMeasure.classList.toggle('on', measuring);
+            canvas.style.cursor = measuring ? 'crosshair' : 'default';
+        });
+        document.getElementById('btnClear').addEventListener('click', clearMeasure);
+
+        let mode = null, lastX = 0, lastY = 0, downX = 0, downY = 0;
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+        canvas.addEventListener('mousedown', e => {
+            mode = e.button === 2 ? 'pan' : 'rotate';
+            lastX = e.clientX; lastY = e.clientY;
+            downX = e.clientX; downY = e.clientY;
+        });
+        window.addEventListener('mouseup', e => {
+            if (measuring && mode === 'rotate' && Math.hypot(e.clientX - downX, e.clientY - downY) < 4) pickPoint(e);
+            mode = null;
+        });
+        window.addEventListener('mousemove', e => {
+            if (!mode) return;
+            const dx = e.clientX - lastX, dy = e.clientY - lastY;
+            lastX = e.clientX; lastY = e.clientY;
+            if (mode === 'rotate') {
+                theta -= dx * 0.005;
+                phi = Math.min(Math.PI - 0.01, Math.max(0.01, phi - dy * 0.005));
+            } else {
+                const right = new THREE.Vector3(), up = new THREE.Vector3();
+                camera.matrixWorld.extractBasis(right, up, new THREE.Vector3());
+                const s = radius * 0.0015;
+                target.addScaledVector(right, -dx * s);
+                target.addScaledVector(up, dy * s);
+            }
+            updateCamera();
+        });
+
+        const raycaster = new THREE.Raycaster();
+        const ground = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+            zoomTarget = Math.min(1e6, Math.max(0.05, (zoomTarget ?? radius) * Math.exp(dy * 0.0015)));
+            const rect = canvas.getBoundingClientRect();
+            const ndc = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+            camera.updateMatrixWorld();
+            raycaster.setFromCamera(ndc, camera);
+            const hit = new THREE.Vector3();
+            zoomPivot = raycaster.ray.intersectPlane(ground, hit) ? hit : target.clone();
+        }, { passive: false });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight, false);
+        });
+
+        let zoomTarget = null, zoomPivot = null;
+        (function animate() {
+            requestAnimationFrame(animate);
+            if (zoomTarget !== null) {
+                const prev = radius;
+                let next = prev + (zoomTarget - prev) * 0.18;
+                if (Math.abs(next - zoomTarget) < zoomTarget * 0.0005) { next = zoomTarget; zoomTarget = null; }
+                target.lerp(zoomPivot, 1 - next / prev);
+                radius = next;
+                updateCamera();
+            }
+            renderer.render(scene, camera);
+        })();
+    </script>
+</body>
+</html>
